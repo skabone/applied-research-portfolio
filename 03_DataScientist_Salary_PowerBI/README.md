@@ -1,36 +1,36 @@
-# Data Scientist Salary Market Analysis — Power BI
+# The Modern Data Scientist Market in the United States (2021)
+**Tools:** Python · RapidMiner · Power BI | **Domain:** Labor Market Analytics / Workforce Intelligence
 
-**Type:** Interactive dashboard / business intelligence project
-**Tools:** Power BI (.pbix), Excel
-**Domain:** Labor market analysis, workforce compensation, data visualization
+---
 
-## Project Overview
+## Overview
 
-This project visualized the U.S. data scientist job market using 2021 compensation and role data. The dashboard explored salary distributions, regional demand, role-type breakdowns, and market trends to support career planning and workforce strategy insights.
+An exploratory analysis of 742 data science job postings scraped from Glassdoor, examining salary distribution, geographic concentration, organizational characteristics, and technical tool demand across DS, DA, Data Engineer, and Senior DS roles.
 
-## Methods Applied
+## Key Findings
 
-- Data cleaning and transformation in Power BI
-- Interactive dashboard design with filters and slicers
-- Salary distribution visualization by role, region, and experience level
-- Comparative analysis across data science job categories
-- KPI card design and executive summary layout
+- **Python is universally required** — and becomes even more dominant at senior levels alongside deep learning frameworks (Keras, PyTorch)
+- **Coastal markets dominate** — California, Massachusetts, and New York account for the highest role volume, salary, and seniority. The effect intensifies as roles become more senior.
+- **The typical hiring organization** is large (1,001–5,000 employees), young (<50 years), private, and in IT or biotech
+- **Flink and Google Analytics** are nearly absent from postings — low-priority tools for most job seekers
+- **Degree requirements escalate with pay** — BA covers entry-level; MA/Ph.D. become requirements for senior and research roles
 
 ## Files
 
 | File | Description |
 |------|-------------|
-| `DS Salary/The Modern Data Scientist Market in the United States of America (2021).pbix` | Main Power BI dashboard file |
-| `DS Salary/USDSS_PBI_01.pbix` | Alternate/working version of dashboard |
-| `DS Salary/The Modern Data Scientist Market in the United States of America (2021).pdf` | PDF export of final dashboard |
-| `DS Salary/DV Project 2 - WriteUp.docx` | Written project report |
-| `DS Salary/Project Working Doc.docx` | Working notes and process documentation |
-| `1.png`, `2.jpg`, `3.jpeg` | Screenshot captures of dashboard views |
+| `DS_Salary_Data_Prep.py` | Python script replicating data cleaning (originally done in RapidMiner) |
+| `Executive_Brief.md` | 1-page summary for HR and workforce planning leaders |
+| `DS_Salary_Project_Report.md` | Full written report with methodology, findings, and discussion |
+| `ds_salary_original.csv` | Raw Kaggle dataset (742 rows × 42 columns) |
+| `dashboard_1.png` · `dashboard_2.png` · `dashboard_3.png` | Power BI dashboard screenshots |
 
-## Note
+## Dashboard
 
-Completed as part of a graduate Data Visualization course. Dataset sourced from publicly available salary survey data (2021). Analysis focuses on the U.S. data science labor market.
+The interactive Power BI dashboard includes salary maps (3D and 2D), tool demand analysis via Key Influencers, a job description word cloud, and salary breakdowns by company and personal features. Global filters allow cross-tab exploration by industry, seniority, degree, and organization size.
+
+*Power BI file (.pbix) available on request — file size exceeds GitHub's 25MB display limit.*
 
 ---
-*Seattle Pacific University — Data Visualization (ISM 6361) — Spring 2022*
-*Mintay Misgano, Ph.D. · github.com/skabone/people-analytics-portfolio*
+
+*Mintay Misgano | People Analytics Portfolio | Seattle Pacific University, 2022*
