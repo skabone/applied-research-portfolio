@@ -1,0 +1,748 @@
+---
+title: "Project Bid Accuracy Analysis — NDA Org"
+subtitle: "Identifying Drivers of Estimation Discrepancy in a Consulting Firm"
+author: "Mintay Misgano"
+date: "2023-03-06"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    theme: flatly
+    highlight: tango
+    df_print: paged
+  pdf_document:
+    toc: true
+    toc_depth: 3
+---
+
+---
+
+> **Note on Confidentiality:** This project was completed as part of a real consulting engagement under a Non-Disclosure Agreement (NDA). All client and personnel identifiers have been anonymized. The organization is referred to throughout as "NDA Org." Project leads and client organizations are referred to by generic labels (Consultant A, Client A, etc.). All analytical methods, data structure, and findings are authentic.
+
+---
+
+# 1. Setup
+
+## 1.1 Package Installation
+
+Run these lines if any package is not already installed. They are commented out by default so the script does not reinstall on every run.
+
+```{r install-packages, eval=FALSE}
+# Uncomment and run once if a package is missing:
+# install.packages("ggplot2")       # Data visualization
+# install.packages("tidyverse")     # Core data science toolkit (includes dplyr, tidyr, readr, ggplot2)
+# install.packages("dplyr")         # Data manipulation
+# install.packages("readxl")        # Reading Excel files
+# install.packages("MASS")          # Statistical methods including robust regression
+# install.packages("lmtest")        # Hypothesis tests for linear models (Breusch-Pagan)
+# install.packages("nortest")       # Normality tests (Anderson-Darling)
+# install.packages("corrplot")      # Correlation matrix visualization
+# install.packages("caret")         # Model training and evaluation framework
+# install.packages("Metrics")       # RMSE, MAE, MSE functions
+# install.packages("scales")        # Dollar formatting for plots
+# install.packages("gridExtra")     # Arrange multiple ggplot panels
+```
+
+## 1.2 Load Packages
+
+```{r load-packages, message=FALSE, warning=FALSE}
+# Core data handling
+library(readxl)      # Read Excel files
+library(dplyr)       # Data manipulation (filter, mutate, rename, summarize)
+library(tidyverse)   # Broad toolkit: includes ggplot2, tidyr, purrr, stringr
+
+# Statistical modeling and testing
+library(MASS)        # Extended regression methods and robust statistics
+library(lmtest)      # Breusch-Pagan test for homoscedasticity
+library(nortest)     # Anderson-Darling normality test
+
+# Visualization
+library(corrplot)    # Correlation matrix plots
+library(scales)      # Axis formatting (dollar_format, percent_format)
+library(gridExtra)   # Multi-panel plot layouts
+
+# Model evaluation
+library(Metrics)     # mae(), rmse(), mse() functions
+
+# Set global options
+options(scipen = 5)   # Reduce scientific notation in output
+knitr::opts_chunk$set(
+  echo    = TRUE,     # Show code in output
+  message = FALSE,    # Suppress package messages
+  warning = FALSE,    # Suppress warnings
+  fig.width  = 9,
+  fig.height = 5,
+  fig.align  = "center"
+)
+```
+
+## 1.3 Color Palette
+
+A consistent color palette makes visualizations easier to read across the report.
+
+```{r color-palette}
+# Define project color palette (used consistently across all plots)
+NAVY    <- "#1B2B4B"
+TEAL    <- "#028090"
+SEAFOAM <- "#02C39A"
+GOLD    <- "#F59E0B"
+ROSE    <- "#E07A5F"
+GRAY    <- "#6B7280"
+
+pal_project <- c(NAVY, TEAL, SEAFOAM, GOLD, ROSE, GRAY)
+```
+
+---
+
+# 2. Business Problem
+
+NDA Org is a mid-size organizational survey and assessment firm specializing in pre-employment testing for public safety agencies (fire, police, corrections, and transit). The firm bids competitively on consulting projects and must quote a project cost before the work begins.
+
+**The core problem:** Discrepancies between estimated project bids and actual invoiced amounts create two costly failure modes:
+
+- **Overestimation** (bid too high): Competitors with lower bids win the contract
+- **Underestimation** (bid too low): The firm absorbs costs exceeding the quote, damaging profitability and client trust
+
+This analysis uses two years of project records (2020–2021) to identify which project and organizational factors most strongly predict bid-to-invoice discrepancy — enabling the firm to sharpen estimates, prioritize internal audits, and reduce revenue variance.
+
+**Target variable (DV):** `DV = Invoice Total − Estimated Bill`
+
+- Positive DV → underestimation (charged more than projected)
+- Negative DV → overestimation (charged less than projected)
+- DV = 0 → perfect estimation
+
+---
+
+# 3. Data Import and Description
+
+## 3.1 Load Data
+
+The dataset combines 2020 and 2021 project records, pre-merged and cleaned in Excel before R import. A year flag was added prior to combining so year effects can be modeled.
+
+```{r load-data}
+# Load the combined and adjusted 2020-2021 project dataset
+# File has been pre-merged from two annual Excel sheets
+df0 <- read_excel("data.xlsx")
+
+# Preserve a copy of the raw import for reference
+df_raw <- df0
+
+# Quick overview of the raw data dimensions
+cat("Rows:", nrow(df0), "\nColumns:", ncol(df0), "\n")
+head(df0, 3)
+```
+
+## 3.2 Variable Definitions
+
+The dataset contains 15 features drawn from internal project management records.
+
+| Variable | Original Name | Type | Description |
+|----------|--------------|------|-------------|
+| `PL` | Project Lead | Character | Anonymized consultant identifier (Consultant A–K) |
+| `AC` | Associate Consultant | Logical | Was an associate consultant assigned? (TRUE/FALSE) |
+| `ID` | Cust ID (Highrise) | Integer | Anonymized client organization identifier |
+| `Industry` | Industry | Factor | Public safety sector (fire, police, corrections, transit, etc.) |
+| `Rank` | Rank | Factor | Position level being assessed (e.g., sergeant, firefighter) |
+| `PType` | Project Type | Factor | Assessment center (AC), written exam (WE), product, general, transit |
+| `BTravel` | Billable Travel | Logical | Did the project require billable travel? |
+| `BShip` | Billable Shipping | Logical | Did the project require billable shipping? |
+| `InvoiceT` | Invoice Total | Numeric | Actual amount invoiced to client (dollars) |
+| `PCost` | Project Costs Total | Numeric | Actual project costs incurred (dollars) |
+| `Bill` | Bill Amount | Numeric | Estimated bid amount (dollars) |
+| `Net` | Net Amount | Numeric | Estimated profit (Bill − estimated costs) |
+| `NetProfit` | True Net Profit | Numeric | Reported net profit from records |
+| `Materials` | Materials (Ops/Consulting) | Factor | Department responsible: Operations, Consulting, or NA |
+| `Year` | Year | Integer | Fiscal year (2020 or 2021) |
+
+---
+
+# 4. Data Preparation
+
+## 4.1 Rename Columns
+
+Renaming to short, R-friendly names makes subsequent code concise and readable. Full definitions are in Section 3.2.
+
+```{r rename-columns}
+df0 <- df0 %>%
+  rename(
+    PL        = `Project Lead`,
+    AC        = `Associate Consultant / Support`,
+    ID        = `Cust ID # (Highrise)`,
+    PType     = `Project Type`,
+    BTravel   = `Billable Travel`,
+    BShip     = `Billable Shipping`,
+    InvoiceT  = `Invoice Total`,
+    PCost     = `Project Costs Total`,
+    Bill      = `Bill Amount (REQUIRED)`,
+    Net       = `Net Amount`,
+    Materials = `Materials (Ops or Consulting)`,
+    NetProfit = `True Net Profit: Invoiced - Proj Costs - Op Costs`
+  )
+
+glimpse(df0)
+```
+
+## 4.2 Missing Value Assessment
+
+Understanding the scope of missing data before deciding on imputation or exclusion strategy.
+
+```{r missing-data}
+# Count missing values per variable
+missing_summary <- df0 %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  pivot_longer(everything(), names_to = "Variable", values_to = "Missing") %>%
+  filter(Missing > 0) %>%
+  mutate(Pct_Missing = round(Missing / nrow(df0) * 100, 1)) %>%
+  arrange(desc(Missing))
+
+print(missing_summary)
+```
+
+**Missing data handling rationale:**
+
+- **`AC` (150 missing):** Converted to logical — `TRUE` if any consultant was assigned, `FALSE` if blank. This preserves the information that no associate was assigned rather than treating it as unknown.
+- **`Materials` (90 missing):** Retained as a 3-level factor (Operations, Consulting, NA), allowing the model to test whether unlisted department has a systematic effect.
+- **`PCost` (37 missing):** Approved by business contact to treat as zero — blank entries reflected projects where no costs were tracked, not truly unknown costs.
+- **`InvoiceT`, `Bill`, `ID` (small N):** Rows deleted; these fields are critical to the analysis and cannot be imputed.
+
+## 4.3 Standardize Character Case
+
+Converting all character fields to lowercase before factoring prevents the same level being counted multiple times due to capitalization differences (e.g., "Fire" vs "fire").
+
+```{r lowercase}
+df0 <- df0 %>% mutate_all(tolower)
+```
+
+## 4.4 Type Conversion
+
+R imports everything as character from Excel unless specified. We explicitly cast each variable to its correct type.
+
+```{r type-conversion}
+# Numeric variables: financial figures
+df0$InvoiceT  <- as.numeric(df0$InvoiceT)
+df0$PCost     <- as.numeric(df0$PCost)
+df0$Bill      <- as.numeric(df0$Bill)
+df0$Net       <- as.numeric(df0$Net)
+df0$NetProfit <- as.numeric(df0$NetProfit)
+
+# Integer variables
+df0$ID   <- as.integer(df0$ID)
+df0$Year <- as.integer(df0$Year)
+
+# Factor variables: categorical predictors
+df0$Industry  <- as.factor(df0$Industry)   # 6 levels: fire, police, corrections, transit, general, dispatch
+df0$Rank      <- as.factor(df0$Rank)       # 8 levels after consolidation
+df0$PType     <- as.factor(df0$PType)      # 6 levels: ac, we, product, general, trans, licensing
+df0$Materials <- as.factor(df0$Materials)  # 3 levels: operations, consulting, NA
+
+# Logical variables: binary flags
+# AC: TRUE if an associate consultant was assigned to the project
+df0$AC      <- as.logical(df0$AC == "yes")
+df0$BTravel <- as.logical(df0$BTravel == "yes")
+df0$BShip   <- as.logical(df0$BShip == "yes")
+
+# Character
+df0$PL <- as.character(df0$PL)
+
+# Confirm structure
+str(df0)
+```
+
+## 4.5 Handle Missing Values (Post Type Conversion)
+
+```{r handle-missing}
+# PCost: replace NA with 0 (business-approved assumption)
+df0$PCost[is.na(df0$PCost)] <- 0
+
+# Remove rows with missing InvoiceT, Bill, or ID (critical variables, cannot impute)
+df0 <- df0 %>% filter(!is.na(InvoiceT), !is.na(Bill), !is.na(ID))
+
+cat("Final dataset dimensions:", nrow(df0), "rows ×", ncol(df0), "columns\n")
+```
+
+## 4.6 Feature Engineering
+
+Creating derived variables that directly address the business question.
+
+```{r feature-engineering}
+# DV: The target variable — difference between actual invoice and estimated bill
+# Positive = underestimation (invoiced more than quoted)
+# Negative = overestimation (invoiced less than quoted)
+df0 <- df0 %>%
+  mutate(
+    DV  = InvoiceT - Bill,           # Target: bid-to-invoice discrepancy
+    NP  = InvoiceT - PCost,          # Calculated net profit (invoice minus actual costs)
+    NP1 = NP - NetProfit             # Reporting inconsistency: calculated vs. reported net profit
+  )
+
+# Summary of the target variable
+cat("DV Summary (bid discrepancy in dollars):\n")
+summary(df0$DV)
+
+cat("\nProjects overestimated (negative DV):", sum(df0$DV < 0, na.rm = TRUE))
+cat("\nProjects underestimated (positive DV):", sum(df0$DV > 0, na.rm = TRUE))
+cat("\nPerfect estimates (DV = 0):", sum(df0$DV == 0, na.rm = TRUE))
+```
+
+## 4.7 Final Dataset
+
+```{r final-dataset}
+# Working copy for analysis
+df <- df0
+
+# Summary of final dataset
+cat("Final Dataset: ", nrow(df), "observations ×", ncol(df), "variables\n\n")
+
+cat("Variable types:\n")
+sapply(df, class) %>% as.data.frame() %>% setNames("Type") %>% print()
+```
+
+---
+
+# 5. Exploratory Data Analysis
+
+## 5.1 Distribution of the Target Variable (DV)
+
+Understanding the shape and spread of bid discrepancy before modeling.
+
+```{r eda-dv-distribution, fig.height=4}
+ggplot(df, aes(x = DV)) +
+  geom_histogram(binwidth = 500, fill = TEAL, color = "white", alpha = 0.85) +
+  geom_vline(xintercept = 0, color = ROSE, linewidth = 1.2, linetype = "dashed") +
+  geom_vline(xintercept = mean(df$DV, na.rm = TRUE), color = GOLD,
+             linewidth = 1.2, linetype = "dotted") +
+  scale_x_continuous(labels = dollar_format()) +
+  labs(
+    title    = "Distribution of Bid-to-Invoice Discrepancy (DV)",
+    subtitle = "Red dashed = perfect estimate ($0); Gold dotted = mean discrepancy",
+    x = "Discrepancy (Actual Invoice − Estimated Bill)",
+    y = "Number of Projects",
+    caption = "Positive values = underestimation; Negative values = overestimation"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold", color = NAVY))
+```
+
+**Interpretation:** The distribution is centered near zero but right-skewed, suggesting the firm more frequently underestimates than overestimates. Several extreme values (outliers) exist on both tails — these will need careful treatment in modeling.
+
+## 5.2 Bid Discrepancy by Project Type
+
+Do certain project types systematically result in more estimation error?
+
+```{r eda-ptype, fig.height=5}
+df %>%
+  filter(!is.na(PType), !is.na(DV)) %>%
+  ggplot(aes(x = reorder(PType, DV, FUN = median), y = DV, fill = PType)) +
+  geom_boxplot(alpha = 0.8, outlier.color = ROSE, outlier.size = 2) +
+  geom_hline(yintercept = 0, color = NAVY, linetype = "dashed", linewidth = 0.8) +
+  scale_y_continuous(labels = dollar_format()) +
+  scale_fill_manual(values = pal_project) +
+  coord_flip() +
+  labs(
+    title    = "Bid Discrepancy by Project Type",
+    subtitle = "Dashed line = perfect estimate ($0)",
+    x = "Project Type",
+    y = "Discrepancy (Actual − Estimated, $)",
+    caption = "AC = Assessment Center | WE = Written Exam"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "none",
+        plot.title = element_text(face = "bold", color = NAVY))
+```
+
+## 5.3 Bid Discrepancy by Industry
+
+Which public safety sectors show the most estimation volatility?
+
+```{r eda-industry, fig.height=4}
+df %>%
+  filter(!is.na(Industry), !is.na(DV)) %>%
+  ggplot(aes(x = reorder(Industry, DV, FUN = median), y = DV, fill = Industry)) +
+  geom_boxplot(alpha = 0.8, outlier.color = ROSE) +
+  geom_hline(yintercept = 0, color = NAVY, linetype = "dashed") +
+  scale_y_continuous(labels = dollar_format()) +
+  scale_fill_manual(values = pal_project) +
+  coord_flip() +
+  labs(
+    title = "Bid Discrepancy by Industry Sector",
+    x = "Industry",
+    y = "Discrepancy ($)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "none",
+        plot.title = element_text(face = "bold", color = NAVY))
+```
+
+## 5.4 Invoice vs. Estimated Bill (Actual vs. Projected)
+
+A direct comparison of what was charged versus what was quoted.
+
+```{r eda-invoice-vs-bill, fig.height=5}
+ggplot(df, aes(x = Bill, y = InvoiceT)) +
+  geom_point(alpha = 0.5, color = TEAL, size = 2) +
+  geom_abline(slope = 1, intercept = 0, color = NAVY, linetype = "dashed", linewidth = 1) +
+  geom_smooth(method = "lm", color = GOLD, se = TRUE, linewidth = 1) +
+  scale_x_continuous(labels = dollar_format()) +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(
+    title    = "Estimated Bill vs. Actual Invoice",
+    subtitle = "Navy dashed = perfect estimation line | Gold = actual regression line",
+    x = "Estimated Bill ($)",
+    y = "Actual Invoice ($)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold", color = NAVY))
+```
+
+**Interpretation:** Points above the perfect estimation line represent underestimations; points below represent overestimations. The regression line follows the perfect line closely on average, but substantial spread around it indicates inconsistency.
+
+## 5.5 Correlation Matrix (Numeric Variables)
+
+Checking relationships between numeric predictors — multicollinearity will directly impact model interpretation.
+
+```{r eda-correlation, fig.height=6, fig.width=7}
+# Select numeric variables for correlation analysis
+numeric_vars <- df %>%
+  select(InvoiceT, PCost, Bill, Net, NetProfit, NP, NP1, DV) %>%
+  filter(complete.cases(.))
+
+# Compute and plot correlation matrix
+cor_matrix <- cor(numeric_vars, use = "complete.obs")
+
+corrplot(cor_matrix,
+         method  = "color",
+         type    = "lower",
+         tl.col  = NAVY,
+         tl.cex  = 0.85,
+         addCoef.col = "white",
+         number.cex  = 0.7,
+         col     = colorRampPalette(c(ROSE, "white", TEAL))(200),
+         title   = "Correlation Matrix — Numeric Variables",
+         mar     = c(0, 0, 1.5, 0))
+```
+
+**Key finding:** Several financial variables are highly intercorrelated (|r| > 0.7), particularly InvoiceT, Bill, NP, and Net. This violates the multicollinearity assumption of OLS regression and requires careful model interpretation. We address this by running separate models for related variable groups.
+
+## 5.6 Project Volume and Revenue by Year
+
+Comparing 2020 vs. 2021 to understand year-over-year trends.
+
+```{r eda-year, fig.height=4}
+year_summary <- df %>%
+  filter(!is.na(Year)) %>%
+  group_by(Year) %>%
+  summarise(
+    N_Projects     = n(),
+    Mean_Invoice   = mean(InvoiceT, na.rm = TRUE),
+    Mean_DV        = mean(DV, na.rm = TRUE),
+    Median_DV      = median(DV, na.rm = TRUE),
+    SD_DV          = sd(DV, na.rm = TRUE)
+  )
+
+print(year_summary)
+
+p1 <- ggplot(year_summary, aes(x = factor(Year), y = N_Projects, fill = factor(Year))) +
+  geom_col(width = 0.6, alpha = 0.85) +
+  scale_fill_manual(values = c(TEAL, NAVY)) +
+  labs(title = "Projects per Year", x = NULL, y = "Count") +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "none")
+
+p2 <- ggplot(year_summary, aes(x = factor(Year), y = Mean_DV, fill = factor(Year))) +
+  geom_col(width = 0.6, alpha = 0.85) +
+  scale_fill_manual(values = c(TEAL, NAVY)) +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(title = "Mean Bid Discrepancy by Year", x = NULL, y = "Mean DV ($)") +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "none")
+
+grid.arrange(p1, p2, ncol = 2)
+```
+
+---
+
+# 6. Assumption Testing
+
+Before running linear regression, we test five core OLS assumptions. Violations found here inform our statistical threshold and model interpretation strategy.
+
+## 6.1 Linearity
+
+A linear relationship between each predictor and DV is required for OLS.
+
+```{r assumption-linearity, fig.height=4}
+# Scatterplot of two key numeric predictors vs DV
+p_lin1 <- ggplot(df, aes(x = InvoiceT, y = DV)) +
+  geom_point(alpha = 0.4, color = TEAL, size = 1.5) +
+  geom_smooth(method = "loess", color = ROSE, se = FALSE) +
+  scale_x_continuous(labels = dollar_format()) +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(title = "Invoice vs. DV", x = "Invoice Total", y = "DV") +
+  theme_minimal(base_size = 10)
+
+p_lin2 <- ggplot(df, aes(x = Bill, y = DV)) +
+  geom_point(alpha = 0.4, color = NAVY, size = 1.5) +
+  geom_smooth(method = "loess", color = GOLD, se = FALSE) +
+  scale_x_continuous(labels = dollar_format()) +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(title = "Estimated Bill vs. DV", x = "Estimated Bill", y = "DV") +
+  theme_minimal(base_size = 10)
+
+grid.arrange(p_lin1, p_lin2, ncol = 2)
+```
+
+**Result:** Linearity assumption **NOT met**. The LOESS smoother curves indicate non-linear relationships between financial predictors and DV.
+
+## 6.2 Normality of Residuals
+
+OLS assumes normally distributed residuals. We test with both visual inspection and formal tests.
+
+```{r assumption-normality}
+# Fit a simple model to obtain residuals for testing
+model_norm_test <- lm(DV ~ InvoiceT + Bill + PCost, data = df)
+
+# Anderson-Darling normality test (robust for small-to-medium N)
+ad_result <- ad.test(residuals(model_norm_test))
+print(ad_result)
+
+# Shapiro-Wilk test (best for N < 5,000)
+sw_result <- shapiro.test(residuals(model_norm_test))
+print(sw_result)
+```
+
+**Result:** Normality assumption **NOT met** (p < 0.001 on both tests). Residuals are not normally distributed.
+
+## 6.3 Homoscedasticity
+
+Constant variance of residuals across predictor values.
+
+```{r assumption-homoscedasticity}
+# Breusch-Pagan test for heteroscedasticity
+bp_result <- bptest(model_norm_test)
+print(bp_result)
+```
+
+**Result:** Homoscedasticity assumption **MET** (p > 0.05). Residual variance is constant — this is the one assumption our data satisfies.
+
+## 6.4 Multicollinearity
+
+High correlations between predictors inflate standard errors and destabilize coefficients.
+
+From the correlation matrix (Section 5.5), InvoiceT, NP, Bill, and Net are highly intercorrelated (|r| > 0.7). **This assumption is NOT met** for models including multiple financial predictors simultaneously.
+
+## 6.5 Independence of Observations
+
+Repeated project leads (PL) and client organizations (ID) in the data mean observations are not fully independent. **This assumption is NOT met.**
+
+## 6.6 Assumption Summary and Analytical Adjustment
+
+| Assumption | Status |
+|------------|--------|
+| Linearity | ❌ Violated |
+| Normality of residuals | ❌ Violated |
+| Homoscedasticity | ✅ Met |
+| No multicollinearity | ❌ Violated (financial predictors) |
+| Independence | ❌ Violated (repeated PL/ID) |
+
+**Adjustment:** Because four of five assumptions are violated, we adopt a **more stringent significance threshold of p < 0.01** (versus the standard p < 0.05). This reduces the probability of Type I error (false positives) given the elevated risk from assumption violations.
+
+---
+
+# 7. Modeling
+
+We run 10 selected linear regression models (from the original 19 in the full analysis). These are organized to address the business question from multiple angles: all predictors together, categorical predictors individually, and financial predictors grouped by actual vs. estimated.
+
+## 7.1 Helper Function: Model Metrics
+
+```{r model-helper}
+# Helper function to extract key model metrics for easy comparison
+extract_metrics <- function(model, label) {
+  s     <- summary(model)
+  preds <- predict(model, na.action = na.exclude)
+  actuals <- model$model[[1]]  # First column is the response variable
+
+  data.frame(
+    Model      = label,
+    F_stat     = round(s$fstatistic[1], 2),
+    p_value    = format.pval(pf(s$fstatistic[1], s$fstatistic[2], s$fstatistic[3], lower.tail = FALSE), digits = 3),
+    Adj_R2     = round(s$adj.r.squared, 4),
+    MAE        = round(mae(actuals, preds), 2),
+    RMSE       = round(rmse(actuals, preds), 2),
+    MSE        = round(mse(actuals, preds), 2)
+  )
+}
+```
+
+## 7.2 Model 1 — All Predictors (Full Model)
+
+Including all 16 features simultaneously gives us the broadest view of what jointly predicts DV.
+
+```{r model-1}
+# Note: PL and ID are character/integer; model will expand to dummy variables
+model1 <- lm(DV ~ PL + AC + ID + Industry + Rank + PType + BTravel + BShip +
+               InvoiceT + PCost + Bill + Net + Materials + NP + NP1,
+             data = df)
+
+summary(model1)
+```
+
+## 7.3 Model 2 — All Predictors Excluding Singularities
+
+Model 1 drops some factor levels due to collinearity ("singularities"). This model removes those predictors to get a cleaner multi-predictor result.
+
+```{r model-2}
+model2 <- lm(DV ~ PL + AC + ID + Industry + Rank + PType + BTravel + BShip +
+               InvoiceT + PCost + Bill + Net + Materials + NP1,
+             data = df)
+
+summary(model2)
+```
+
+## 7.4 Models 3-8 — Simple Regressions: Categorical Predictors
+
+Testing each categorical predictor individually against DV. This isolates the unique effect of each grouping variable without the confounding influence of other predictors.
+
+```{r models-3-8}
+model3 <- lm(DV ~ PL,        data = df)   # Project Lead
+model4 <- lm(DV ~ ID,        data = df)   # Client Organization
+model5 <- lm(DV ~ Industry,  data = df)   # Industry Sector
+model6 <- lm(DV ~ Rank,      data = df)   # Position Rank
+model7 <- lm(DV ~ PType,     data = df)   # Project Type
+model8 <- lm(DV ~ Materials, data = df)   # Department (Operations/Consulting)
+
+# Summaries for key models
+summary(model3)
+summary(model4)
+```
+
+## 7.5 Model 9 — Industry + Rank Combined
+
+Industry and Rank together describe the nature of the client organization (e.g., fire captain, police sergeant). Testing them jointly captures interaction effects that individual models miss.
+
+```{r model-9}
+model9 <- lm(DV ~ Industry + Rank, data = df)
+summary(model9)
+```
+
+## 7.6 Model 10 — Financial Predictors (Actual Values Only)
+
+Testing actual financial variables (invoice, project cost, calculated net profit) without estimated values, to see what the real economic footprint of a project tells us about estimation error.
+
+```{r model-10}
+model10 <- lm(DV ~ InvoiceT + PCost + NP, data = df)
+summary(model10)
+```
+
+---
+
+# 8. Results
+
+## 8.1 Model Comparison Table
+
+```{r results-table}
+# Compile metrics for all 10 models
+model_results <- bind_rows(
+  extract_metrics(model1,  "M1: All Predictors (Full)"),
+  extract_metrics(model2,  "M2: All Predictors (No Singularities)"),
+  extract_metrics(model3,  "M3: Project Lead"),
+  extract_metrics(model4,  "M4: Client Organization"),
+  extract_metrics(model5,  "M5: Industry"),
+  extract_metrics(model6,  "M6: Rank"),
+  extract_metrics(model7,  "M7: Project Type"),
+  extract_metrics(model8,  "M8: Materials/Department"),
+  extract_metrics(model9,  "M9: Industry + Rank"),
+  extract_metrics(model10, "M10: Financial (Actual)")
+)
+
+# Display table
+knitr::kable(model_results, caption = "Model Comparison: F-Statistic, p-value, Adj. R², MAE, RMSE, MSE",
+             align = c("l", "r", "r", "r", "r", "r", "r"))
+```
+
+## 8.2 Key Findings by Model
+
+**Which models were statistically significant (p < 0.01)?**
+
+```{r results-significance}
+# Flag significant models
+model_results <- model_results %>%
+  mutate(Significant = ifelse(as.numeric(gsub("<", "", p_value)) < 0.01 |
+                                grepl("e-", p_value), "Yes ✓", "No"))
+
+model_results %>%
+  select(Model, F_stat, p_value, Adj_R2, Significant) %>%
+  knitr::kable(caption = "Statistical Significance by Model (threshold: p < 0.01)")
+```
+
+**Summary of significant predictors:**
+
+- **Project Lead (M3):** Significant. Specific consultants are systematically associated with over- or under-estimation. Some consultants consistently overestimate; others underestimate.
+- **Client Organization (M4):** Significant. Specific clients (4 out of 78 unique organizations) show persistent and large discrepancies — suggesting client-specific complexity that current estimates don't capture.
+- **Project Type (M7):** Significant. Assessment centers (AC) and written exams (WE) show different estimation profiles compared to product sales or licensing projects.
+- **Department/Materials (M8):** Significant. Whether the project was Ops or Consulting — or unlisted — affects estimation accuracy.
+- **Industry + Rank (M9):** NOT significant. What sector the client operates in and the rank of the position being tested do not drive estimation error once other factors are controlled.
+
+## 8.3 Best Model
+
+Based on our evaluation criteria (F-statistic → p-value → MAE → Adjusted R²), **Model 1 (Full Model)** is selected as best for business insight because:
+
+1. It identifies the most actionable predictors (13 significant features)
+2. Significant features are controllable: specific project leads and client organizations — unlike raw invoice size
+3. It provides directional coefficients for each project lead and client, enabling targeted calibration of future estimates
+
+Model 10 achieves perfect R² but is built on financial variables the firm cannot control ex ante (the invoice hasn't happened yet). It is useful for understanding financial dynamics but not for improving bid pricing.
+
+---
+
+# 9. Recommendations
+
+**1. Audit the four highest-discrepancy client organizations**
+
+Four clients (anonymized as Client A–D) accounted for a disproportionate share of estimation error. An internal review of archived project files for these clients would reveal patterns (scope changes, unique complexity, pricing dynamics) that can be built into future bid formulas.
+
+**2. Investigate consultant-specific discrepancies constructively**
+
+Two consultants account for the largest systematic overestimation. This is best framed as a coaching and calibration opportunity, not a performance issue. A structured debrief — comparing their estimate sheets to final invoices — may surface specific line-item categories (labor hours, shipping, subcontractors) where assumptions differ from actual spend.
+
+**3. Revisit travel expense estimation**
+
+Projects with billable travel (BTravel = TRUE) show a consistent pattern of overestimation. The firm's travel estimates likely use conservative buffers that don't match actual costs. Revisiting the travel estimation formula with two years of actual travel data would quickly narrow this gap.
+
+**4. Improve data quality — make key fields required**
+
+90 of 279 projects (~32%) had no department (Materials) recorded. Unlisted department was itself a significant predictor of overestimation, suggesting these projects are disproportionately misquoted. Making Materials a required field in the project management system removes both the data gap and its associated estimation risk.
+
+**5. Track labor hours at the project level**
+
+The firm currently tracks project cost inconsistently — some consultants include labor hours, others do not. Standardizing labor hour tracking would dramatically improve PCost accuracy and, in turn, the NP1 (reporting inconsistency) metric that surfaced as significant in Model 2.
+
+---
+
+# 10. Limitations
+
+- **Small N:** With 279 observations over two years, some factor levels (particularly rare industries and ranks) are underpowered. Results for rare categories should be interpreted cautiously.
+- **Assumption violations:** Four of five OLS assumptions were violated. Findings are directionally reliable but coefficient magnitudes should not be interpreted as precise estimates. Mixed-effects models (accounting for repeated PL/ID) would be the appropriate next step with more data.
+- **Missing labor cost data:** PCost was imputed as zero for 37 projects. If these projects actually had costs, this introduces systematic error into net profit and DV calculations.
+- **Single time window:** Two years of data may not generalize — pricing dynamics, market competition, and client mix change. Annual replication of this analysis is recommended.
+
+---
+
+# 11. Conclusion
+
+This analysis identified specific, actionable drivers of bid-to-invoice discrepancy at NDA Org. The primary finding is that the largest sources of estimation error are attributable to specific client-consultant combinations rather than structural features like industry or rank. This is good news: it means the problem is solvable through targeted audits, consultant calibration, and data quality improvements — not fundamental structural change.
+
+The recommended next step is to implement the four data quality improvements first, re-run this analysis after one additional year of data, and explore mixed-effects regression to properly account for the clustered structure of the data (repeated clients and project leads).
+
+---
+
+# 12. Session Information
+
+Reproducibility requires recording the R version and package versions used at time of analysis.
+
+```{r session-info}
+sessionInfo()
+```
+
+---
+
+*Analysis by Mintay Misgano | R / RStudio | Data: 279 observations, 2020–2021 | NDA Confidential*
