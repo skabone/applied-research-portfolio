@@ -29,8 +29,8 @@ Completed as graduate coursework in data mining and analytics, the project is ce
 - Start here for the project overview and file map
 - Read `Data_Scientist_Market_Project_Summary.md` for the short narrative interpretation
 - Read `Data_Scientist_Market_Project_Report.md` for methods, findings, and limitations in full
-- Open `Data_Scientist_Market_Data_Prep.py` for the data-preparation workflow
-- Review the dashboard screenshots for the visual structure of the Power BI output
+- Open `Data_Scientist_Market_Data_Prep.ipynb` for a GitHub-rendered notebook version of the preparation workflow
+- Use `Data_Scientist_Market_Data_Prep.py` if you prefer the script version
 
 ---
 
@@ -40,15 +40,9 @@ Completed as graduate coursework in data mining and analytics, the project is ce
 |------|---------|
 | `Data_Scientist_Market_Project_Summary.md` | Short narrative summary of the project and what it demonstrates |
 | `Data_Scientist_Market_Project_Report.md` | Full project report with methods, findings, and limitations |
+| `Data_Scientist_Market_Data_Prep.ipynb` | GitHub-rendered notebook companion for the preparation workflow |
 | `Data_Scientist_Market_Data_Prep.py` | Reproducible data-preparation script |
 | `ds_salary_original.csv` | Source dataset used in the analysis |
-| `dashboard_1.png`, `dashboard_2.jpg`, `dashboard_3.jpeg` | Dashboard screenshots |
-
----
-
-## Dashboard Note
-
-The public folder includes dashboard screenshots rather than the full `.pbix` file. The screenshots document the analytical structure of the dashboard, while the written materials explain the underlying workflow and findings.
 
 ---
 

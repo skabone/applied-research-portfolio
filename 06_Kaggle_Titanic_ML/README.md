@@ -34,7 +34,8 @@ Completed as graduate coursework in data mining, the project is intended to demo
 - Start here for the project overview and file map
 - Read `Titanic_Project_Summary.md` for the short narrative interpretation
 - Read `Titanic_Project_Report.md` for methods, results, and limitations in full
-- Open `Titanic_ML_Classification.py` for the end-to-end implementation
+- Open `Titanic_ML_Classification.ipynb` for a GitHub-rendered notebook view of the workflow
+- Use `Titanic_ML_Classification.py` for the script version
 
 ---
 
@@ -42,6 +43,7 @@ Completed as graduate coursework in data mining, the project is intended to demo
 
 | File | Purpose |
 |:-----|:--------|
+| `Titanic_ML_Classification.ipynb` | GitHub-rendered notebook companion for the modeling workflow |
 | `Titanic_ML_Classification.py` | End-to-end classification pipeline and submission workflow |
 | `Titanic_Project_Summary.md` | Short narrative summary of the project and what it demonstrates |
 | `Titanic_Project_Report.md` | Full project report with methods, results, and limitations |

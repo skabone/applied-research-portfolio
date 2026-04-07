@@ -20,9 +20,19 @@ This project applies the CRISP-DM framework to a public Kaggle dataset on job-ch
 
 ## Read This Project
 
-- Start with [Job_Change_Prediction_Project_Summary.md](/Users/Taco/Library/CloudStorage/ProtonDrive-Skabone@pm.me-folder/2!!Career/GitHub_Portfolio/09_Data_Mining_Coursework/GitHub_Ready/Job_Change_Prediction_Project_Summary.md) for the short overview.
-- Use [Job_Change_Prediction_Project_Report.md](/Users/Taco/Library/CloudStorage/ProtonDrive-Skabone@pm.me-folder/2!!Career/GitHub_Portfolio/09_Data_Mining_Coursework/GitHub_Ready/Job_Change_Prediction_Project_Report.md) for the fuller CRISP-DM write-up.
-- See [Job_Change_Prediction_Data_Mining.py](/Users/Taco/Library/CloudStorage/ProtonDrive-Skabone@pm.me-folder/2!!Career/GitHub_Portfolio/09_Data_Mining_Coursework/GitHub_Ready/Job_Change_Prediction_Data_Mining.py) for the implementation.
+- Start with `Job_Change_Prediction_Project_Summary.md` for the short overview.
+- Use `Job_Change_Prediction_Project_Report.md` for the fuller CRISP-DM write-up.
+- Open `Job_Change_Prediction_Data_Mining.ipynb` for a GitHub-rendered notebook version of the workflow.
+- Use `Job_Change_Prediction_Data_Mining.py` if you prefer the script version.
+
+## Project Files
+
+| File | Role |
+|------|------|
+| `Job_Change_Prediction_Project_Summary.md` | Short interpretive overview of the project |
+| `Job_Change_Prediction_Project_Report.md` | Full CRISP-DM write-up |
+| `Job_Change_Prediction_Data_Mining.ipynb` | GitHub-rendered notebook companion for the workflow |
+| `Job_Change_Prediction_Data_Mining.py` | Script version of the workflow |
 
 ## Data Note
 

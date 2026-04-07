@@ -26,9 +26,19 @@ This project consolidates a graduate-level Python machine learning course into a
 
 ## Read This Project
 
-- Start with [Python_ML_Methods_Project_Summary.md](/Users/Taco/Library/CloudStorage/ProtonDrive-Skabone@pm.me-folder/2!!Career/GitHub_Portfolio/07_Python_ML_Methods_Collection/GitHub_Ready/Python_ML_Methods_Project_Summary.md) for the short overview.
-- Use [Python_ML_Methods_Project_Report.md](/Users/Taco/Library/CloudStorage/ProtonDrive-Skabone@pm.me-folder/2!!Career/GitHub_Portfolio/07_Python_ML_Methods_Collection/GitHub_Ready/Python_ML_Methods_Project_Report.md) for the full comparative write-up.
-- See [Python_ML_Methods_Showcase.py](/Users/Taco/Library/CloudStorage/ProtonDrive-Skabone@pm.me-folder/2!!Career/GitHub_Portfolio/07_Python_ML_Methods_Collection/GitHub_Ready/Python_ML_Methods_Showcase.py) for the implementation.
+- Start with `Python_ML_Methods_Project_Summary.md` for the short overview.
+- Use `Python_ML_Methods_Project_Report.md` for the full comparative write-up.
+- Open `Python_ML_Methods_Showcase.ipynb` for a GitHub-rendered notebook version of the implementation.
+- Use `Python_ML_Methods_Showcase.py` if you prefer the script version.
+
+## Project Files
+
+| File | Role |
+|------|------|
+| `Python_ML_Methods_Project_Summary.md` | Short interpretive overview of the methods showcase |
+| `Python_ML_Methods_Project_Report.md` | Full comparative report across methods |
+| `Python_ML_Methods_Showcase.ipynb` | GitHub-rendered notebook companion for the full workflow |
+| `Python_ML_Methods_Showcase.py` | Script version of the full workflow |
 
 ## Data Note
 
