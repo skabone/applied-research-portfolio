@@ -11,6 +11,7 @@ The goal of this portfolio is to document analytical process clearly, communicat
 ## Quick Links
 
 - [Resume (PDF)](./resume/Mintay_Misgano_PhD_Resume.pdf)
+- [LinkedIn](https://www.linkedin.com/in/mintaymisgano)
 
 ## Repository Structure
 
