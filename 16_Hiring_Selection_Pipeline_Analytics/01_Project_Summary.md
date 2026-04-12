@@ -17,8 +17,7 @@ This case study demonstrates an end-to-end hiring pipeline analytics workflow us
 - `docs/Results_Snapshot.md`
 - `README.md`
 
-## Why it matters (role alignment)
+## Why it matters in practice
 
-- **Boeing ETA:** fairness screening, selection documentation discipline, interpretation limits
-- **Microsoft analyst / people analytics:** funnel metrics, segmentation, stakeholder-ready reporting
-
+- **Talent assessment and selection work:** fairness screening, selection documentation discipline, interpretation limits
+- **People analytics and workforce insights work:** funnel metrics, segmentation, stakeholder-ready reporting

@@ -12,7 +12,7 @@ Demonstrate an end-to-end hiring/selection analytics workflow:
 
 1) business question → 2) data model → 3) SQL extraction → 4) statistical analysis → 5) decision-ready reporting
 
-This project is designed to overlap **people analytics** expectations (Microsoft) and **assessment/validation** expectations (Boeing ETA), including **adverse impact** checks and documentation discipline.
+This project is designed to show crossover strength across **people analytics**, **talent assessment**, and **selection-system governance**, including **adverse impact** checks and documentation discipline.
 
 ---
 
