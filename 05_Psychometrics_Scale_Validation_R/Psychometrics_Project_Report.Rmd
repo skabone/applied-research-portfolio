@@ -1,0 +1,368 @@
+---
+title: "Psychometric Scale Validation — Project Report"
+author: "Mintay Misgano, PhD"
+date: "2023"
+output:
+  github_document:
+    toc: true
+    toc_depth: 3
+  html_document:
+    toc: true
+    toc_depth: 3
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = NA, warning = FALSE, message = FALSE)
+options(scipen = 999)
+```
+
+## Overview
+
+This script demonstrates a psychometric scale-validation workflow applied to the **Perceptions of the LGBTQ College Campus Climate Scale** (Szymanski & Bissonette, 2020). The scale is a 6-item, 7-point Likert instrument proposed to measure two distinct dimensions of campus climate experienced by LGBTQ students:
+
+- **College Response** subscale (3 items): institution's responsiveness and care toward LGBTQ students
+- **Stigma** subscale (3 items): visibility of negative attitudes, heterosexism, and harassment on campus
+
+The workflow proceeds through four stages:
+
+1. **Data preparation** — data simulation from published parameters, reverse-scoring, and scale scoring
+2. **Reliability analysis** — Cronbach's alpha and McDonald's omega for total scale and subscales
+3. **Item analysis** — corrected item-total correlations and cross-subscale discriminant validity
+4. **Exploratory factor analysis** — suitability tests, component extraction, orthogonal and oblique rotations
+
+Item-level data are simulated from the factor loadings, means, and sample size (N = 646) reported in the published article, preserving methodological transparency and reproducibility.
+
+**Research questions:**
+
+1. Does the LGBTQ Campus Climate Scale demonstrate acceptable reliability at the total scale and subscale levels?
+2. Do the scale's items exhibit within-scale convergent and discriminant validity consistent with a two-factor structure?
+3. Does exploratory factor analysis recover the hypothesized two-factor solution?
+
+---
+
+## Packages
+
+```{r packages}
+# Install if not already present
+if (!require(psych))     install.packages("psych")
+if (!require(tidyverse)) install.packages("tidyverse")
+if (!require(MASS))      install.packages("MASS")
+if (!require(sjstats))   install.packages("sjstats")
+if (!require(apaTables)) install.packages("apaTables")
+
+library(psych)
+library(tidyverse)
+library(MASS)
+library(sjstats)
+library(apaTables)
+```
+
+---
+
+## 1. Data Preparation
+
+### 1.1 Simulate Item-Level Data
+
+Item-level data are simulated from the factor loadings, item means, and item standard deviations reported in Szymanski and Bissonette (2020, Table 2). The simulation uses the `mvrnorm()` function from the `MASS` package with `empirical = TRUE` to reproduce the published covariance structure exactly. The random seed is set for reproducibility.
+
+```{r simulate-data}
+set.seed(210827)
+
+# Factor loading matrix (6 items × 2 factors)
+# Rows: cold, unresponsive, supportiveNR, negative, heterosexism, harassed
+# F1 = College Response; F2 = Stigma
+SzyT1 <- matrix(
+  c(.88, .73, .73, -.07, -.02,  .16,
+   -.03, .10, -.04, .86,  .76,  .71),
+  ncol = 2
+)
+rownames(SzyT1) <- c("cold", "unresponsive", "supportiveNR",
+                      "negative", "heterosexism", "harassed")
+colnames(SzyT1) <- c("F1_CollegeResponse", "F2_Stigma")
+
+# Build correlation matrix from factor loadings
+SzyCorMat <- SzyT1 %*% t(SzyT1)
+diag(SzyCorMat) <- 1
+
+# Item means and SDs from published article
+SzyM  <- c(2.31, 3.11, 2.40, 3.18, 4.44, 3.02)
+SzySD <- c(1.35, 1.46, 1.26, 1.60, 1.75, 1.50)
+
+# Covariance matrix
+SzyCovMat <- SzySD %*% t(SzySD) * SzyCorMat
+
+# Simulate N = 646 item-level responses
+dfSzy <- as.data.frame(
+  round(MASS::mvrnorm(n = 646, mu = SzyM, Sigma = SzyCovMat, empirical = TRUE), 0)
+)
+
+# Enforce 1–7 bounds
+dfSzy[dfSzy > 7] <- 7
+dfSzy[dfSzy < 1] <- 1
+```
+
+### 1.2 Reverse-Scoring and ID Assignment
+
+The *supportiveNR* item is worded in the opposite direction of the remaining items: a higher score on *supportive* reflects a positive campus climate perception, whereas higher scores on other items reflect negative perceptions. This item is reverse-scored (8 − raw score on a 1–7 scale) and renamed *unsupportive* to clarify its rescaled direction.
+
+```{r reverse-score}
+# Add participant ID
+dfSzy <- dfSzy %>% dplyr::mutate(ID = row_number()) %>%
+  dplyr::select(ID, everything())
+
+# Reverse score supportive item (scale: 1–7, so subtract from 8)
+dfSzy <- dfSzy %>%
+  dplyr::mutate(unsupportive = 8 - supportiveNR) %>%
+  dplyr::select(-supportiveNR)
+
+# Descriptive statistics
+psych::describe(dfSzy)
+```
+
+### 1.3 Calculate Scale and Subscale Scores
+
+Scale scores are calculated using an available information approach (AIA; Parent, 2013), allowing up to 20% item missingness for the total score. In this simulated dataset there is no missing data, but the AIA approach is retained as best practice.
+
+```{r scale-scores}
+# Define item sets
+LGBTQvars   <- c("cold", "unresponsive", "unsupportive", "negative", "heterosexism", "harassed")
+ResponseVars <- c("cold", "unresponsive", "unsupportive")
+StigmaVars   <- c("negative", "heterosexism", "harassed")
+
+# Compute mean scores (AIA: 80% of items must be present)
+dfSzy$TotalScore    <- sjstats::mean_n(dfSzy[, LGBTQvars],    .80)
+dfSzy$ResponseScore <- sjstats::mean_n(dfSzy[, ResponseVars], .80)
+dfSzy$StigmaScore   <- sjstats::mean_n(dfSzy[, StigmaVars],   .80)
+
+# Item-only dataframes for subsequent analyses
+LGBTQ_items    <- dplyr::select(dfSzy, cold, unresponsive, unsupportive, negative, heterosexism, harassed)
+Response_items <- dplyr::select(dfSzy, cold, unresponsive, unsupportive)
+Stigma_items   <- dplyr::select(dfSzy, negative, heterosexism, harassed)
+```
+
+---
+
+## 2. Reliability Analysis
+
+Reliability is assessed using two complementary statistics:
+
+- **Cronbach's alpha (α)**: the most widely reported internal consistency coefficient; sensitive to number of items and average inter-item correlation
+- **McDonald's omega (ω)**: a model-based estimate that partitions variance into components attributable to the general factor (ωh), all common factors (ωt), and unique/error variance; less affected by the assumption of tau-equivalence than alpha
+
+Both are computed via `psych::alpha()` and `psych::omega()`.
+
+### 2.1 Total Scale Reliability
+
+```{r reliability-total}
+# Cronbach's alpha — total scale
+alpha_total <- psych::alpha(LGBTQ_items)
+alpha_total
+```
+
+```{r omega-total, results='hide', fig.keep='all'}
+# McDonald's omega — total scale
+omega_total <- psych::omega(LGBTQ_items, nfactors = 2, fm = "pa")
+```
+
+```{r omega-total-print}
+omega_total
+```
+
+### 2.2 College Response Subscale Reliability
+
+```{r reliability-response}
+alpha_response <- psych::alpha(Response_items)
+alpha_response
+```
+
+### 2.3 Stigma Subscale Reliability
+
+```{r reliability-stigma}
+alpha_stigma <- psych::alpha(Stigma_items)
+alpha_stigma
+```
+
+**Reliability summary:**
+
+| Scale              | α     | Average inter-item *r* |
+|:-------------------|:-----:|:----------------------:|
+| Total (6 items)    | .64   | .23                    |
+| College Response   | .79   | .56                    |
+| Stigma             | .79   | .56                    |
+
+The total scale alpha of .64 is marginal. The subscale alphas of .79 each meet the conventional threshold for acceptable reliability and substantially exceed the total scale value, providing early empirical support for a two-factor structure over a unidimensional interpretation.
+
+---
+
+## 3. Item Analysis
+
+Item analysis examines the degree to which individual items demonstrate within-scale convergent validity (items correlate strongly with their own subscale) and discriminant validity (items correlate weakly with other subscales). This serves as a preliminary evaluation of scale structure prior to formal factor analysis.
+
+### 3.1 Total Scale Item Statistics
+
+```{r item-analysis-total}
+# Corrected item-total correlations for the full scale
+psych::alpha(LGBTQ_items)$item.stats
+```
+
+### 3.2 College Response Subscale Item Statistics
+
+```{r item-analysis-response}
+psych::alpha(Response_items)$item.stats
+```
+
+### 3.3 Stigma Subscale Item Statistics
+
+```{r item-analysis-stigma}
+psych::alpha(Stigma_items)$item.stats
+```
+
+### 3.4 Cross-Subscale Discriminant Validity
+
+Items from each subscale are correlated with the *other* subscale's score. For a well-structured instrument, items should correlate more strongly with their own subscale (corrected item-total *r.drop*) than with the other subscale score.
+
+```{r discriminant-response}
+# College Response items correlated with Stigma subscale score
+apaTables::apa.cor.table(dfSzy[c("cold", "unresponsive", "unsupportive", "StigmaScore")])
+```
+
+```{r discriminant-stigma}
+# Stigma items correlated with College Response subscale score
+apaTables::apa.cor.table(dfSzy[c("negative", "heterosexism", "harassed", "ResponseScore")])
+```
+
+**Item analysis summary table:**
+
+| Item          | College Response (*r.drop*) | Stigma (*r.drop*) | Cross-scale *r* |
+|:--------------|:---------------------------:|:-----------------:|:---------------:|
+| cold          | **.69**                     | —                 | −.02            |
+| unresponsive  | **.61**                     | —                 | .09             |
+| unsupportive  | **.59**                     | —                 | −.02            |
+| negative      | —                           | **.69**           | −.05            |
+| heterosexism  | —                           | **.63**           | −.01            |
+| harassed      | —                           | **.59**           | .13             |
+
+*Note.* Bold values = corrected item-total correlation with own subscale. Cross-scale r = correlation of item with the other subscale score. Items consistently show stronger relationships with their own subscale than with the alternate subscale.
+
+---
+
+## 4. Exploratory Factor Analysis
+
+### 4.1 Suitability Diagnostics
+
+Before extraction, the data must be suitable for factor analysis. Two tests are standard:
+
+- **Bartlett's test of sphericity**: tests whether the correlation matrix is an identity matrix (all off-diagonal elements = 0). A significant result (*p* < .05) indicates sufficient covariation among items.
+- **Kaiser-Meyer-Olkin (KMO) measure of sampling adequacy**: values ≥ .70 indicate the data is appropriate for factor analysis.
+
+```{r efa-suitability}
+# Correlation matrix of items
+R <- cor(LGBTQ_items)
+print(round(R, 3))
+
+# Bartlett's test and KMO
+psych::cortest.bartlett(R, n = 646)
+psych::KMO(LGBTQ_items)
+```
+
+### 4.2 Factor Extraction: How Many Factors?
+
+Multiple criteria guide the number of factors to retain:
+
+- **Scree plot**: eigenvalues plotted in descending order; look for the "elbow"
+- **Parallel analysis**: compares observed eigenvalues against eigenvalues from simulated random data; retain factors where observed > simulated
+
+```{r scree-parallel, fig.width=7, fig.height=5}
+# Scree plot
+psych::scree(LGBTQ_items, factors = FALSE)
+title(main = "Scree Plot — LGBTQ Campus Climate Scale")
+
+# Parallel analysis
+psych::fa.parallel(LGBTQ_items, fm = "pa", fa = "fa", n.iter = 100)
+```
+
+### 4.3 Principal Components Analysis (PCA)
+
+PCA is run first as a preliminary step. Two solutions are extracted: a one-component and a two-component solution, compared to evaluate the factor structure.
+
+```{r pca-1}
+# 1-component solution
+pca_1 <- psych::principal(LGBTQ_items, nfactors = 1, rotate = "none")
+pca_1
+```
+
+```{r pca-2-orthogonal}
+# 2-component solution — orthogonal (varimax) rotation
+pca_2_orth <- psych::principal(LGBTQ_items, nfactors = 2, rotate = "varimax")
+pca_2_orth
+```
+
+```{r pca-2-oblique}
+# 2-component solution — oblique (oblimin) rotation
+pca_2_obliq <- psych::principal(LGBTQ_items, nfactors = 2, rotate = "oblimin")
+pca_2_obliq
+```
+
+### 4.4 Principal Axis Factoring (PAF)
+
+PAF is the preferred EFA method when the goal is to identify latent factors assumed to *cause* item responses (as opposed to PCA, which summarizes observed variance). Two solutions are extracted and compared.
+
+```{r paf-2-orthogonal}
+# 2-factor PAF — orthogonal (varimax) rotation
+paf_2_orth <- psych::fa(LGBTQ_items, nfactors = 2, fm = "pa", rotate = "varimax")
+paf_2_orth
+```
+
+```{r paf-2-oblique}
+# 2-factor PAF — oblique (oblimin) rotation
+paf_2_obliq <- psych::fa(LGBTQ_items, nfactors = 2, fm = "pa", rotate = "oblimin")
+paf_2_obliq
+```
+
+```{r paf-diagram, fig.width=7, fig.height=5}
+# Factor diagram of preferred solution (PAF, oblique)
+psych::fa.diagram(paf_2_obliq,
+                  main = "PAF Oblique Solution — LGBTQ Campus Climate Scale")
+```
+
+### 4.5 Comparing Solutions
+
+```{r compare-solutions}
+# Factor loadings side-by-side: PCA oblique vs. PAF oblique
+cat("=== PCA OBLIQUE PATTERN MATRIX ===\n")
+print(round(pca_2_obliq$loadings[], 3))
+
+cat("\n=== PAF OBLIQUE PATTERN MATRIX ===\n")
+print(round(paf_2_obliq$loadings[], 3))
+```
+
+---
+
+## 5. Results Summary
+
+**Reliability:** The total scale alpha (α = .64) falls below commonly cited thresholds (e.g., .70), whereas both subscale alphas (α = .79) meet or exceed acceptable standards. The substantially higher subscale alphas relative to the total scale indicate that treating the instrument as unidimensional obscures meaningful internal structure.
+
+**Item analysis:** All six items showed substantially higher corrected item-total correlations with their own subscale (*r.drop* range: .59–.69) than with the other subscale (|*r*| range: .00–.13). This pattern is consistent with strong within-scale convergent validity and discriminant validity, supporting the hypothesized two-subscale structure.
+
+**Factor analysis:** Both PCA and PAF solutions converge on a clean two-factor structure that maps directly onto the a priori College Response and Stigma subscales. Items load strongly on their hypothesized factor (loadings: .60–.91) and negligibly on the alternative factor (<.20 in most cases). The between-factor correlation in oblique solutions is near zero, indicating that the two dimensions are largely orthogonal despite being measured within the same instrument. Parallel analysis confirmed the retention of two factors.
+
+**Conclusion:** The LGBTQ Campus Climate Scale demonstrates sound psychometric properties at the subscale level. The evidence from reliability analysis, item analysis, and exploratory factor analysis converges on a two-factor interpretation. The College Response and Stigma subscales function as reliable and structurally distinct measurement units that are appropriate for use in empirical research on LGBTQ campus climate experiences.
+
+---
+
+## References
+
+Lewis, J. A., & Neville, H. A. (2015). Construction and initial validation of the Gendered Racial Microaggressions Scale for Black women. *Journal of Counseling Psychology, 62*(2), 289–302. https://doi.org/10.1037/cou0000062
+
+Parent, M. C. (2013). Handling item-level missing data: Simpler is just as good. *The Counseling Psychologist, 41*(4), 568–600. https://doi.org/10.1177/0011000012445176
+
+Revelle, W., & Condon, D. M. (2019). Reliability from α to ω: A tutorial. *Psychological Assessment, 31*(12), 1395–1411. https://doi.org/10.1037/pas0000754
+
+Szymanski, D. M., & Bissonette, D. (2020). Perceptions of the LGBTQ College Campus Climate Scale: Development and psychometric evaluation. *Journal of Homosexuality, 67*(10), 1412–1428. https://doi.org/10.1080/00918369.2019.1591788
+
+---
+
+```{r session-info, include=FALSE}
+sessionInfo()
+```

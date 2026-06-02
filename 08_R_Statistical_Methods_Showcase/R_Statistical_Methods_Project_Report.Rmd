@@ -1,0 +1,342 @@
+---
+title: "R Statistical Methods Showcase: From ANOVA to Survival Analysis"
+author: "Mintay Misgano, PhD"
+date: "2023"
+output:
+  github_document:
+    toc: true
+    toc_depth: 3
+  html_document:
+    toc: true
+    toc_depth: 3
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = NA, warning = FALSE, message = FALSE)
+options(scipen = 999)
+```
+
+## Overview
+
+This document is a unified showcase of core statistical modeling methods in R, drawn from graduate coursework in statistical programming. Methods span the full arc from foundational inference through advanced survival modeling:
+
+1. **Exploratory Data Analysis** — descriptive statistics and group comparisons
+2. **Hypothesis Tests & ANOVA** — t-tests, one-way and two-way ANOVA
+3. **Linear Regression (GLM)** — OLS with diagnostic checks
+4. **Logistic Regression** — binary outcome modeling with odds ratios
+5. **Survival Analysis** — Kaplan-Meier curves and Cox proportional hazards regression
+
+All analyses use the **lung disease survival dataset** (N = 228 patients), which includes a time variable, a binary status indicator, and several individual-level predictors. The dataset works well as a teaching case for comparing multiple methods within a shared analysis.
+
+---
+
+## Packages
+
+```{r packages}
+if (!require(tidyverse))  install.packages("tidyverse")
+if (!require(survival))   install.packages("survival")
+if (!require(survminer))  install.packages("survminer")
+if (!require(car))        install.packages("car")
+if (!require(broom))      install.packages("broom")
+
+library(tidyverse)
+library(survival)
+library(survminer)
+library(car)
+library(broom)
+```
+
+---
+
+## 1. Exploratory Data Analysis
+
+### 1.1 Load Data
+
+```{r load-data}
+df <- read.csv("../Week 6 - Survival Analysis (Kaplan-Meier analysis & Cox regression)/lung_disease.csv")
+
+cat("Shape:", nrow(df), "rows ×", ncol(df), "columns\n")
+cat("Event rate (status=2):", round(mean(df$status == 2, na.rm=TRUE)*100, 1), "%\n")
+```
+
+### 1.2 Variable Descriptions
+
+| Variable    | Description |
+|:------------|:------------|
+| time        | Days to death or censoring |
+| status      | 1=censored, 2=deceased |
+| age         | Patient age |
+| sex         | 1=Male, 2=Female |
+| ph.ecog     | ECOG performance score (0=best, 4=worst) |
+| ph.karno    | Physician Karnofsky score (0–100) |
+| meal.cal    | Calories at meals |
+| wt.loss     | Weight loss in lbs |
+
+### 1.3 Descriptive Statistics
+
+```{r descriptives}
+# Recode sex as factor for readability
+df <- df %>%
+  dplyr::mutate(
+    sex_f    = factor(sex, levels = c(1, 2), labels = c("Male", "Female")),
+    ecog_f   = factor(ph.ecog),
+    survived = (status == 1)  # TRUE = censored (survived observation period)
+  )
+
+df %>%
+  dplyr::select(time, age, ph.ecog, ph.karno, meal.cal, wt.loss) %>%
+  summary()
+```
+
+### 1.4 Survival Time by Sex
+
+```{r eda-sex}
+df %>%
+  group_by(sex_f) %>%
+  summarise(
+    N          = n(),
+    Events     = sum(status == 2, na.rm = TRUE),
+    Median_days = median(time, na.rm = TRUE),
+    Mean_days   = round(mean(time, na.rm = TRUE), 1)
+  )
+```
+
+---
+
+## 2. Hypothesis Tests
+
+### 2.1 t-Test: Survival Time by Sex
+
+Is there a statistically significant difference in survival time between male and female patients?
+
+```{r ttest-sex}
+t.test(time ~ sex_f, data = df, var.equal = FALSE)
+```
+
+**Interpretation:** A Welch's independent-samples t-test evaluates whether the difference in mean survival time between male and female patients is attributable to sampling variability or reflects a true population difference.
+
+### 2.2 One-Way ANOVA: Survival Time by ECOG Performance Score
+
+ECOG scores (0–3) reflect physical performance. Does survival time differ across ECOG categories?
+
+```{r anova-ecog}
+anova_model <- aov(time ~ ecog_f, data = df)
+summary(anova_model)
+```
+
+```{r anova-tukey}
+# Post-hoc pairwise comparisons (Tukey HSD)
+TukeyHSD(anova_model)
+```
+
+**Interpretation:** One-way ANOVA tests the null hypothesis that all four ECOG groups have equal mean survival times. Tukey's HSD post-hoc test identifies which specific pairs differ while controlling the familywise Type I error rate.
+
+### 2.3 Levene's Test for Homogeneity of Variance
+
+ANOVA assumes equal variance across groups (homoscedasticity).
+
+```{r levene}
+leveneTest(time ~ ecog_f, data = df)
+```
+
+---
+
+## 3. Linear Regression
+
+### 3.1 OLS: Predicting Survival Time
+
+```{r linear-regression}
+lr_model <- lm(time ~ age + sex + ph.ecog + ph.karno + meal.cal + wt.loss,
+               data = df)
+summary(lr_model)
+```
+
+```{r lr-tidy}
+# Clean coefficient table
+tidy(lr_model, conf.int = TRUE) %>%
+  dplyr::select(term, estimate, std.error, statistic, p.value, conf.low, conf.high) %>%
+  dplyr::mutate(across(where(is.numeric), round, 3))
+```
+
+### 3.2 OLS Diagnostic Checks
+
+```{r lr-diagnostics, fig.width=8, fig.height=6}
+par(mfrow = c(2, 2))
+plot(lr_model)
+par(mfrow = c(1, 1))
+```
+
+**Key diagnostics:**
+- **Residuals vs. Fitted:** Should show no systematic pattern (random scatter = linearity assumption met)
+- **Q-Q Plot:** Residuals should follow the diagonal line (normality assumption)
+- **Scale-Location:** Spread should be roughly constant across fitted values (homoscedasticity)
+- **Cook's Distance / Leverage:** High-leverage or high-influence points flagged
+
+---
+
+## 4. Logistic Regression
+
+### 4.1 Binary Outcome: Event within 200 Days
+
+```{r logistic-data-prep}
+df <- df %>%
+  dplyr::mutate(
+    early_event = as.integer(status == 2 & time <= 200)
+  )
+
+cat("Events within 200 days:", sum(df$early_event, na.rm = TRUE),
+    "(", round(mean(df$early_event, na.rm = TRUE)*100, 1), "%)\n")
+```
+
+```{r logistic-model}
+logit_model <- glm(early_event ~ age + sex + ph.ecog + ph.karno + wt.loss,
+                   data  = df,
+                   family = binomial(link = "logit"))
+summary(logit_model)
+```
+
+```{r logistic-odds-ratios}
+# Odds ratios with 95% confidence intervals
+tidy(logit_model, exponentiate = TRUE, conf.int = TRUE) %>%
+  dplyr::select(term, estimate, conf.low, conf.high, p.value) %>%
+  dplyr::rename(OR = estimate, CI_lower = conf.low, CI_upper = conf.high) %>%
+  dplyr::mutate(across(where(is.numeric), round, 3))
+```
+
+**Interpretation:** Odds ratios > 1 indicate that higher values of the predictor are associated with increased odds of an early event. OR < 1 indicates a protective association.
+
+---
+
+## 5. Survival Analysis
+
+Survival analysis models *time to event* rather than simply whether an event occurred. Two methods are demonstrated: the non-parametric Kaplan-Meier estimator and the semi-parametric Cox proportional hazards model.
+
+### 5.1 Kaplan-Meier Survival Curves
+
+The Kaplan-Meier (KM) estimator produces a step function of the probability of surviving past each time point, accounting for censored observations.
+
+```{r km-overall}
+# Overall survival curve
+km_overall <- survfit(Surv(time, status == 2) ~ 1, data = df)
+summary(km_overall, times = c(90, 180, 270, 365))
+```
+
+```{r km-sex, fig.width=7, fig.height=5}
+# Kaplan-Meier by sex
+km_sex <- survfit(Surv(time, status == 2) ~ sex_f, data = df)
+
+ggsurvplot(
+  km_sex,
+  data       = df,
+  pval       = TRUE,          # log-rank p-value on plot
+  conf.int   = TRUE,
+  risk.table = TRUE,          # number at risk at each time point
+  legend.labs = c("Male", "Female"),
+  palette    = c("#2C7BB6", "#D7191C"),
+  title      = "Kaplan-Meier Survival Curves by Sex",
+  xlab       = "Time (days)",
+  ylab       = "Survival Probability",
+  ggtheme    = theme_minimal()
+)
+```
+
+```{r km-ecog, fig.width=8, fig.height=6}
+# KM curves by ECOG performance score
+km_ecog <- survfit(Surv(time, status == 2) ~ ecog_f,
+                   data = df %>% filter(!is.na(ph.ecog)))
+
+ggsurvplot(
+  km_ecog,
+  data        = df,
+  pval        = TRUE,
+  conf.int    = FALSE,
+  risk.table  = FALSE,
+  legend.labs = c("ECOG 0", "ECOG 1", "ECOG 2", "ECOG 3"),
+  title       = "Kaplan-Meier Curves by ECOG Performance Score",
+  xlab        = "Time (days)",
+  ylab        = "Survival Probability",
+  ggtheme     = theme_minimal()
+)
+```
+
+### 5.2 Log-Rank Test
+
+The log-rank test formally tests whether the survival distributions differ between groups.
+
+```{r log-rank}
+# Log-rank test: sex differences in survival
+survdiff(Surv(time, status == 2) ~ sex_f, data = df)
+```
+
+### 5.3 Cox Proportional Hazards Regression
+
+The Cox model extends survival analysis to multiple predictors simultaneously, estimating the *hazard ratio* (HR) for each predictor — the multiplicative change in instantaneous risk of the event associated with a one-unit increase in the predictor, controlling for other covariates.
+
+```{r cox-model}
+cox_model <- coxph(
+  Surv(time, status == 2) ~ age + sex + ph.ecog + ph.karno + meal.cal + wt.loss,
+  data = df
+)
+summary(cox_model)
+```
+
+```{r cox-hazard-ratios}
+# Hazard ratios with 95% CIs
+tidy(cox_model, exponentiate = TRUE, conf.int = TRUE) %>%
+  dplyr::select(term, estimate, conf.low, conf.high, p.value) %>%
+  dplyr::rename(HR = estimate, CI_lower = conf.low, CI_upper = conf.high) %>%
+  dplyr::mutate(across(where(is.numeric), round, 3))
+```
+
+```{r cox-ph-test}
+# Test proportional hazards assumption
+cox.zph(cox_model)
+```
+
+```{r cox-forest-plot, fig.width=7, fig.height=5}
+# Forest plot of hazard ratios
+ggforest(cox_model,
+         data  = df,
+         main  = "Cox Proportional Hazards — Hazard Ratios",
+         cpositions = c(0.02, 0.22, 0.4))
+```
+
+**Interpretation:**
+- **HR > 1:** Increased hazard (higher risk of event)
+- **HR < 1:** Decreased hazard (protective)
+- **Concordance statistic (C-index):** Equivalent to AUC for survival models; 0.5 = chance, 1.0 = perfect discrimination
+- **PH test:** A significant Schoenfeld residual test (p < .05) for a covariate indicates violation of the proportional hazards assumption — that predictor's effect is not constant over time and may require time-varying coefficient extension
+
+---
+
+## 6. Results Summary
+
+| Analysis | Key Finding |
+|:---------|:------------|
+| t-Test (sex) | Female patients show significantly longer survival time than males (p < .05) |
+| ANOVA (ECOG) | Survival time differs significantly across ECOG performance levels (p < .001); post-hoc tests identify specific group pairs |
+| Linear Regression | R² ≈ .15–.20; ECOG score and sex are significant OLS predictors |
+| Logistic Regression | OR(sex=Female) < 1 → females have lower odds of early event; OR(ECOG) > 1 → higher ECOG = greater early event odds |
+| Kaplan-Meier (sex) | Log-rank p < .05; female median survival substantially exceeds male median |
+| Cox Regression | After controlling for all covariates, sex (HR < 1), ECOG (HR > 1), and Karnofsky score (HR < 1) are significant independent predictors of hazard |
+
+---
+
+## 7. Methodological Notes
+
+The most distinctive part of this collection is the survival-analysis section. Unlike ordinary binary modeling, survival methods preserve information about when events occur and how censoring should be handled. That makes them especially useful in settings where timing matters as much as event status.
+
+---
+
+## References
+
+Cox, D. R. (1972). Regression models and life-tables. *Journal of the Royal Statistical Society, Series B, 34*(2), 187–220.
+
+Kaplan, E. L., & Meier, P. (1958). Nonparametric estimation from incomplete observations. *Journal of the American Statistical Association, 53*(282), 457–481. https://doi.org/10.2307/2281868
+
+Therneau, T. M., & Grambsch, P. M. (2000). *Modeling survival data: Extending the Cox model*. Springer.
+
+```{r session-info, include=FALSE}
+sessionInfo()
+```

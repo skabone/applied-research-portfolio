@@ -1,0 +1,137 @@
+---
+title: "Public-Safe Consulting Bid Accuracy Analysis"
+subtitle: "Synthetic portfolio case study"
+author: "Mintay Misgano, PhD"
+output:
+  github_document:
+    toc: true
+    toc_depth: 3
+---
+
+> This public portfolio version uses fully synthetic data. It does not contain real client records, personnel names, customer IDs, invoice numbers, contact fields, exact dates, or operational notes.
+
+# 1. Setup
+
+```{r setup, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 8,
+  fig.height = 5
+)
+```
+
+# 2. Load Public Data
+
+```{r load-data}
+df <- read.csv("data.csv", stringsAsFactors = FALSE)
+
+df <- df %>%
+  mutate(
+    consultant_id = factor(consultant_id),
+    client_id = factor(client_id),
+    service_area = factor(service_area),
+    project_type = factor(project_type),
+    department_owner = factor(department_owner),
+    associate_assigned = factor(associate_assigned),
+    billable_travel = factor(billable_travel),
+    billable_shipping = factor(billable_shipping)
+  )
+
+glimpse(df)
+```
+
+# 3. Outcome Definition
+
+```{r outcome-check}
+summary(df$bid_discrepancy)
+
+df %>%
+  summarise(
+    records = n(),
+    mean_discrepancy = mean(bid_discrepancy),
+    median_discrepancy = median(bid_discrepancy),
+    sd_discrepancy = sd(bid_discrepancy),
+    underestimated = sum(bid_discrepancy > 0),
+    overestimated = sum(bid_discrepancy < 0)
+  )
+```
+
+# 4. Exploratory View
+
+```{r discrepancy-plot}
+ggplot(df, aes(x = bid_discrepancy)) +
+  geom_histogram(binwidth = 500, fill = "#2C7FB8", color = "white") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "#B22222") +
+  labs(
+    title = "Synthetic Bid-to-Invoice Discrepancy",
+    x = "Invoice total minus estimated bill",
+    y = "Project count"
+  ) +
+  theme_minimal()
+```
+
+```{r project-type-plot}
+ggplot(df, aes(x = reorder(project_type, bid_discrepancy, FUN = median), y = bid_discrepancy)) +
+  geom_boxplot(fill = "#74A9CF", color = "#1B1B1B") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#B22222") +
+  coord_flip() +
+  labs(
+    title = "Bid Discrepancy by Synthetic Project Type",
+    x = "Project type",
+    y = "Bid discrepancy"
+  ) +
+  theme_minimal()
+```
+
+# 5. Model Comparison
+
+```{r model-comparison}
+model_full <- lm(
+  bid_discrepancy ~ consultant_id + client_id + service_area + project_type +
+    department_owner + associate_assigned + billable_travel + billable_shipping +
+    candidate_count + estimated_bill + project_cost,
+  data = df
+)
+
+model_consultant <- lm(bid_discrepancy ~ consultant_id, data = df)
+model_client <- lm(bid_discrepancy ~ client_id, data = df)
+model_project_type <- lm(bid_discrepancy ~ project_type, data = df)
+model_department <- lm(bid_discrepancy ~ department_owner, data = df)
+model_operational <- lm(
+  bid_discrepancy ~ project_type + department_owner + billable_travel +
+    billable_shipping + associate_assigned + candidate_count,
+  data = df
+)
+
+model_metrics <- function(model, label) {
+  pred <- predict(model, df)
+  actual <- df$bid_discrepancy
+  fstat <- summary(model)$fstatistic
+  data.frame(
+    model = label,
+    adj_r_squared = summary(model)$adj.r.squared,
+    mae = mean(abs(actual - pred)),
+    rmse = sqrt(mean((actual - pred)^2)),
+    p_value = pf(fstat[1], fstat[2], fstat[3], lower.tail = FALSE)
+  )
+}
+
+bind_rows(
+  model_metrics(model_full, "Full diagnostic model"),
+  model_metrics(model_consultant, "Consultant group"),
+  model_metrics(model_client, "Client group"),
+  model_metrics(model_project_type, "Project type"),
+  model_metrics(model_department, "Department ownership"),
+  model_metrics(model_operational, "Operational model")
+) %>%
+  mutate(across(where(is.numeric), round, 3))
+```
+
+# 6. Interpretation
+
+This workflow is designed for diagnostic review. In a production setting, repeated consultant and client groups would make mixed-effects modeling a better next step than treating all rows as fully independent. The practical use is to support estimate calibration, data-quality improvement, and structured debriefs for high-discrepancy projects.
