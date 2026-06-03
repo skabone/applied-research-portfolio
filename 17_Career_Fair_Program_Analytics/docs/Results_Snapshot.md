@@ -1,6 +1,6 @@
-# Career Fair Program Analytics — Results Snapshot (Public-Safe, First Pass)
+# Career Fair Program Analytics — Results Snapshot
 
-This snapshot is generated from **aggregated**, public-safe SPU Career Fair tables.
+This snapshot is generated from the **aggregated** SPU Career Fair tables in `data/`. The underlying event was real; only per-question summaries are published, so no individual respondent appears.
 
 ## Event Totals
 
@@ -55,9 +55,9 @@ This snapshot is generated from **aggregated**, public-safe SPU Career Fair tabl
 
 - Survey results are descriptive and represent only respondents.
 - Participation data fields can vary across event cycles; tables use available aggregate-safe columns only.
-- Free-text feedback was intentionally excluded from the public dataset in this first pass.
+- Free-text feedback was intentionally excluded from the published dataset to protect respondents.
 
-## Recommendations (First Pass)
+## Recommendations
 
 Based on the patterns above (and keeping sample sizes in mind):
 

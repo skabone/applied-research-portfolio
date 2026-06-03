@@ -1,65 +1,35 @@
-# Career Fair Program Analytics (Program Evaluation + Survey Insights)
+# Career Fair Program Analytics
 
-**Author:** Mintay Misgano, PhD  
-**Project Type:** Program evaluation case study (career fair planning + execution + feedback)  
-**Tools:** Python/R (analysis), spreadsheet-style ops tracking, markdown reporting
+**Author:** Mintay Misgano, PhD · **Tools:** Python (pandas, matplotlib), survey + registration data, markdown reporting
 
----
+A university career services team had run its annual career fair and wanted to know one thing before planning the next cycle: *what actually worked, and where should we put our limited effort to improve it?* This project answers that question by combining employer registration records with post-event student and employer surveys into a single, decision-ready read of the event.
 
-## Objective
+> **About the data:** This is a real program evaluation of the SPU Career Fair. To protect respondents, no person-level records are published here — the repository contains only aggregated counts and item-level survey summaries (17–20 responses per question). All analysis below is performed on those aggregated tables.
 
-Demonstrate an end-to-end stakeholder analytics workflow:
+## What the evaluation found
 
-- define program success metrics
-- summarize event participation + attendance signals
-- analyze student + employer survey feedback
-- translate results into actionable recommendations for the next event cycle
+The event was a logistical success but a candidate-market disappointment for employers. Employers rated the **atmosphere (90% favorable)** and **registration process (89%)** highly, yet only **45% agreed they met enough qualified candidates** and just **42% felt student turnout matched the school's size**. Students rated the fair positively across the board (83% called it a valuable use of time) but were least confident in **their own preparedness (44%)** — and only **22% had attended a pre-event resume session**. The pattern is consistent: the program runs well, but it is under-supplying prepared candidates to a healthcare-, government-, and non-profit-heavy employer pool.
 
-This project shows practical strength in **people analytics**, **program evaluation**, and **stakeholder-facing reporting** (problem framing → analysis → stakeholder-ready findings).
+![Employers rated atmosphere and logistics highly (80–90% favorable) but fell to 42–45% on student turnout and meeting enough qualified candidates — the clearest improvement target for the next cycle.](docs/figures/employer-experience-1.png)
 
----
+## Where to go next
 
-## Key Findings
+- **[01_Project_Summary.md](01_Project_Summary.md)** — a 3-minute, plain-language read of the findings and recommendations, for a recruiter or program lead.
+- **[02_Project_Report.md](02_Project_Report.md)** — the full write-up: metric definitions, methods, every figure with an evidence walkthrough, and recommendations traced back to specific results.
+- **[03_Analysis_Notebook.ipynb](03_Analysis_Notebook.ipynb)** — the executed analysis that reads the aggregated tables and produces every figure.
+- **[docs/](docs/)** — leader brief, metrics spec, and the results snapshot.
 
-- Student ratings were strongest for employer approachability and overall layout/value.
-- Employer ratings were strongest for atmosphere and registration process.
-- Several employer items point to opportunities around candidate volume, candidate fit, and event ergonomics.
-
-## Data Note
-
-Raw local inputs for this project may include private person-level details. Those source files are not included in this repository.
-
-For GitHub publication:
-
-- only **sanitized** or **aggregated** datasets are included in `data/`
-- potentially identifying information has been removed from public files
-
-## Repository Guide
+## Repository guide
 
 | Path | Purpose |
 |---|---|
-| `analysis/` | Supporting scripts that regenerate the public-safe tables |
-| `data/` | Sanitized/aggregated datasets used in the public analysis |
-| `docs/` | Public-safe results snapshot, leader brief, and metrics definitions |
-
-## Key Deliverables
-
-- `01_Project_Summary.md`
-- `02_Project_Report.md`
-- `03_Analysis_Notebook.ipynb`
-- `docs/Leader_Brief.md`
-- `docs/Metrics_Spec.md`
-- `docs/Results_Snapshot.md`
-
-## Repro (optional)
-
-On GitHub, start with `03_Analysis_Notebook.ipynb` and `docs/Results_Snapshot.md`. If you have access to the original private inputs locally, you can regenerate the public tables:
-
-```bash
-python3 analysis/build_public_data.py --source-base "/path/to/local_private_event_inputs"
-```
+| `01_Project_Summary.md` | Recruiter-facing overview (plain language, findings-first) |
+| `02_Project_Report.md` | Full program-evaluation write-up with figures and references |
+| `03_Analysis_Notebook.ipynb` | Executed analysis that builds the figures from `data/` |
+| `data/` | Aggregated survey and registration summary tables (no person-level data) |
+| `docs/` | Leader brief, metrics spec, results snapshot, and `figures/` |
+| `analysis/build_public_data.py` | Script that aggregates the original private exports into the public tables |
 
 ## Limitations
 
-- The public package is intentionally aggregated, which limits granular diagnostic detail.
-- The package is strongest for surfacing next-cycle decisions rather than longitudinal evaluation.
+Survey results describe respondents only (17–20 per item), so they indicate direction rather than precise population values, and the analysis is descriptive — it supports next-cycle planning, not causal or ROI claims, because the data are not yet linked to downstream application and hire outcomes.

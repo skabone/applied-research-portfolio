@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Define the public-safe program metrics used in this career fair package.
+Define the program metrics used in this career fair evaluation.
 
 ## Core metrics
 
@@ -16,7 +16,7 @@ Define the public-safe program metrics used in this career fair package.
 
 ## Guardrails
 
-- Public package uses aggregated tables only.
+- Published tables are aggregated only; no person-level responses are included.
 - Survey metrics are descriptive of respondents, not all attendees.
 - Event-to-event comparisons should use the same field definitions and survey wording.
 

@@ -1,6 +1,6 @@
-# Data (Public-Safe)
+# Data (Aggregated)
 
-This folder contains only **aggregated, public-safe** tables created from private local event inputs.
+This folder contains only **aggregated** summary tables created from the original event inputs (employer registration export and the student/employer surveys).
 
 No person-level response records or contact fields are included.
 
