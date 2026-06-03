@@ -164,6 +164,18 @@ Engagement results are reported at three levels:
 
 ## 6. Methodological Considerations
 
+### 6.0 Evaluation Metrics Defined
+
+Because the validation plan (Sections 6.2 and 7) and the reporting demonstration (Section 9) rely on specific psychometric and fit statistics, each is defined here before it appears in any result so the reader can interpret the values directly.
+
+**Cronbach's alpha (α).** Alpha estimates *internal-consistency reliability* — the degree to which the items intended to measure one subscale actually move together. It is computed as α = (k/(k−1)) × (1 − Σσ²ᵢ/σ²ₜ), where k is the number of items, σ²ᵢ is each item's variance, and σ²ₜ is the variance of the summed scale (Cronbach, 1951; Field, 2018). It ranges from 0 to 1; values of .70–.95 are conventionally acceptable, with .80+ considered good. Below .70, the items are not measuring a coherent construct and item-level diagnostics are warranted. This design adopts α ≥ .70 as the per-administration acceptability gate.
+
+**Corrected item-total correlation (r.drop).** This is the correlation between a single item and the sum of the *other* items in its subscale (the item itself excluded to avoid spurious inflation). It indicates how well an individual item discriminates; values below .30 flag an item that contributes little and is a revision candidate (Field, 2018).
+
+**Comparative Fit Index (CFI).** A confirmatory-factor-analysis fit index comparing the hypothesized three-factor model to a baseline null model in which all items are uncorrelated. It ranges 0–1; values ≥ .95 indicate good fit (Hu & Bentler, 1999). CFI is used at the confirmatory validation stage (Section 7) to test whether the Vigor/Dedication/Absorption structure holds before full rollout.
+
+**Root Mean Square Error of Approximation (RMSEA).** A CFA badness-of-fit index estimating model misfit per degree of freedom in the population, so it rewards parsimony. Lower is better: ≤ .06 indicates good fit and ≥ .10 indicates poor fit (Hu & Bentler, 1999). Reported alongside CFI because the two indices are sensitive to different kinds of misspecification.
+
 ### 6.1 Validity Considerations
 
 **Content validity:** Items were selected directly from the validated UWES-15 (Schaufeli et al., 2002), ensuring construct coverage. The three-dimensional structure (Vigor, Dedication, Absorption) maps to the theoretical definition of engagement.
@@ -229,6 +241,42 @@ glm(voluntary_left ~ total_engagement + vigor + dedication,
 
 ---
 
+## 9. Reporting Demonstration on Illustrative Data
+
+A survey design is only as credible as the output it produces. Because no employees were surveyed for this coursework artifact, the scoring and reporting pipeline specified above is demonstrated on an **illustrative synthetic dataset** generated to match the instrument's exact structure: three subscales of five items each, 5-point Likert responses, four quarterly waves, and seven department strata of roughly 30 respondents each (the n ≥ 30 sampling target from Section 3.2). The full pipeline is implemented in `03_Reporting_Demonstration.ipynb` (source: `04_Reporting_Demonstration_Source.py`). The values below are simulated for demonstration and are not findings about any organization; their purpose is to make the abstract reporting framework inspectable.
+
+### 9.1 Instrument Blueprint
+
+![Instrument blueprint showing one engagement construct measured through three subscales — Vigor, Dedication, Absorption — of five items each](docs/figures/instrument-blueprint-1.png)
+
+This figure renders the measurement model before any data is involved. *What to inspect:* the single top-level construct (Work Engagement) feeding three subscale boxes, each with five labeled items (V1–V5, D1–D5, A1–A5). *Why it matters:* it visually commits the design to a multidimensional structure — the same three-factor structure that the confirmatory validation stage (Section 7, CFI ≥ .95, RMSEA ≤ .06) is later meant to test. A reviewer can confirm at a glance that the instrument measures engagement as three distinct constructs rather than a single attitudinal index.
+
+### 9.2 Organizational-Level Trend
+
+![Quarterly trend of mean Vigor, Dedication, and Absorption across four 2024 waves, all hovering between 3.5 and 4.0 against a dashed engaged-threshold line at 4.0](docs/figures/quarterly-trend-1.png)
+
+This is the headline monitoring view (reporting level 1 from Section 5.2). *What to inspect:* the three subscale lines across the four quarterly waves relative to the dashed 4.0 "engaged" threshold. *What pattern is visible:* all three dimensions sit in the 3.5–4.0 band and drift gently upward across 2024, with Dedication consistently highest and Absorption lowest — the expected ordering, since absorption is the most cognitively demanding dimension. *Why it matters:* the value of the design is not the level but the *slope and separation* — a single subscale turning down while the others hold would be visible here a full quarter or more before it surfaced in attrition, which is precisely the early-warning function the survey exists to provide.
+
+### 9.3 Subgroup-Level Comparison
+
+![Horizontal bar chart of mean total engagement by department for 2024 Q4; Customer Support (3.32) and Sales (3.34) shown in red below 3.5, Management highest at 4.24](docs/figures/department-comparison-1.png)
+
+This is reporting level 2 — the stratified breakdown that drives targeted action. *What to inspect:* the department bars for the latest wave, sorted ascending, with red marking any subgroup below 3.5. *Which groups support the conclusion:* Customer Support (3.32) and Sales (3.34) fall roughly 0.9 points below Management (4.24) and clearly below the next group, Operations (3.64). *Why it changes the interpretation:* the organizational trend in 9.2 looked healthy, but the subgroup view reveals that two departments are materially disengaged and would be automatically flagged for the item-level drill-down — demonstrating why the design mandates subgroup reporting rather than a single company-wide number.
+
+### 9.4 Reliability Quality Gate
+
+![Line chart of Cronbach's alpha by subscale across four waves, oscillating around the dashed 0.70 acceptability threshold, with several points dipping just below it](docs/figures/reliability-check-1.png)
+
+This figure operationalizes the reliability gate defined in Section 6.0. *What to inspect:* each subscale's alpha across waves against the dashed .70 threshold. *What pattern is visible:* alpha generally sits between .67 and .75, and in this simulation several points dip just below .70 (e.g., Dedication and Absorption in mid-year waves) before recovering to .74–.75 in 2024 Q4. *Why it matters:* the figure shows the gate doing its job — a sub-.70 administration is the design's signal to run corrected item-total diagnostics (r.drop < .30, Section 6.0) before trusting that wave's scores, rather than silently reporting unreliable numbers. In production these values would be expected to stabilize at the published UWES range of .75–.92 (Schaufeli & Bakker, 2003); the demonstration's smaller synthetic samples explain the softer values here.
+
+### 9.5 Item-Level Drill-Down
+
+![Bar chart of mean scores for all 15 items in 2024 Q4, color-coded by subscale, with item means clustered between 3.4 and 4.0](docs/figures/item-profile-1.png)
+
+This is reporting level 3 — the deepest layer, triggered when a subgroup scores low. *What to inspect:* the per-item means for the latest wave, grouped by subscale colour. *Why it matters:* when a department such as Customer Support is flagged in 9.3, this view localizes the deficit to specific items rather than a whole subscale, so an intervention can target the actual driver (for example, a low Vigor item about energy at work points to workload, whereas a low Dedication item about meaning points to role clarity). This is the mechanism by which the design converts a flagged score into an actionable hypothesis.
+
+---
+
 ## References
 
 Bakker, A. B., Schaufeli, W. B., Leiter, M. P., & Taris, T. W. (2008). Work engagement: An emerging concept in occupational health psychology. *Work & Stress, 22*(3), 187–200. https://doi.org/10.1080/02678370802393649
@@ -237,7 +285,13 @@ Byrne, Z. S., Peters, J. M., & Weston, J. W. (2016). The struggle with employee 
 
 Christian, M. S., Garza, A. S., & Slaughter, J. E. (2011). Work engagement: A quantitative review and test of its relations with task and contextual performance. *Personnel Psychology, 64*(1), 89–136. https://doi.org/10.1111/j.1744-6570.2010.01203.x
 
+Cronbach, L. J. (1951). Coefficient alpha and the internal structure of tests. *Psychometrika, 16*(3), 297–334. https://doi.org/10.1007/BF02310555
+
+Field, A. (2018). *Discovering statistics using IBM SPSS statistics* (5th ed.). SAGE.
+
 Gallup. (2020). *The relationship between engagement at work and organizational outcomes: 2020 Q12 meta-analysis.* Gallup, Inc.
+
+Hu, L., & Bentler, P. M. (1999). Cutoff criteria for fit indexes in covariance structure analysis: Conventional criteria versus new alternatives. *Structural Equation Modeling, 6*(1), 1–55. https://doi.org/10.1080/10705519909540118
 
 Gallup. (2023). *State of the global workplace: 2023 report.* Gallup, Inc.
 

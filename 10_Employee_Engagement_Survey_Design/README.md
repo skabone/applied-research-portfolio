@@ -1,32 +1,21 @@
-# Project 10 - Employee Engagement Survey Design
+# Employee Engagement Pulse Survey — Design & Reporting
 
-Author: Mintay Misgano, PhD
+Organizations usually detect engagement problems too late — as attrition, after the people are gone. This project builds the instrument that surfaces the signal earlier: a short quarterly survey designed to measure employee engagement reliably enough to trust and quickly enough to act on, grounded in the Utrecht Work Engagement Scale (UWES-15).
 
-This project presents a full survey-design specification for a quarterly employee engagement pulse survey grounded in the Utrecht Work Engagement Scale (UWES). Rather than focusing on analysis after data collection, the project emphasizes front-end measurement design: construct definition, item selection, sampling, administration, scoring, and planned validation.
+Engagement is measured as three distinct dimensions — **Vigor**, **Dedication**, and **Absorption** — so a low score points to *what* is wrong, not just *that* something is. The design covers the full lifecycle: construct definition, item selection, stratified sampling, anonymous administration, scoring, layered reporting, and a pre-specified validation plan (reliability ≥ 0.70 before any number is trusted).
 
-## What This Project Demonstrates
+![Quarterly engagement trend by subscale across four waves — the core monitoring view the design is built to produce](docs/figures/quarterly-trend-1.png)
 
-- End-to-end survey design grounded in an established organizational-psychology framework
-- Translation of theory into an implementable pulse-survey instrument
-- Attention to sampling, administration, anonymity, and reporting considerations
-- Clear connection between survey design and later psychometric validation work
+*Above: the headline view leadership would receive each quarter. Tracking Vigor, Dedication, and Absorption separately over four waves makes a dip in any single dimension visible before it compounds into turnover.*
 
-## Instrument Overview
+## Read this project
 
-| Feature | Specification |
-|--------|---------------|
-| Framework | Utrecht Work Engagement Scale (UWES-15) |
-| Dimensions | Vigor, Dedication, Absorption |
-| Total items | 20 |
-| Response format | 5-point Likert scale |
-| Administration | Quarterly pulse format |
-| Platform | Qualtrics |
+- **[01_Project_Summary.md](./01_Project_Summary.md)** — recruiter-facing overview: the problem, the design, and what it produces, in plain language (~3 min).
+- **[02_Project_Report.md](./02_Project_Report.md)** — full PhD-level design specification: theoretical framework, sampling, instrument, scoring, validation plan, and APA-cited methodology.
+- **[03_Reporting_Demonstration.ipynb](./03_Reporting_Demonstration.ipynb)** — the scoring and reporting pipeline implemented end-to-end on clearly-labeled synthetic illustrative data ([source](./04_Reporting_Demonstration_Source.py)).
 
-## Read This Project
+## Note on data
 
-- Start with [Employee_Engagement_Survey_Project_Summary.md](./Employee_Engagement_Survey_Project_Summary.md) for the short overview.
-- Use [Employee_Engagement_Survey_Project_Report.md](./Employee_Engagement_Survey_Project_Report.md) for the full design specification.
+This is a measurement-**design** project — no employees were surveyed. To show how the designed instrument behaves once fielded, the notebook generates a synthetic illustrative dataset matching the instrument's structure (3 subscales × 5 items, 5-point Likert, quarterly waves, department strata) and runs the exact scoring/reporting logic from the specification. All figures are demonstrations, not findings about any organization.
 
-## Context Note
-
-This is a design-focused project completed as graduate coursework in survey design and development. It is best interpreted as a measurement and research-design artifact rather than as a deployed organizational survey.
+*Originated as graduate coursework in survey design and development (2023).*
