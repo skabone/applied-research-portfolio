@@ -9,7 +9,7 @@ output:
     toc_depth: 3
 ---
 
-> **Confidentiality Note:** This project was completed under a Non-Disclosure Agreement. The client organization is not named. All personnel identifiers, client organization names, and operationally identifying details have been anonymized. The analytical workflow, variable structure, and findings reflect the original engagement.
+> **Confidentiality Note:** This project was completed under a Non-Disclosure Agreement. The client organization is not named. All personnel identifiers, client organization names, invoice numbers, and operationally identifying details have been removed. The public dataset is synthetic and anonymized, preserving the analytical structure of the engagement without exposing protected records.
 
 ---
 
@@ -83,7 +83,7 @@ Two failure modes arise from bid inaccuracy:
 - **Overestimation** (bid too high): The firm risks losing contracts to competitors or eroding client confidence when the final invoice comes in well below the quote.
 - **Underestimation** (bid too low): The firm absorbs costs beyond what was quoted, directly affecting profitability.
 
-This analysis examines 279 anonymized project records to answer one central question:
+This analysis examines 279 synthetic, anonymized public records modeled from the protected project structure to answer one central question:
 
 > *Which project-level, personnel, and client-level factors are most consistently associated with the discrepancy between estimated bids and actual invoiced amounts?*
 
@@ -102,8 +102,8 @@ bid_discrepancy = invoice_total − estimated_bill
 # 3. Data Import
 
 ```{r load-data}
-# Load the anonymized project dataset
-# All identifying fields (client names, personnel, dates) have been removed or replaced
+# Load the synthetic, anonymized public project dataset
+# All identifying fields (client names, personnel, dates, invoices) have been removed or replaced
 # bid_discrepancy is pre-computed in the source file as: invoice_total - estimated_bill
 df <- read.csv("data.csv", stringsAsFactors = FALSE)
 
@@ -131,7 +131,7 @@ glimpse(df)
 
 | Variable | Type | Description |
 |----------|------|-------------|
-| `project_id` | Character | Anonymized row identifier |
+| `project_id` | Character | Synthetic public row identifier |
 | `project_year` | Character | Year grouping (Year_1 = FY2020, Year_2 = FY2021) |
 | `consultant_id` | Factor | Anonymized project lead (Consultant_A through Consultant_K) |
 | `client_id` | Factor | Anonymized client organization identifier |
@@ -196,9 +196,9 @@ cat("Final dataset:", nrow(df), "observations,", ncol(df), "variables\n\n")
 cat("Bid Discrepancy Summary (dollars):\n")
 summary(df$bid_discrepancy)
 
-cat("\nProjects underestimated (DV > 0):", sum(df$bid_discrepancy > 0))
-cat("\nProjects overestimated (DV < 0):",  sum(df$bid_discrepancy < 0))
-cat("\nPerfect estimates (DV = 0):",        sum(df$bid_discrepancy == 0), "\n")
+cat("\nProjects underestimated (bid_discrepancy > 0):", sum(df$bid_discrepancy > 0))
+cat("\nProjects overestimated (bid_discrepancy < 0):",  sum(df$bid_discrepancy < 0))
+cat("\nPerfect estimates (bid_discrepancy = 0):",        sum(df$bid_discrepancy == 0), "\n")
 ```
 
 ---
@@ -380,7 +380,7 @@ p2 <- ggplot(year_summary, aes(x = project_year, y = mean_dv, fill = project_yea
   geom_col(width = 0.5, alpha = 0.85) +
   scale_fill_manual(values = c(TEAL, NAVY)) +
   scale_y_continuous(labels = dollar_format()) +
-  labs(title = "Mean Discrepancy by Year", x = NULL, y = "Mean DV ($)") +
+  labs(title = "Mean Discrepancy by Year", x = NULL, y = "Mean bid discrepancy ($)") +
   theme_minimal(base_size = 11) +
   theme(legend.position = "none")
 
@@ -442,7 +442,7 @@ cat("Shapiro-Wilk:     W =", round(sw_result$statistic, 3),
     "| p =", format.pval(sw_result$p.value, digits = 3), "\n")
 ```
 
-**Result: Normality NOT met.** Both tests reject normality (p < .001), consistent with the right-skewed DV distribution observed in EDA.
+**Result: Normality NOT met.** Both tests reject normality (p < .001), consistent with the right-skewed bid-discrepancy distribution observed in EDA.
 
 ## 6.3 Homoscedasticity
 
@@ -694,7 +694,7 @@ A meaningful share of projects had no department recorded. Unlisted department c
 
 - **Assumption violations:** Four of five OLS assumptions were violated. Findings are directionally useful but coefficient magnitudes should not be interpreted as precise estimates.
 - **Clustered structure:** Repeated consultants and clients require mixed-effects regression for proper inference. This is the appropriate methodological next step with additional data.
-- **Synthetic data:** The published dataset is anonymized and synthetic. All variable relationships and model results are illustrative of the analytical workflow.
+- **Synthetic public data:** The published dataset is synthetic and anonymized. It was created from the protected engagement structure so the workflow can be reviewed publicly without exposing client, personnel, invoice, or operationally identifying records.
 - **Two-year window:** Project mix, staffing, and market conditions change year to year. Annual replication is recommended.
 
 ---
@@ -709,5 +709,4 @@ sessionInfo()
 
 ---
 
-*Analysis by Mintay Misgano, PhD  |  R / RStudio  |  N = 279, FY2020–2021  |  Anonymized for NDA compliance*
-
+*Analysis by Mintay Misgano, PhD  |  R / RStudio  |  N = 279, FY2020–2021  |  Public dataset synthetic and anonymized for NDA compliance*

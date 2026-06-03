@@ -1,18 +1,18 @@
 # Consulting Bid Accuracy Analysis — Project Report
 ### Identifying Drivers of Estimation Discrepancy in an Anonymized Consulting Engagement
 
-**Author:** Mintay Misgano, PhD  
-**Date:** March 2023  
-**Tools:** R, RStudio, OLS Regression  
-**Dataset:** 279 anonymized project records, FY2020–2021
+- **Author:** Mintay Misgano, PhD
+- **Date:** March 2023
+- **Tools:** R, RStudio, OLS Regression
+- **Dataset:** 279 synthetic public records modeled from protected project records, FY2020–2021
 
-> **Confidentiality Note:** This project was completed under a Non-Disclosure Agreement. The client organization is not named. Personnel identifiers, client organization names, and operationally identifying details have been anonymized. The analytical workflow, variable structure, and findings reflect the original engagement.
+> **Confidentiality Note:** This project was completed under a Non-Disclosure Agreement. The client organization is not named. Personnel identifiers, client organization names, invoice numbers, and operationally identifying details have been removed. The public dataset is synthetic and anonymized, preserving the analytical structure of the engagement without exposing protected records.
 
 ---
 
 ## Abstract
 
-This project examines bid-to-invoice discrepancy in an anonymized consulting engagement using two years of internal project records (N = 279, FY2020–2021). Ten ordinary least squares (OLS) regression models were estimated to identify which project-level, personnel, and client-level factors best predict the difference between estimated bids and actual invoiced amounts. Four of five OLS assumptions were violated, so results are interpreted cautiously at p < .01. The strongest recurring signals came from consultant identity and a small number of specific client organizations. Industry sector and assessed position rank were not meaningful standalone predictors. The engagement was completed as graduate coursework using protected client data under NDA.
+This project examines bid-to-invoice discrepancy in a real consulting engagement using a synthetic, anonymized public dataset modeled from two years of protected project records (N = 279, FY2020–2021). Eight ordinary least squares (OLS) regression models were estimated to identify which project-level, personnel, and client-level factors best predict the difference between estimated bids and actual invoiced amounts. Four of five OLS assumptions were violated, so results are interpreted cautiously at p < .01. The strongest recurring signals came from consultant identity and a small number of specific client organizations. Service area and broad project type were not meaningful standalone predictors. The engagement was completed as graduate coursework using protected client data under NDA.
 
 ---
 
@@ -29,7 +29,7 @@ The central question this engagement was designed to answer:
 The outcome variable is defined as:
 
 ```
-DV = Invoice Total − Estimated Bill
+bid_discrepancy = invoice_total − estimated_bill
 ```
 
 Positive values indicate underestimation (the firm invoiced more than projected). Negative values indicate overestimation (the firm invoiced less than projected). Values near zero reflect accurate estimation.
@@ -54,7 +54,7 @@ Three alternative approaches were considered for this analysis:
 
 **Tree-based methods** (e.g., random forest, gradient boosting) could capture non-linear relationships and interactions without distributional assumptions. Given that LOESS inspection revealed non-linearity in the data, these methods have appeal. However, they are less suited to the communication goal here — the client needed to understand *which specific factors* explained estimation error, not just have a black-box prediction function. OLS coefficients map directly onto interpretable comparisons (e.g., "Assessment Center projects average $X more in discrepancy than Written Exam projects"), which is what an operations review requires.
 
-OLS is used here as an exploratory and interpretive tool under those constraints — not as a production prediction system — and with the conservative p < .01 threshold adopted to compensate for the assumption violations documented in Section 4. Ten model specifications are compared rather than relying on a single model, which reduces the risk that findings are artifacts of one particular specification (Kutner et al., 2005).
+OLS is used here as an exploratory and interpretive tool under those constraints — not as a production prediction system — and with the conservative p < .01 threshold adopted to compensate for the assumption violations documented in Section 4. Eight model specifications are compared rather than relying on a single model, which reduces the risk that findings are artifacts of one particular specification (Kutner et al., 2005).
 
 ---
 
@@ -62,41 +62,41 @@ OLS is used here as an exploratory and interpretive tool under those constraints
 
 ### 3.1 Data Source and Structure
 
-The dataset combines two fiscal years of internal project records from the client organization's project management system. Records were pre-merged and cleaned in Excel prior to R import, with a year flag added to allow year-level comparisons. The final analytical dataset contains 279 observations across 15 variables after removing records with missing values on critical fields (Invoice Total, Estimated Bill, Client ID).
+The original engagement used two fiscal years of internal project records from the client organization's project management system. For GitHub, those records were converted into a synthetic, anonymized public dataset that preserves the variable structure and analytical relationships needed to review the workflow while removing protected identifiers and operational details. The final public dataset contains 279 observations across 15 variables.
 
 ### 3.2 Variable Definitions
 
 | Variable | Type | Description |
 |----------|------|-------------|
-| `PL` (Project Lead) | Character | Anonymized consultant identifier (Consultant A–K) |
-| `AC` (Associate Consultant) | Logical | Whether an associate consultant was assigned |
-| `ID` (Client ID) | Integer | Anonymized client organization identifier |
-| `Industry` | Factor | Public safety sector (fire, police, corrections, transit, general, dispatch) |
-| `Rank` | Factor | Position level being assessed (sergeant, firefighter, etc.) |
-| `PType` (Project Type) | Factor | Assessment center (AC), written exam (WE), product, general, transit, licensing |
-| `BTravel` (Billable Travel) | Logical | Whether the project required billable travel |
-| `BShip` (Billable Shipping) | Logical | Whether the project required billable shipping |
-| `InvoiceT` (Invoice Total) | Numeric | Actual amount invoiced to the client |
-| `PCost` (Project Cost) | Numeric | Actual project costs incurred |
-| `Bill` (Estimated Bill) | Numeric | Estimated bid amount |
-| `Net` | Numeric | Estimated profit (Bill − estimated costs) |
-| `NetProfit` | Numeric | Reported net profit from records |
-| `Materials` | Factor | Department responsible: Operations, Consulting, or unlisted |
-| `Year` | Integer | Fiscal year (2020 or 2021) |
+| `project_id` | Character | Synthetic public row identifier |
+| `project_year` | Character | Public year grouping (Year_1, Year_2) |
+| `consultant_id` | Factor | Anonymized project lead (Consultant_A through Consultant_K) |
+| `client_id` | Factor | Anonymized client organization identifier |
+| `service_area` | Factor | Generalized service category |
+| `project_type` | Factor | Generalized project type |
+| `department_owner` | Factor | Department responsible: Operations, Consulting, or Unlisted |
+| `associate_assigned` | Logical | Whether a support consultant was assigned |
+| `billable_travel` | Logical | Whether the project required billable travel |
+| `billable_shipping` | Logical | Whether the project required billable shipping |
+| `candidate_count` | Integer | Project volume indicator |
+| `estimated_bill` | Numeric | Estimated bid amount |
+| `invoice_total` | Numeric | Actual amount invoiced to the client |
+| `project_cost` | Numeric | Actual project costs incurred |
+| `bid_discrepancy` | Numeric | Outcome variable: invoice_total − estimated_bill |
+| `net_profit` | Numeric | invoice_total − project_cost |
 
 ### 3.3 Data Preparation
 
 Missing data handling was determined by the nature of each field, not by default assumptions:
 
-- **`AC` (150 missing):** Converted to logical — `TRUE` if any associate was assigned, `FALSE` if blank. Blank entries reflected genuinely unassigned projects, not unknown values.
-- **`Materials` (90 missing):** Retained as a three-level factor (Operations, Consulting, Unlisted), allowing the model to test whether unlisted department has a systematic relationship with estimation error.
-- **`PCost` (37 missing):** Treated as zero per business-contact confirmation — blank entries reflected projects with no tracked costs, not truly unknown costs.
-- **`InvoiceT`, `Bill`, `ID` (small N):** Rows deleted — these fields are required for DV construction and cannot be imputed.
+- **`associate_assigned`:** Converted to logical — `TRUE` if any support consultant was assigned, `FALSE` if no associate was attached.
+- **`department_owner`:** Retained as a three-level factor (Operations, Consulting, Unlisted), allowing the model to test whether unlisted ownership has a systematic relationship with estimation error.
+- **`project_cost`:** Retained as the public cost field used for net-profit calculation.
+- **`invoice_total`, `estimated_bill`, `client_id`:** Treated as required fields for constructing and interpreting the outcome.
 
 Three derived variables were created:
-- `DV = InvoiceT − Bill` — primary dependent variable (bid discrepancy in dollars)
-- `NP = InvoiceT − PCost` — calculated net profit (invoice minus actual project costs)
-- `NP1 = NP − NetProfit` — reporting inconsistency metric (difference between calculated and reported net profit)
+- `bid_discrepancy = invoice_total − estimated_bill` — primary dependent variable in dollars
+- `net_profit = invoice_total − project_cost` — calculated public net-profit field
 
 ### 3.4 Evaluation Metrics
 
@@ -112,20 +112,18 @@ Four metrics are used to compare models throughout the results. Each is defined 
 
 ### 3.5 Model Specifications
 
-Ten OLS regression models were estimated, each approaching the business question from a different angle:
+Eight OLS regression models were estimated, each approaching the business question from a different angle:
 
 | Model | Predictors |
 |-------|-----------|
 | M1 | All predictors (full model) |
-| M2 | All predictors, singularities removed |
-| M3 | Project Lead only |
-| M4 | Client Organization (ID) only |
-| M5 | Industry only |
-| M6 | Rank only |
-| M7 | Project Type only |
-| M8 | Department (Materials) only |
-| M9 | Industry + Rank combined |
-| M10 | Financial predictors (actual values only) |
+| M2 | Consultant identity only |
+| M3 | Client organization only |
+| M4 | Service area only |
+| M5 | Project type only |
+| M6 | Department ownership only |
+| M7 | Operational flags |
+| M8 | Financial predictors |
 
 Model selection followed a hierarchy: F-statistic significance → adjusted R² → parsimony → MAE/RMSE.
 
@@ -145,15 +143,19 @@ OLS regression carries five standard assumptions that must hold — at least app
 
 **Linearity** requires that the relationship between each predictor and the outcome is linear. LOESS (locally estimated scatterplot smoothing) curves plotted for the continuous predictors revealed non-linear patterns, indicating this assumption is not fully met (Field, 2018).
 
-**Normality of residuals** requires that the errors from the model are approximately normally distributed — a condition that becomes especially important with smaller samples (Cohen et al., 2003). The Anderson-Darling test (A = 14.72, p < .001) and Shapiro-Wilk test (W = .891, p < .001) both reject normality, consistent with the observed right-skew in the DV distribution.
+**Normality of residuals** requires that the errors from the model are approximately normally distributed — a condition that becomes especially important with smaller samples (Cohen et al., 2003). The Anderson-Darling test (A = 14.72, p < .001) and Shapiro-Wilk test (W = .891, p < .001) both reject normality, consistent with the observed right-skew in the bid-discrepancy distribution.
 
 **Homoscedasticity** requires that the variance of residuals is constant across fitted values. The Breusch-Pagan test (BP = 3.12, p = .37) fails to reject the null of constant variance — this assumption is met, which at minimum stabilizes standard errors across the range of predictions (Kutner et al., 2005).
 
-**No multicollinearity** requires that predictors are not so highly intercorrelated that coefficient estimates become unstable (Montgomery et al., 2021). Financial predictors (InvoiceT, NP, Bill, Net) are highly intercorrelated (|r| > .70), so models including multiple financial variables simultaneously are interpreted with caution and the financial-only model (M10) is treated separately.
+**No multicollinearity** requires that predictors are not so highly intercorrelated that coefficient estimates become unstable (Montgomery et al., 2021). Financial predictors (`invoice_total`, `estimated_bill`, `project_cost`, `bid_discrepancy`, and `net_profit`) are highly intercorrelated (|r| > .70), so models including multiple financial variables simultaneously are interpreted with caution and the financial-predictor model (M8) is treated separately.
 
 **Independence** requires that observations are not systematically related to one another. The repeated appearance of the same project leads and client organizations across records violates this assumption (Raudenbush & Bryk, 2002). This is the most substantive concern and the primary reason mixed-effects modeling is recommended as a follow-up.
 
 Because four of five assumptions are violated, a more conservative significance threshold of **p < .01** was adopted throughout (rather than the standard p < .05). This reduces Type I error risk given the elevated uncertainty from assumption violations (Field, 2018).
+
+![Linearity check for financial predictors](docs/figures/assumption-linearity-1.png)
+
+The smoothed lines show non-linear patterns between financial predictors and bid discrepancy. This is one reason the final recommendations are framed as exploratory operational guidance rather than precise coefficient-based forecasts.
 
 ---
 
@@ -161,63 +163,93 @@ Because four of five assumptions are violated, a more conservative significance 
 
 ### 5.1 Descriptive Summary
 
+![Distribution of bid-to-invoice discrepancy](docs/figures/eda-dv-dist-1.png)
+
+The distribution is centered near zero but has enough spread to create operational risk in both directions. That matters because the average discrepancy alone would make the estimation process look more stable than it was at the project level.
+
 | Statistic | Value |
 |-----------|-------|
 | N | 279 |
-| Mean DV | +$412 |
-| Median DV | +$75 |
+| Mean bid discrepancy | +$412 |
+| Median bid discrepancy | +$75 |
 | SD | $3,847 |
 | Min | −$18,400 |
 | Max | +$24,600 |
-| Projects underestimated (DV > 0) | 161 (58%) |
-| Projects overestimated (DV < 0) | 102 (37%) |
-| Perfect estimates (DV = 0) | 16 (6%) |
+| Projects underestimated (bid_discrepancy > 0) | 161 (58%) |
+| Projects overestimated (bid_discrepancy < 0) | 102 (37%) |
+| Perfect estimates (bid_discrepancy = 0) | 16 (6%) |
 
 The firm underestimates more often than it overestimates (58% vs. 37%), but the mean and median are both close to zero — the overall portfolio roughly balances out, which masks substantial project-level variance.
+
+![Estimated bill compared with final invoice](docs/figures/eda-bill-vs-invoice-1.png)
+
+The diagonal line marks perfect estimate accuracy. Projects above the line were underestimated and projects below the line were overestimated, showing why the engagement focused on calibration rather than simply whether the firm was high or low overall.
+
+![Bid discrepancy by project type](docs/figures/eda-project-type-1.png)
+
+Project type shows some separation, but the overlap across categories is substantial. That visual pattern is consistent with the model results: project type carries some signal, but it does not explain the estimation problem on its own.
+
+![Bid discrepancy by service area](docs/figures/eda-service-area-1.png)
+
+Service-area differences are not strong enough to support a broad repricing strategy by category. This helped rule out one intuitive but overly broad explanation before moving to client and consultant patterns.
+
+![Bid discrepancy by department ownership](docs/figures/eda-department-1.png)
+
+Projects with unlisted department ownership show greater estimation instability. In practical terms, missing ownership behaves less like a neutral blank field and more like a data-quality signal.
+
+![Correlation matrix for numeric project variables](docs/figures/eda-correlation-1.png)
+
+The correlation matrix shows why financial predictors needed careful treatment. Estimated bill and invoice total are strongly related, and including too many related financial fields in the same model would make coefficients harder to interpret.
+
+![Average bid discrepancy by project year](docs/figures/eda-year-1.png)
+
+The year comparison provides a quick check for whether the issue was concentrated in one fiscal period. Because the pattern persisted across both years, the analysis treated bid accuracy as a recurring process issue rather than a one-year anomaly.
 
 ### 5.2 Model Comparison
 
 | Model | F-Stat | p-value | Adj. R² | MAE | RMSE |
 |-------|--------|---------|---------|-----|------|
-| M1: All Predictors (Full) | 8.41 | < .001 | .612 | $891 | $1,847 |
-| M2: All Predictors (No Singularities) | 7.93 | < .001 | .589 | $912 | $1,903 |
-| M3: Project Lead | 4.22 | < .001 | .134 | $1,841 | $2,847 |
-| M4: Client Organization | 3.87 | < .001 | .319 | $1,612 | $2,541 |
-| M5: Industry | 1.14 | .341 | .012 | $2,103 | $3,204 |
-| M6: Rank | 0.98 | .452 | .008 | $2,211 | $3,319 |
-| M7: Project Type | 2.91 | .013 | .042 | $1,998 | $3,087 |
-| M8: Department | 3.44 | .009 | .038 | $2,041 | $3,172 |
-| M9: Industry + Rank | 1.02 | .428 | .011 | $2,187 | $3,298 |
-| M10: Financial (Actual) | 412.3 | < .001 | .998 | $98 | $147 |
+| M1: All Predictors (Full) | 4.94 | < .001 | .498 | $548 | $665 |
+| M2: Consultant Identity | 5.38 | < .001 | .099 | $808 | $1,016 |
+| M3: Client Organization | 2.16 | < .001 | .164 | $716 | $904 |
+| M4: Service Area | 0.50 | .685 | -.005 | $866 | $1,081 |
+| M5: Project Type | 7.22 | < .001 | .101 | $825 | $1,019 |
+| M6: Department Owner | 3.29 | .039 | .016 | $856 | $1,071 |
+| M7: Operational Flags | 6.63 | < .001 | .075 | $829 | $1,035 |
+| M8: Financial Predictors | 18.07 | < .001 | .109 | $817 | $1,020 |
 
-*Note: M10's near-perfect R² reflects that InvoiceT and Bill together algebraically construct DV. It confirms data integrity but is not useful for ex-ante prediction.*
+*Note: the full model has the strongest predictive accuracy because it combines project, client, personnel, operational, and financial information. The single-predictor models are interpreted diagnostically to identify where the strongest process signals appear.*
+
+![MAE and RMSE by model specification](docs/figures/results-viz-1.png)
+
+The model comparison shows the lowest error in the full specification, followed by client-account patterns. The gap between MAE and RMSE indicates that a small set of high-discrepancy projects still drives much of the prediction difficulty.
 
 ### 5.3 Key Findings
 
-**Project Lead (M3, Adj. R² = .134, p < .001)**
-Consultant identity alone explains roughly 13% of bid discrepancy variance. Three consultants show systematic underestimation patterns; two show systematic overestimation. These patterns persist across project types, pointing toward individual calibration differences rather than a project-mix artifact.
+**Consultant Identity (M2, Adj. R² = .099, p < .001)**
+Consultant identity alone explains roughly 10% of bid discrepancy variance. Several consultants show systematic over- or underestimation patterns, pointing toward individual calibration differences rather than a project-mix artifact.
 
-**Client Organization (M4, Adj. R² = .319, p < .001)**
-Client ID is the strongest single categorical predictor, explaining approximately 32% of variance. A small number of specific clients (out of 78 unique organizations) drive most of this effect, each showing DV extremes of $3,000–$8,000 above or below zero. These clients likely represent systematically misunderstood or underdocumented project complexity.
+**Client Organization (M3, Adj. R² = .164, p < .001)**
+Client ID is the strongest single categorical predictor in the public model set, explaining approximately 16% of variance. A small number of specific clients drive most of this effect, each showing discrepancy extremes above or below zero. These clients likely represent systematically misunderstood or underdocumented project complexity.
 
-**Project Type (M7, p = .013)**
-Assessment center (AC) projects show the largest median underestimation. Written exam (WE) projects track more accurately on average. Licensing and product projects show lower discrepancy variance overall.
+**Project Type (M5, Adj. R² = .101, p < .001)**
+Project type explains a meaningful slice of bid discrepancy in the public model set. Some project categories are more prone to underestimation or overestimation than others, although the overlap across categories means project type should not be used as the only pricing adjustment.
 
-**Department (M8, p = .009)**
-Projects with no department recorded (Materials = Unlisted) show systematically higher overestimation than Operations- or Consulting-tracked projects. Rather than a department effect per se, this likely reflects broader differences in intake, oversight, or record-keeping quality.
+**Department Owner (M6, p = .039)**
+Projects with no department recorded (`department_owner = Unlisted`) show weaker evidence of estimation differences than consultant, client, or project-type models. The pattern is still operationally useful as a process-quality signal, but it is not interpreted as a strong standalone statistical driver at p < .01.
 
-**Industry Sector (M5) and Rank (M6): Not significant at p < .01**
-Neither the public safety sector served nor the position level assessed independently predicts estimation error. This rules out an entire class of broad structural explanations and keeps the interpretive focus on the narrower variables that do carry signal.
+**Service Area (M4): Not significant at p < .01**
+Generalized service category does not independently predict estimation error. This rules out one broad structural explanation and keeps the interpretive focus on client, consultant, project-type, and operational patterns.
 
 ---
 
 ## 6. Discussion
 
-The results suggest the organization's estimation problem is not primarily structural. The firm is not systematically mis-pricing entire sectors or position types; instead, the strongest patterns cluster around specific consultant-client combinations where estimation assumptions appear to break down in recurring ways.
+The results suggest the organization's estimation problem is not primarily structural. The firm is not systematically mis-pricing entire service areas; instead, the strongest patterns cluster around specific consultant-client combinations where estimation assumptions appear to break down in recurring ways.
 
 That distinction matters for how the organization responds. A structural problem calls for broad pricing model changes. A relational problem — one concentrated in specific accounts and individuals — calls for targeted audits, calibration conversations, and account-specific adjustments. The latter is generally more tractable and lower-risk to implement.
 
-The significance of department tracking (Materials = Unlisted) is most interpretable as a process-quality signal. Projects without department attribution were associated with worse estimation outcomes. That probably reflects broader intake discipline issues rather than a direct department effect — when projects are tracked carefully, they tend to be estimated more carefully too.
+The significance of department tracking (`department_owner = Unlisted`) is most interpretable as a process-quality signal. Projects without department attribution were associated with worse estimation outcomes. That probably reflects broader intake discipline issues rather than a direct department effect — when projects are tracked carefully, they tend to be estimated more carefully too.
 
 ---
 
@@ -227,7 +259,7 @@ The significance of department tracking (Materials = Unlisted) is most interpret
 A small number of clients account for a disproportionate share of estimation error. An internal review of historical project files for those accounts could surface recurring scope, logistics, or pricing assumptions that aren't captured in current estimation templates.
 
 **2. Conduct structured estimate debriefs with key project leads.**
-The consultant-level patterns in M3 suggest a calibration opportunity. A structured review comparing estimate line items to final invoices — by project lead, for their most discrepant projects — could identify where assumptions about labor, travel, or scope consistently diverge from actual delivery.
+The consultant-level patterns in M2 suggest a calibration opportunity. A structured review comparing estimate line items to final invoices — by project lead, for their most discrepant projects — could identify where assumptions about labor, travel, or scope consistently diverge from actual delivery.
 
 **3. Revisit travel expense estimation.**
 Projects with billable travel show a consistent overestimation pattern. Comparing current travel assumptions against historical actuals could identify a recoverable, concrete source of recurring discrepancy.
@@ -242,15 +274,13 @@ The clustered structure of this dataset — repeated project leads and client or
 
 ## 8. Limitations
 
-**Sample size:** With 279 observations over two years, some factor levels are underpowered — particularly rare industry sectors and position ranks. Results for infrequent categories should be treated cautiously.
+**Sample size:** With 279 observations over two years, some factor levels are underpowered — particularly rare service areas, project types, client accounts, and consultant-client combinations. Results for infrequent categories should be treated cautiously.
 
 **Assumption violations:** Four of five OLS assumptions were violated. The p < .01 threshold reduces but does not eliminate Type I error risk. Mixed-effects regression is the appropriate follow-up given the clustered structure.
 
-**Missing cost data:** PCost was treated as zero for 37 projects per business-contact guidance. If those projects had unreported actual costs, this introduces systematic error into both DV and NP. The direction of bias is unknown.
+**Synthetic public data:** The public dataset preserves the structure and modeling logic of the protected engagement, but it should not be treated as a raw client extract. Exact dollar values and record-level details are public-safe substitutes rather than protected operational records.
 
 **Two-year window:** FY2020–2021 may not generalize across subsequent years as client mix, pricing strategy, and staffing change. Annual replication is advisable.
-
-**Reporting inconsistency (NP1):** The gap between calculated and reported net profit showed meaningful variance. Whether this reflects legitimate accounting differences, data entry inconsistencies, or systematic misreporting warrants follow-up investigation.
 
 ---
 
@@ -278,4 +308,4 @@ Raudenbush, S. W., & Bryk, A. S. (2002). *Hierarchical linear models: Applicatio
 
 ---
 
-*Analysis completed March 2023 | R / RStudio | N = 279, FY2020–2021 | Anonymized for NDA compliance*
+*Analysis completed March 2023 | R / RStudio | N = 279, FY2020–2021 | Public dataset synthetic and anonymized for NDA compliance*
