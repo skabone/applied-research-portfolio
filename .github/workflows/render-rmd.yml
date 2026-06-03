@@ -1,0 +1,133 @@
+name: Render R Markdown Files
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.Rmd'           # Only runs when an .Rmd file is changed
+      - '.github/workflows/render-rmd.yml'
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write      # Allows the workflow to commit rendered output back to the repo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.3.2'
+          use-public-rspm: true   # Faster binary package installs
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev \
+            libfontconfig1-dev libharfbuzz-dev libfribidi-dev \
+            libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev
+
+      - name: Cache R packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-r-4.3.2-${{ hashFiles('requirements-r.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-r-4.3.2-
+
+      - name: Install R packages
+        run: |
+          install.packages(c(
+            # Core
+            "rmarkdown", "knitr",
+            # Data manipulation
+            "dplyr", "tidyr", "tidyverse", "readr", "stringr", "purrr",
+            # Visualization
+            "ggplot2", "corrplot", "scales", "gridExtra", "ggcorrplot",
+            # Regression and modeling
+            "lmtest", "MASS", "car",
+            # Normality / assumption tests
+            "nortest",
+            # Model evaluation
+            "Metrics",
+            # Psychometrics / SEM
+            "psych", "lavaan", "semTools", "GPArotation",
+            # ANOVA / mixed models
+            "ez", "emmeans", "lme4",
+            # Misc
+            "broom", "here", "glue", "janitor", "skimr"
+          ))
+        shell: Rscript {0}
+
+      - name: Find and render all Rmd files
+        run: |
+          # Find every .Rmd in the repo, render each to github_document
+          # The rendered .md and figure folders are saved alongside the source .Rmd
+          rmd_files <- list.files(
+            path       = ".",
+            pattern    = "\\.Rmd$",
+            recursive  = TRUE,
+            full.names = TRUE
+          )
+
+          cat("Found", length(rmd_files), "Rmd file(s) to render:\n")
+          cat(paste(" -", rmd_files, collapse = "\n"), "\n\n")
+
+          errors <- character(0)
+
+          for (f in rmd_files) {
+            cat("Rendering:", f, "\n")
+            tryCatch(
+              rmarkdown::render(
+                input       = f,
+                output_format = "github_document",
+                quiet       = FALSE
+              ),
+              error = function(e) {
+                msg <- paste("ERROR rendering", f, ":", conditionMessage(e))
+                cat(msg, "\n")
+                errors <<- c(errors, msg)
+              }
+            )
+          }
+
+          if (length(errors) > 0) {
+            cat("\n--- RENDER ERRORS ---\n")
+            cat(paste(errors, collapse = "\n"), "\n")
+            # Report errors but don't fail the whole workflow —
+            # one broken Rmd shouldn't block all rendered output from committing
+          }
+        shell: Rscript {0}
+
+      - name: Copy key figures to docs/figures
+        run: |
+          # For each project folder that has a *_files/ figure directory from rendering,
+          # copy the figures into docs/figures/ so the report and README can reference them
+          find . -type d -name "*_files" | while read fig_dir; do
+            project_dir=$(dirname "$fig_dir")
+            dest="$project_dir/docs/figures"
+            mkdir -p "$dest"
+            cp -r "$fig_dir/figure-gfm/." "$dest/" 2>/dev/null || true
+            echo "Copied figures from $fig_dir to $dest"
+          done
+
+      - name: Commit rendered output
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # Stage all rendered .md files, figure directories, and docs/figures
+          git add "**/*.md" "**/*_files/" "**/docs/figures/" 2>/dev/null || true
+          git add -A
+
+          # Only commit if there are actual changes — avoids empty commits
+          if git diff --staged --quiet; then
+            echo "No changes to commit — rendered output is already up to date."
+          else
+            git commit -m "Auto-render: update Rmd outputs [skip ci]"
+            git push
+          fi

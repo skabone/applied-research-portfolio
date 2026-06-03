@@ -1,49 +1,42 @@
-# Public-Safe Consulting Bid Accuracy Analysis
+# Consulting Bid Accuracy Analysis
 
-**Author:** Mintay Misgano, PhD
-**Project Type:** Consulting analytics case study using synthetic public data
-**Tools:** R, dplyr, ggplot2, OLS regression
+**Author:** Mintay Misgano, PhD  
+**Engagement Type:** Real consulting project completed under NDA — data anonymized for public presentation  
+**Tools:** R, RStudio, dplyr, ggplot2, OLS regression  
+**Dataset:** 279 anonymized project records, FY2020–2021
 
 ---
 
 ## Overview
 
-This project demonstrates how a consulting operations question can be translated into a structured analytics workflow: which project, client, staffing, and process factors are associated with the gap between estimated bids and final invoice amounts?
+A regional assessment services firm had two years of internal project records and a concrete operational problem: project bids were not consistently landing close to final invoiced amounts. Some projects came in significantly over estimate, others under, and the firm had no systematic way to identify what was driving the gap. This project was completed as part of a graduate consulting engagement to answer that question.
 
-The public portfolio version uses a fully synthetic dataset that preserves the analytical structure of a consulting bid-accuracy problem without exposing real client records, personnel names, customer IDs, invoice numbers, dates, contact fields, or operational notes.
+The analysis examines project-level, personnel, and client-level factors across 279 records using ten OLS regression model specifications, compares their explanatory value, and translates the findings into actionable process recommendations. All organization, client, and personnel identifiers have been anonymized for public presentation.
 
 ---
 
-## Key Findings From The Synthetic Demo
+## Key Findings
 
-- Consultant and client identifiers are useful diagnostic grouping variables when bid variance is concentrated in repeated patterns.
-- Project type and department ownership can explain some discrepancy, but model interpretation should stay cautious.
-- Travel and shipping flags are operational variables worth checking because they affect cost estimation assumptions.
-- Missing or unlisted ownership fields can be treated as process-quality signals rather than ignored as simple blanks.
-- The best use of this workflow is targeted review and calibration, not automated pricing decisions.
+- Consultant identity and specific client accounts explained far more estimation variance than broad project categories like industry sector or position rank.
+- The estimation problem appeared relational rather than structural — a signal that targeted review by account and project lead is likely more useful than an across-the-board pricing overhaul.
+- Travel estimates showed a consistent pattern of overestimation, pointing to a specific calibration opportunity.
+- Missing department or intake data co-occurred with worse bid accuracy, suggesting that process discipline and data quality are connected.
+- Four of five OLS assumptions were violated; results are interpreted conservatively (p < .01) and framed as exploratory guidance rather than definitive findings.
 
 ---
 
 ## Read This Project
 
-- Start here for the project overview and file map.
-- Read `NDA_Organization_Project_Summary.md` for the short consulting-case narrative.
-- Read `NDA_Organization_Project_Report.md` for methods, results, and limitations in full.
-- Use `NDA_Organization_Project_Report.Rmd` as the source file for the long-form report.
-
----
-
-## Project Files
-
 | File | Purpose |
 |---|---|
-| `NDA_Organization_Project_Summary.md` | Short narrative summary of the project and what it demonstrates |
-| `NDA_Organization_Project_Report.md` | Full public-facing report |
-| `NDA_Organization_Project_Report.Rmd` | R Markdown source file for the report |
-| `data.csv` | Synthetic public dataset used in the analysis |
+| `01_Project_Summary.md` | Short narrative overview: problem, approach, and takeaways |
+| `02_Project_Report.md` | Full methods and results write-up |
+| `04_Source_Report.Rmd` | R Markdown source file for the report |
+| `data.csv` | Anonymized project records used in the analysis |
+| `docs/Results_Snapshot.md` | Quick-reference model results table |
 
 ---
 
-## Data And Confidentiality Note
+## Confidentiality Note
 
-No protected client data is published in this project. The dataset is synthetic and was generated for portfolio demonstration only. It does not contain real organization names, personnel names, client names, contacts, invoice numbers, customer IDs, exact dates, or original private records.
+This project was completed under a Non-Disclosure Agreement. The client organization is not named. All personnel identifiers, client organization names, invoice numbers, and operationally identifying details have been removed or replaced with anonymized labels. The published dataset reflects the analytical structure of the original data without exposing any protected records.
