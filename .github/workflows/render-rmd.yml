@@ -107,29 +107,38 @@ jobs:
 
       - name: Copy key figures to docs/figures
         run: |
-          # For each project folder that has a *_files/ figure directory from rendering,
-          # copy the figures into docs/figures/ so the report and README can reference them
-          find . -type d -name "*_files" | while read fig_dir; do
-            project_dir=$(dirname "$fig_dir")
+          # For each project folder that has a *_files/figure-gfm directory from rendering,
+          # copy figures into docs/figures/ so reports and READMEs can reference them by stable path
+          find . -type d -name "figure-gfm" | while read fig_dir; do
+            project_dir=$(dirname "$(dirname "$fig_dir")")
             dest="$project_dir/docs/figures"
             mkdir -p "$dest"
-            cp -r "$fig_dir/figure-gfm/." "$dest/" 2>/dev/null || true
-            echo "Copied figures from $fig_dir to $dest"
+            cp -r "$fig_dir/." "$dest/"
+            echo "Copied figures from $fig_dir → $dest"
           done
+
+          # Show all figure files now present so we can verify in logs
+          echo "--- All PNG files in repo ---"
+          find . -name "*.png" | sort
 
       - name: Commit rendered output
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-          # Stage all rendered .md files, figure directories, and docs/figures
-          git add "**/*.md" "**/*_files/" "**/docs/figures/" 2>/dev/null || true
-          git add -A
+          # Stage everything — rendered .md files, *_files/ figure dirs, docs/figures/
+          # Using plain 'git add .' is the most reliable approach in bash
+          git add .
 
-          # Only commit if there are actual changes — avoids empty commits
+          # Show exactly what is staged so we can debug in logs
+          echo "--- Staged changes ---"
+          git diff --staged --name-only
+
+          # Only commit if there are actual staged changes
           if git diff --staged --quiet; then
             echo "No changes to commit — rendered output is already up to date."
           else
             git commit -m "Auto-render: update Rmd outputs [skip ci]"
             git push
+            echo "Committed and pushed rendered output."
           fi
