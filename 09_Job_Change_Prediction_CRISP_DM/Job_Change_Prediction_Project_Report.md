@@ -29,7 +29,15 @@ The dataset contains 19,158 training records and 2,129 unlabeled test records. T
 
 The first descriptive issue is class imbalance. Of the 19,158 training records, 14,381 cases are labeled `0` and 4,777 cases are labeled `1`. In percentage terms, 75.1% of trainees are not looking for a job change and 24.9% are looking. This imbalance shapes the analysis because a model can appear accurate by favoring the majority class.
 
+![Job-change outcome balance](docs/figures/target_distribution.png)
+
+The figure shows why the project cannot rely on accuracy alone. A model that leans toward the majority class starts with a large advantage because non-job-change cases outnumber job-change cases by 14,381 to 4,777.
+
 The second descriptive issue is missingness. Employer-context fields have the heaviest missingness: `company_type` is missing in 6,140 records and `company_size` is missing in 5,938 records. Demographic and education fields also have missingness, including `gender` (4,508), `major_discipline` (2,813), `education_level` (460), `last_new_job` (423), `enrolled_university` (386), and `experience` (65). At this stage, the missingness pattern is not yet a recommendation. It is an analytic constraint: the model needs an imputation strategy, and any deployment interpretation should treat employer-context predictors with caution.
+
+![Missingness by field](docs/figures/missingness_by_field.png)
+
+The missingness figure makes the preparation problem visible. `company_type` and `company_size` are not just slightly incomplete; each is missing in more than 5,900 records, so employer-context findings need more caution than fields such as `experience`, which is missing in only 65 records.
 
 ---
 
@@ -81,6 +89,8 @@ Recall is the proportion of actual positive cases that the model identifies. In 
 | Random forest | 0.779 | 0.781 |
 | Gradient boosting | 0.780 | 0.784 |
 
+![Cross-validated ROC-AUC by model](docs/figures/model_auc_comparison.png)
+
 Gradient boosting had the strongest ROC-AUC at 0.784, but random forest was very close at 0.781. The small AUC gap matters for interpretation: gradient boosting is the selected model, but the evidence does not suggest a dramatic performance separation between the two ensemble approaches. The larger contrast is between the ensemble models and logistic regression, where the AUC difference is roughly 0.052 to 0.052 points depending on the ensemble used. That pattern suggests nonlinear relationships or interaction-like structure in the predictors.
 
 ### 6.2 Holdout Performance
@@ -104,6 +114,8 @@ The holdout ROC-AUC of 0.802 is the strongest evidence that the model can rank c
 | False negatives | 524 |
 | True positives | 431 |
 
+![Holdout confusion matrix](docs/figures/confusion_matrix.png)
+
 The confusion matrix explains why accuracy alone is not enough. The model correctly classified 2,575 negative cases and 431 positive cases, but it missed 524 positive cases. If the purpose were broad early outreach, those false negatives would be a serious limitation. If the purpose were narrower prioritization for a limited follow-up queue, the model could still be useful because the ranked probabilities help staff decide where to look first.
 
 ### 6.4 Feature Importance
@@ -116,6 +128,8 @@ The confusion matrix explains why accuracy alone is not enough. The model correc
 | Education level | 0.047 |
 | Relevant experience | 0.044 |
 | Experience | 0.043 |
+
+![Gradient boosting feature importance](docs/figures/feature_importance.png)
 
 City development index dominates the fitted gradient boosting model, with importance = 0.604. That is more than four times the importance of company size (0.132), the second-ranked predictor. The key interpretation is that local labor-market context appears to carry more predictive signal than individual training activity alone. Log training hours ranks third at 0.060, which means training engagement contributes to the model but is not the primary driver.
 

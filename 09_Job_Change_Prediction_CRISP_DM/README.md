@@ -16,6 +16,10 @@ The dataset is included locally in `data/` under its CC0/Public Domain license, 
 
 ## Main Results
 
+![Cross-validated ROC-AUC by model](docs/figures/model_auc_comparison.png)
+
+Gradient boosting and random forest separate from the simpler baselines on ROC-AUC, but the gap between the two ensemble models is small: 0.784 for gradient boosting versus 0.781 for random forest.
+
 - The training data contains 19,158 records; 4,777 trainees (24.9%) are labeled as looking for a job change.
 - Gradient boosting produced the strongest cross-validated ROC-AUC (0.784), narrowly ahead of random forest (0.781).
 - On the holdout set, gradient boosting reached ROC-AUC = 0.802 and accuracy = 0.784.
@@ -38,6 +42,7 @@ The dataset is included locally in `data/` under its CC0/Public Domain license, 
 | `Job_Change_Prediction_Data_Mining.ipynb` | GitHub-rendered notebook companion for the workflow |
 | `Job_Change_Prediction_Data_Mining.py` | Script version of the workflow |
 | `data/` | Public Kaggle CSVs and source/license note |
+| `docs/figures/` | Generated figures embedded in the writeups |
 | `outputs/` | Local run outputs; generated CSVs are intentionally ignored |
 
 ## Data Note

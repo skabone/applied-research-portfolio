@@ -30,6 +30,9 @@ import pandas as pd
 import numpy as np
 import warnings
 from pathlib import Path
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 warnings.filterwarnings("ignore")
 
 from sklearn.linear_model     import LogisticRegression
@@ -84,7 +87,9 @@ def resolve_project_dir():
 
 PROJECT_DIR = resolve_project_dir()
 DATA_DIR = PROJECT_DIR / "data"
+FIGURE_DIR = PROJECT_DIR / "docs" / "figures"
 OUTPUT_DIR = PROJECT_DIR / "outputs"
+FIGURE_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 # Load the public Kaggle training/test files from the project-local data folder.
@@ -103,6 +108,35 @@ print(f"    Not looking (0): {(train['target']==0).sum():,} ({(train['target']==
 print(f"    Looking (1):     {(train['target']==1).sum():,} ({(train['target']==1).mean():.1%})")
 print(f"\n  Missing values (training):")
 print(train.isnull().sum()[train.isnull().sum() > 0].to_string())
+
+# Visualize the two descriptive checks that determine how the modeling
+# workflow should proceed: class balance and field-level missingness.
+target_counts = train["target"].value_counts().sort_index()
+fig, ax = plt.subplots(figsize=(7, 4.5))
+bars = ax.bar(["Not looking", "Looking"], target_counts.values, color=["#4C78A8", "#F58518"])
+ax.set_title("Job-Change Outcome Balance")
+ax.set_ylabel("Number of trainees")
+ax.set_xlabel("Target class")
+ax.spines[["top", "right"]].set_visible(False)
+for bar, value in zip(bars, target_counts.values):
+    ax.text(bar.get_x() + bar.get_width() / 2, value + 250, f"{value:,}", ha="center", va="bottom")
+fig.tight_layout()
+fig.savefig(FIGURE_DIR / "target_distribution.png", dpi=160)
+plt.close(fig)
+
+missing_counts = train.isnull().sum()
+missing_counts = missing_counts[missing_counts > 0].sort_values(ascending=True)
+fig, ax = plt.subplots(figsize=(8, 5))
+ax.barh(missing_counts.index, missing_counts.values, color="#6F9C7D")
+ax.set_title("Missingness by Field")
+ax.set_xlabel("Missing records")
+ax.set_ylabel("Field")
+ax.spines[["top", "right"]].set_visible(False)
+for idx, value in enumerate(missing_counts.values):
+    ax.text(value + 120, idx, f"{value:,}", va="center")
+fig.tight_layout()
+fig.savefig(FIGURE_DIR / "missingness_by_field.png", dpi=160)
+plt.close(fig)
 
 
 # ── 3. Data Preparation ───────────────────────────────────────────────────────
@@ -215,6 +249,19 @@ for name, model in models.items():
     cv_results[name] = {"accuracy": acc, "auc": auc}
     print(f"  {name:<25} {acc:>8.4f}  {auc:>8.4f}")
 
+cv_plot = pd.DataFrame(cv_results).T.sort_values("auc", ascending=True)
+fig, ax = plt.subplots(figsize=(8, 4.8))
+ax.barh(cv_plot.index, cv_plot["auc"], color="#4C78A8")
+ax.set_title("Cross-Validated ROC-AUC by Model")
+ax.set_xlabel("Mean ROC-AUC")
+ax.set_xlim(0.68, 0.81)
+ax.spines[["top", "right"]].set_visible(False)
+for idx, value in enumerate(cv_plot["auc"]):
+    ax.text(value + 0.003, idx, f"{value:.3f}", va="center")
+fig.tight_layout()
+fig.savefig(FIGURE_DIR / "model_auc_comparison.png", dpi=160)
+plt.close(fig)
+
 # Best model: Gradient Boosting (or whichever is highest)
 best_name = max(cv_results, key=lambda k: cv_results[k]["auc"])
 print(f"\n  Best model (by AUC): {best_name}")
@@ -235,6 +282,22 @@ cm = confusion_matrix(y_val, y_pred)
 print(f"\n  Confusion Matrix:")
 print(f"    TN={cm[0,0]:4d}  FP={cm[0,1]:4d}")
 print(f"    FN={cm[1,0]:4d}  TP={cm[1,1]:4d}")
+
+fig, ax = plt.subplots(figsize=(5.5, 4.8))
+im = ax.imshow(cm, cmap="Blues")
+ax.set_title("Holdout Confusion Matrix")
+ax.set_xlabel("Predicted class")
+ax.set_ylabel("Actual class")
+ax.set_xticks([0, 1], labels=["Not looking", "Looking"])
+ax.set_yticks([0, 1], labels=["Not looking", "Looking"])
+for i in range(cm.shape[0]):
+    for j in range(cm.shape[1]):
+        color = "white" if cm[i, j] > cm.max() / 2 else "black"
+        ax.text(j, i, f"{cm[i, j]:,}", ha="center", va="center", color=color, fontsize=12)
+fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+fig.tight_layout()
+fig.savefig(FIGURE_DIR / "confusion_matrix.png", dpi=160)
+plt.close(fig)
 
 print("""
   Evaluation interpretation:
@@ -257,6 +320,19 @@ if hasattr(best_model, "feature_importances_"):
         "Importance": best_model.feature_importances_
     }).sort_values("Importance", ascending=False)
     print(imp_df.round(4).to_string(index=False))
+
+    imp_plot = imp_df.sort_values("Importance", ascending=True)
+    fig, ax = plt.subplots(figsize=(8, 5.5))
+    ax.barh(imp_plot["Feature"], imp_plot["Importance"], color="#E45756")
+    ax.set_title("Gradient Boosting Feature Importance")
+    ax.set_xlabel("Relative importance")
+    ax.set_ylabel("Feature")
+    ax.spines[["top", "right"]].set_visible(False)
+    for idx, value in enumerate(imp_plot["Importance"]):
+        ax.text(value + 0.006, idx, f"{value:.3f}", va="center")
+    fig.tight_layout()
+    fig.savefig(FIGURE_DIR / "feature_importance.png", dpi=160)
+    plt.close(fig)
 
 
 # ── 6. Deployment Notes ────────────────────────────────────────────────────────
