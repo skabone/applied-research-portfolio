@@ -11,7 +11,7 @@
 Demonstrate an end-to-end stakeholder analytics workflow:
 
 - define program success metrics
-- summarize registration + attendance signals
+- summarize event participation + attendance signals
 - analyze student + employer survey feedback
 - translate results into actionable recommendations for the next event cycle
 
@@ -27,7 +27,7 @@ This project shows practical strength in **people analytics**, **program evaluat
 
 ## Data Note
 
-Raw exports for this project may include contact information (emails/names) and other operational details. Those source exports are not included in this repository.
+Raw local inputs for this project may include private person-level details. Those source files are not included in this repository.
 
 For GitHub publication:
 
@@ -53,10 +53,10 @@ For GitHub publication:
 
 ## Repro (optional)
 
-On GitHub, start with `03_Analysis_Notebook.ipynb` and `docs/Results_Snapshot.md`. If you have access to the original exports locally, you can regenerate the public tables:
+On GitHub, start with `03_Analysis_Notebook.ipynb` and `docs/Results_Snapshot.md`. If you have access to the original private inputs locally, you can regenerate the public tables:
 
 ```bash
-python3 analysis/build_public_data.py --source-base "/path/to/private_career_fair_exports"
+python3 analysis/build_public_data.py --source-base "/path/to/local_private_event_inputs"
 ```
 
 ## Limitations

@@ -46,4 +46,4 @@ The public portfolio version uses a fully synthetic dataset that preserves the a
 
 ## Data And Confidentiality Note
 
-No protected client data is published in this project. The dataset is synthetic and was generated for portfolio demonstration only. It does not contain real organization names, personnel names, client names, contacts, invoice numbers, customer IDs, exact dates, or original row-level records.
+No protected client data is published in this project. The dataset is synthetic and was generated for portfolio demonstration only. It does not contain real organization names, personnel names, client names, contacts, invoice numbers, customer IDs, exact dates, or original private records.

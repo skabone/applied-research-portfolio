@@ -1,8 +1,8 @@
 # Data (Public-Safe)
 
-This folder contains only **aggregated, public-safe** tables created from private operational exports.
+This folder contains only **aggregated, public-safe** tables created from private local event inputs.
 
-No row-level survey responses and no contact fields are included.
+No person-level response records or contact fields are included.
 
 ## Files
 

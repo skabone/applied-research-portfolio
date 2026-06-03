@@ -12,7 +12,7 @@ OUT_DATA_DIR = ROOT / "data"
 OUT_DOCS_DIR = ROOT / "docs"
 
 DEFAULT_SOURCE_BASE = (
-    ROOT.parent / "private_career_fair_exports"
+    ROOT.parent / "local_private_event_inputs"
 ).resolve()
 
 LIKERT_ORDER = [
@@ -46,7 +46,7 @@ def _coerce_bool_like(series: pd.Series) -> pd.Series:
 def _split_multi(s: str) -> list[str]:
     if not isinstance(s, str) or not s.strip():
         return []
-    # Registration exports commonly use comma-separated lists in a single cell.
+    # Event input tables commonly use comma-separated lists in a single cell.
     return [p.strip() for p in s.split(",") if p.strip()]
 
 
@@ -163,16 +163,16 @@ def build_public_tables(source_base: Path) -> dict[str, pd.DataFrame]:
         surveys_dir,
         ["employer_survey.csv"],
     )
-    registration_path = _first_existing(
+    participation_path = _first_existing(
         data_dir,
-        ["registration_export.csv"],
+        ["event_participation.csv"],
     )
 
     student = pd.read_csv(student_path)
     employer = pd.read_csv(employer_path)
-    reg = pd.read_csv(registration_path, low_memory=False)
+    reg = pd.read_csv(participation_path, low_memory=False)
 
-    # --- Surveys (aggregate only; do not publish row-level responses) ---
+    # --- Feedback summaries (aggregate only; do not publish person-level responses) ---
     student_cols = [c for c in student.columns if c.strip().lower() != "timestamp"]
     student_likert_cols = [
         c
@@ -195,7 +195,7 @@ def build_public_tables(source_base: Path) -> dict[str, pd.DataFrame]:
     out["student_yesno_summary"] = _summarize_yesno(student, student_yesno_cols)
     out["student_hear_about_summary"] = _summarize_single_choice(student, "How did you hear about the Career Fair")
 
-    # --- Registration / employer participation (aggregate only) ---
+    # --- Event participation (aggregate only) ---
     safe_cols = [
         "Career Fair",
         "Employer Industry",
@@ -287,12 +287,12 @@ def write_results_snapshot(tables: dict[str, pd.DataFrame]) -> None:
     lines: list[str] = [
         "# Career Fair Program Analytics — Results Snapshot (Public-Safe, First Pass)",
         "",
-        "This snapshot is generated from **aggregated** survey and registration tables (no row-level survey responses and no contact fields).",
+        "This snapshot is generated from **aggregated**, public-safe SPU Career Fair tables.",
         "",
     ]
 
     if not totals.empty:
-        lines += ["## Event Totals (from registration export)", "", totals.to_markdown(index=False), ""]
+        lines += ["## Event Totals", "", totals.to_markdown(index=False), ""]
 
     if not industry.empty:
         lines += ["## Employers by Industry (top)", "", industry.to_markdown(index=False), ""]
@@ -321,8 +321,8 @@ def write_results_snapshot(tables: dict[str, pd.DataFrame]) -> None:
         "## Limitations",
         "",
         "- Survey results are descriptive and represent only respondents.",
-        "- Registration export fields vary across events; tables are built from available columns only.",
-        "- Open-ended feedback was intentionally excluded from the public dataset in this first pass.",
+        "- Participation data fields can vary across event cycles; tables use available aggregate-safe columns only.",
+        "- Free-text feedback was intentionally excluded from the public dataset in this first pass.",
         "",
     ]
 
@@ -337,7 +337,7 @@ def main() -> None:
         "--source-base",
         type=Path,
         default=DEFAULT_SOURCE_BASE,
-        help="Path to the private source folder (exports + surveys).",
+        help="Path to the private local input folder.",
     )
     args = parser.parse_args()
 

@@ -7,13 +7,9 @@
 3. How did students and employers rate the event experience?
 4. What does the feedback suggest changing for the next cycle?
 
-## 2) Data sources (private inputs → public outputs)
+## 2) Public data boundary
 
-Private inputs (not published):
-
-- Career fair registration export (contains employer + registrant contact fields)
-- Student survey export (row-level responses)
-- Employer survey export (row-level responses + open-ended comments)
+This public package uses only aggregated SPU Career Fair tables. Raw local inputs are not published; person-level details, contact fields, and free-text responses are excluded before GitHub publication.
 
 Public outputs (published):
 
@@ -27,17 +23,15 @@ Public outputs (published):
 - Likert items are summarized as counts and % per response option.
 - Key headline metric per item: **% Agree/Strongly Agree**.
 - Yes/No items are summarized as % Yes.
-- Open-ended items are excluded from the public dataset in this first pass.
+- Free-text items are excluded from the public dataset in this first pass.
 
-### Registration export
+### Event participation
 
-- Contact fields are excluded.
 - The analysis produces event-level totals and distributions (industry mix, employment types, target school years).
 - Multi-value fields are split on commas and summarized as frequency tables.
 
 ## 4) Limitations
 
 - Survey responses represent respondents only; results are descriptive.
-- “Registration rows” may not perfectly map to unique employers if the export structure varies by event.
+- Participation counts are descriptive event records, not audited unique-employer counts.
 - Without linking to downstream outcomes (applications, interviews), results support event improvement rather than ROI estimation.
-

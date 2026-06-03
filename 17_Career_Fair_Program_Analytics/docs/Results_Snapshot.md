@@ -1,8 +1,8 @@
 # Career Fair Program Analytics — Results Snapshot (Public-Safe, First Pass)
 
-This snapshot is generated from **aggregated** survey and registration tables (no row-level survey responses and no contact fields).
+This snapshot is generated from **aggregated**, public-safe SPU Career Fair tables.
 
-## Event Totals (from registration export)
+## Event Totals
 
 | career_fair     |   n_employer_registrations_rows |   total_representatives |   total_student_checkins |
 |:----------------|--------------------------------:|------------------------:|-------------------------:|
@@ -54,8 +54,8 @@ This snapshot is generated from **aggregated** survey and registration tables (n
 ## Limitations
 
 - Survey results are descriptive and represent only respondents.
-- Registration export fields vary across events; tables are built from available columns only.
-- Open-ended feedback was intentionally excluded from the public dataset in this first pass.
+- Participation data fields can vary across event cycles; tables use available aggregate-safe columns only.
+- Free-text feedback was intentionally excluded from the public dataset in this first pass.
 
 ## Recommendations (First Pass)
 
