@@ -7,9 +7,9 @@ Context: Graduate coursework in data mining (2022)
 Description
 -----------
 This script applies the CRISP-DM framework to a public Kaggle dataset on
-job-change intent among data science trainees. The goal is to demonstrate
-an end-to-end data-mining workflow spanning business framing, preparation,
-model comparison, and evaluation.
+job-change intent among data science trainees. The goal is to answer a
+practical talent-pipeline question by moving from problem framing through
+data understanding, preparation, model comparison, and evaluation.
 
 Dataset: Kaggle HR Analytics — Job Change of Data Scientists
   - N = 19,158 training records
@@ -29,6 +29,7 @@ This project follows the CRISP-DM framework:
 import pandas as pd
 import numpy as np
 import warnings
+from pathlib import Path
 warnings.filterwarnings("ignore")
 
 from sklearn.linear_model     import LogisticRegression
@@ -48,7 +49,8 @@ after completing our training program?
 
 Success criteria:
   - ROC-AUC > 0.75 (sufficient for talent pipeline prioritization)
-  - Precision on positive class (job-seekers) > 0.60 (limit false positives)
+  - Positive-class precision near 0.60 while monitoring recall, because the
+    operational risk is different for false alarms and missed job seekers
 
 Deployment context: Predictions would feed into a recruiter dashboard showing
   probability-of-departure for each trainee cohort.
@@ -56,12 +58,40 @@ Deployment context: Predictions would feed into a recruiter dashboard showing
 
 
 # ── 2. Data Understanding ─────────────────────────────────────────────────────
-train = pd.read_csv(
-    "../DM Project/HR Anylytics Project/archive/aug_train.csv"
-)
-test  = pd.read_csv(
-    "../DM Project/HR Anylytics Project/archive/aug_test.csv"
-)
+def resolve_project_dir():
+    """
+    Locate the project folder whether the script is run from this directory,
+    from the repository root, or as a notebook cell where __file__ is absent.
+    Keeping this resolver local prevents public code from depending on private
+    coursework folders or cloud-drive paths.
+    """
+    candidates = []
+    if "__file__" in globals():
+        candidates.append(Path(__file__).resolve().parent)
+    candidates.extend([
+        Path.cwd(),
+        Path.cwd() / "09_Job_Change_Prediction_CRISP_DM",
+    ])
+
+    for candidate in candidates:
+        if candidate and (candidate / "data" / "aug_train.csv").exists():
+            return candidate
+    raise FileNotFoundError(
+        "Could not find data/aug_train.csv. Run from the project folder or "
+        "repository root after confirming Project 09's data directory exists."
+    )
+
+
+PROJECT_DIR = resolve_project_dir()
+DATA_DIR = PROJECT_DIR / "data"
+OUTPUT_DIR = PROJECT_DIR / "outputs"
+OUTPUT_DIR.mkdir(exist_ok=True)
+
+# Load the public Kaggle training/test files from the project-local data folder.
+# This keeps the workflow reproducible from GitHub and removes the old private
+# coursework path dependency.
+train = pd.read_csv(DATA_DIR / "aug_train.csv")
+test  = pd.read_csv(DATA_DIR / "aug_test.csv")
 
 print("="*60)
 print("  DATA UNDERSTANDING")
@@ -206,6 +236,18 @@ print(f"\n  Confusion Matrix:")
 print(f"    TN={cm[0,0]:4d}  FP={cm[0,1]:4d}")
 print(f"    FN={cm[1,0]:4d}  TP={cm[1,1]:4d}")
 
+print("""
+  Evaluation interpretation:
+  ------------------------------------------------------------------
+  The model clears the AUC target, which means it ranks job-change cases
+  ahead of non-job-change cases better than a random classifier. The
+  default 0.50 threshold is more conservative: it catches 431 of 955
+  positive cases in the holdout set and misses 524. That makes the model
+  more appropriate as a prioritization screen than as an automated decision
+  rule unless the threshold is tuned for the stakeholder's risk tolerance.
+  ------------------------------------------------------------------
+""")
+
 
 # ── Feature Importance ─────────────────────────────────────────────────────────
 print("\n  Feature Importance (best model):")
@@ -222,25 +264,24 @@ print("\n" + "="*60)
 print("  CRISP-DM: DEPLOYMENT")
 print("="*60)
 print("""
-  Deployment recommendation:
+  Deployment notes:
   ------------------------------------------------------------------
-  1. Apply the best model to each new trainee cohort at mid-program
-  2. Score each trainee with job-change probability (predict_proba[:, 1])
-  3. Flag trainees with P(job-change) > 0.5 for recruiter follow-up
-  4. Trainees with P > 0.7: offer accelerated internal placement
-     to retain them before external search escalates
-  5. Re-train the model quarterly on updated enrollment data
-  6. Monitor AUC drift — if AUC falls below 0.72, trigger retraining
+  1. Use the model as a ranked screening layer, not as an automated decision.
+  2. Review threshold choices before acting; the 0.50 threshold missed 524
+     of 955 positive holdout cases, so recall would need tuning if the goal
+     is early intervention.
+  3. Re-train and recalibrate on current program data before any live use.
+  4. Monitor AUC drift — if AUC falls below 0.72, trigger review/retraining.
 
   Key predictor interpretation:
-  - city_development_index: High CDI → strong local job market →
-    higher intent to seek new employment
-  - has_relevant_exp: Experienced candidates have more alternatives →
-    higher departure intent
-  - experience_num: Mid-career professionals (5–10 years) show peak
-    job-seeking behavior; very senior candidates are more stable
-  - company_size_num: Candidates from very large/very small firms
-    show different stability profiles
+  - city_development_index: strongest model signal; interpret as local
+    labor-market context, not an individual-level causal claim.
+  - company_size_num: second-strongest signal, but employer-context fields
+    also had substantial missingness and should be validated before live use.
+  - log_training_hrs: contributes less than market and employer context,
+    so training activity alone should not drive intervention decisions.
+  - Feature importance shows relative contribution to this fitted model; it
+    does not by itself establish direction, fairness, or causality.
   ------------------------------------------------------------------
 """)
 
@@ -252,6 +293,7 @@ submission = pd.DataFrame({
     "enrollee_id": test["enrollee_id"],
     "target":      test_preds
 })
-submission.to_csv("hr_jobchange_submission.csv", index=False)
-print("  Submission saved: hr_jobchange_submission.csv")
+submission_path = OUTPUT_DIR / "hr_jobchange_submission.csv"
+submission.to_csv(submission_path, index=False)
+print(f"  Submission saved: {submission_path}")
 print("  Done.")

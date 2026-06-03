@@ -2,21 +2,25 @@
 
 Author: Mintay Misgano, PhD
 
-This project applies the CRISP-DM framework to a public Kaggle dataset on job-change intent among data science trainees. The package is organized as a compact end-to-end classification workflow, from business framing and data preparation through model comparison and evaluation.
+This project uses a public HR analytics dataset to estimate which data science trainees are most likely to look for a new job after training. I organized the work with CRISP-DM, a structured data-mining process that moves from business framing to data understanding, preparation, modeling, evaluation, and deployment planning.
 
-## What This Project Demonstrates
+The dataset is included locally in `data/` under its CC0/Public Domain license, so the workflow can be rerun without local source-folder or cloud-drive dependencies.
 
-- Use of CRISP-DM as a structured workflow for an applied machine learning project
-- Cleaning and feature engineering for a moderately large tabular dataset
-- Comparison of multiple classification models under a shared cross-validation setup
-- Use of ROC-AUC alongside accuracy for an imbalanced binary outcome
+## Project Focus
+
+- Frame job-change prediction as a talent-pipeline prioritization problem.
+- Examine class balance and missingness before modeling.
+- Prepare categorical, ordinal, and skewed variables for model comparison.
+- Compare logistic regression, decision tree, random forest, and gradient boosting under the same stratified cross-validation setup.
+- Interpret ROC-AUC, precision, recall, and the confusion matrix together because the positive class is only 24.9% of the training sample.
 
 ## Main Results
 
-- Gradient boosting produced the strongest overall model performance in this workflow.
-- Ensemble methods outperformed simpler single-model baselines.
-- City development index, experience, and company-related features were among the strongest predictors.
-- ROC-AUC was a more informative success metric than accuracy alone because the positive class was the minority class.
+- The training data contains 19,158 records; 4,777 trainees (24.9%) are labeled as looking for a job change.
+- Gradient boosting produced the strongest cross-validated ROC-AUC (0.784), narrowly ahead of random forest (0.781).
+- On the holdout set, gradient boosting reached ROC-AUC = 0.802 and accuracy = 0.784.
+- At the default 0.50 threshold, the model identified 431 of 955 job-change cases and missed 524, so it is better framed as a ranked screening tool than as an automated decision rule.
+- City development index was the dominant feature in the fitted gradient boosting model (importance = 0.604), followed by company size (0.132) and log training hours (0.060).
 
 ## Read This Project
 
@@ -33,7 +37,9 @@ This project applies the CRISP-DM framework to a public Kaggle dataset on job-ch
 | `Job_Change_Prediction_Project_Report.md` | Full CRISP-DM write-up |
 | `Job_Change_Prediction_Data_Mining.ipynb` | GitHub-rendered notebook companion for the workflow |
 | `Job_Change_Prediction_Data_Mining.py` | Script version of the workflow |
+| `data/` | Public Kaggle CSVs and source/license note |
+| `outputs/` | Local run outputs; generated CSVs are intentionally ignored |
 
 ## Data Note
 
-The project uses Kaggle's HR Analytics: Job Change of Data Scientists dataset. It is best read as a benchmark-style applied data-mining project that demonstrates workflow, feature preparation, and model evaluation rather than a production deployment claim.
+The project uses Kaggle's **HR Analytics: Job Change of Data Scientists** dataset. It is best read as a benchmark-style applied data-mining analysis: the workflow documents how I would structure prediction, threshold interpretation, and deployment cautions, but it is not a live organizational deployment claim.
