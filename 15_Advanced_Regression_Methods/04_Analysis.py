@@ -23,12 +23,22 @@
 # =============================================================================
 
 import os
+import warnings
 import numpy as np
 import pandas as pd
 import matplotlib
 
-matplotlib.use("Agg")  # headless backend so the script runs in CI without a display
+# Use a headless backend only when running as a plain script; inside a notebook
+# kernel the inline backend stays active so every figure renders in the cell.
+try:
+    get_ipython()  # defined only inside IPython / Jupyter
+except NameError:
+    matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+# Keep console and notebook output clean (e.g. the negative-binomial default-alpha
+# note); results are unaffected.
+warnings.filterwarnings("ignore")
 import statsmodels.api as sm
 from statsmodels.miscmodels.ordinal_model import OrderedModel
 from scipy import stats, optimize
@@ -96,8 +106,10 @@ print("  Poisson AIC = %.2f" % poisson.aic)
 # and Poisson fits better (lower AIC) - a useful calibration point that negative
 # binomial is not automatically superior to Poisson.
 # =============================================================================
+# alpha=1.0 sets the dispersion parameter explicitly (the standard default) so
+# the fit is fully specified and reproducible.
 nb = sm.GLM.from_formula("num_awards ~ C(prog) + math", data=awards,
-                         family=sm.families.NegativeBinomial()).fit()
+                         family=sm.families.NegativeBinomial(alpha=1.0)).fit()
 print("\nNegative Binomial AIC = %.2f  (Poisson AIC = %.2f, diff = %.2f)"
       % (nb.aic, poisson.aic, nb.aic - poisson.aic))
 
@@ -113,7 +125,7 @@ ax.set_title("Distribution of Number of Awards by Programme\n"
              "Right-skewed integer counts - Poisson regression appropriate")
 ax.set_xlabel("Number of Awards"); ax.set_ylabel("Count of Students")
 ax.legend(title="Programme")
-fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig01-award-distribution.png")); plt.close(fig)
+fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig01-award-distribution.png")); plt.show()
 
 # --- Figure 2: observed counts (jittered) vs Poisson predicted means by math
 # score and programme. ---
@@ -130,7 +142,7 @@ ax.set_title("Poisson Model: Predicted Award Count vs. Math Score\n"
              "Points = observed (jittered); lines = model-predicted mean")
 ax.set_xlabel("Math Score"); ax.set_ylabel("Number of Awards")
 ax.legend(title="Programme")
-fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig02-poisson-predicted.png")); plt.close(fig)
+fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig02-poisson-predicted.png")); plt.show()
 # Report the predicted means at math = 70 for the figure interpretation.
 for prog in ["Academic", "General"]:
     row = pd.DataFrame({"prog": [prog], "math": [70]})
@@ -146,7 +158,7 @@ for x, v in zip([0, 1], [poisson.aic, nb.aic]):
 ax.set_title("Model Fit: Poisson vs. Negative Binomial (Awards)\n"
              "Lower AIC is better - Poisson wins when overdispersion is mild")
 ax.set_ylabel("AIC"); ax.set_ylim(0, max(poisson.aic, nb.aic) * 1.12)
-fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig03-poisson-nb-aic.png")); plt.close(fig)
+fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig03-poisson-nb-aic.png")); plt.show()
 
 
 # =============================================================================
@@ -207,7 +219,7 @@ axes[0].set_ylabel("Proportion")
 axes[1].legend(title="Poverty Perception", bbox_to_anchor=(1.02, 1), loc="upper left")
 fig.suptitle("Perceived Government Effort on Poverty by Country and Gender\n"
              "Proportion in each ordered response category (World Values Survey)")
-fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig04-ordinal-poverty-country.png")); plt.close(fig)
+fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig04-ordinal-poverty-country.png")); plt.show()
 
 
 # =============================================================================
@@ -258,7 +270,7 @@ ax.set_title("Score Distribution by Programme\n"
              "Right-truncation at 100: students above the ceiling are absent from the sample")
 ax.set_xlabel("Academic Score"); ax.set_ylabel("Count of Students")
 ax.legend(title="Programme")
-fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig05-truncated-score-dist.png")); plt.close(fig)
+fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig05-truncated-score-dist.png")); plt.show()
 
 
 # =============================================================================
@@ -330,7 +342,7 @@ ax.set_title("Distribution of Extramarital Affairs (synthetic illustrative data)
              "Heavy mass at zero - Tobit model appropriate for censored outcomes")
 ax.set_xlabel("Number of Extramarital Affairs (per year)")
 ax.set_ylabel("Count of Respondents")
-fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig06-tobit-affairs-dist.png")); plt.close(fig)
+fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig06-tobit-affairs-dist.png")); plt.show()
 
 # --- Figure 7: Tobit vs OLS predicted latent affairs across marriage rating,
 # all other predictors held at their sample means. ---
@@ -357,6 +369,6 @@ ax.set_title("Tobit vs. OLS: Predicted Affairs by Marriage Happiness Rating\n"
 ax.set_xlabel("Marriage Happiness Rating (1 = very unhappy, 5 = very happy)")
 ax.set_ylabel("Predicted Number of Affairs (latent)")
 ax.set_xticks(ratings); ax.legend()
-fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig07-tobit-predicted.png")); plt.close(fig)
+fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig07-tobit-predicted.png")); plt.show()
 
 print("\nAll seven figures written to docs/figures/. Pipeline complete.")
