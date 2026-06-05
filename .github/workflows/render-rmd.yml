@@ -123,8 +123,8 @@ jobs:
 
       - name: Commit rendered output
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git config --local user.email "skabone@pm.me"
+          git config --local user.name "Mintay Misgano"
 
           # Stage everything — rendered .md files, *_files/ figure dirs, docs/figures/
           # Using plain 'git add .' is the most reliable approach in bash
