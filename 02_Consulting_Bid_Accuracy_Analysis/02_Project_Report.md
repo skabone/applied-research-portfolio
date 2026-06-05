@@ -62,7 +62,7 @@ OLS is used here as an exploratory and interpretive tool under those constraints
 
 ### 3.1 Data Source and Structure
 
-The original engagement used two fiscal years of internal project records from the client organization's project management system. For GitHub, those records were converted into a synthetic, anonymized public dataset that preserves the variable structure and analytical relationships needed to review the workflow while removing protected identifiers and operational details. The final public dataset contains 279 observations across 15 variables.
+The original engagement used two fiscal years of internal project records from the client organization's project management system. Those records were converted into a synthetic, anonymized public dataset that preserves the variable structure and analytical relationships needed to review the workflow while removing protected identifiers and operational details. The final public dataset contains 279 observations across 15 variables.
 
 ### 3.2 Variable Definitions
 

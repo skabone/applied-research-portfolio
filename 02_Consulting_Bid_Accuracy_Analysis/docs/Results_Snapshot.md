@@ -12,4 +12,4 @@
 |---|---|
 | What is driving estimation error? | Consultant identity, client organization, and process-quality signals matter more than broad project category labels. |
 | What should leadership do? | Tighten intake completeness, standardize estimation checkpoints, and review travel-cost assumptions. |
-| Why is this portfolio-relevant? | It shows applied judgment on a real operational problem — working with messy client data, making defensible analytical decisions under assumption violations, and translating statistical output into actionable process recommendations. |
+| Why does this matter? | It shows applied judgment on a real operational problem — working with messy client data, making defensible analytical decisions under assumption violations, and translating statistical output into actionable process recommendations. |

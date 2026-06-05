@@ -171,7 +171,7 @@ The dual map approach (3D + 2D) addressed a real tension in geospatial visualiza
 
 This project provides a structured view of the 2021 U.S. data-science labor market using a public job-posting dataset and a dashboard-centered workflow. The clearest patterns in the sample were the prevalence of Python, the concentration of roles in major coastal markets, and the prominence of large private employers in technology-related sectors.
 
-As a portfolio project, its main value lies in combining data preparation, exploratory market analysis, and dashboard-based communication in one coherent artifact. The dashboard is useful as a directional exploration tool, while the written report clarifies the scope and limits of the underlying data.
+Its main value lies in combining data preparation, exploratory market analysis, and dashboard-based communication in one coherent artifact. The dashboard is useful as a directional exploration tool, while the written report clarifies the scope and limits of the underlying data.
 
 ---
 

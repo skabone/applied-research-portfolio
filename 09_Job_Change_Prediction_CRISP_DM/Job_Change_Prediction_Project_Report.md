@@ -165,7 +165,7 @@ The dataset is public and benchmark-oriented, so the results should not be treat
 
 Several predictors may act as proxies for broader socioeconomic or labor-market conditions. That makes model interpretation useful for planning, but risky if translated into individual-level decisions without fairness review.
 
-The workflow uses transparent preprocessing and moderate model comparison rather than exhaustive hyperparameter tuning. That is appropriate for a compact CRISP-DM portfolio analysis, but a production build would require deeper validation.
+The workflow uses transparent preprocessing and moderate model comparison rather than exhaustive hyperparameter tuning. That is appropriate for a compact CRISP-DM analysis, but a production build would require deeper validation.
 
 ---
 

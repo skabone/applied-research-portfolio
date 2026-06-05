@@ -1,6 +1,6 @@
 # Results Snapshot
 
-Fast-read metric summary for Project 07: College Institutional Profile Modeling.
+Metric summary for Project 07: College Institutional Profile Modeling.
 
 ## Dataset
 

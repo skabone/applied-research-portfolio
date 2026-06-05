@@ -4,7 +4,7 @@ Author: Mintay Misgano, PhD
 
 This project collects several ANOVA designs into one comparative methods package. Rather than treating ANOVA as a single test, it shows how design choice changes the structure of the analysis, the assumptions being tested, and the kinds of questions that can be answered.
 
-## What This Project Demonstrates
+## Practical Value
 
 - Clear distinction among one-way, factorial, repeated-measures, and mixed ANOVA designs
 - Use of simulated datasets to illustrate how different research structures require different ANOVA models
@@ -20,9 +20,9 @@ This project collects several ANOVA designs into one comparative methods package
 | Repeated measures ANOVA | Track within-person change over time |
 | Mixed design ANOVA | Combine between-group and within-person effects |
 
-## Read This Project
+## Project Files
 
-- Start with [ANOVA_Methods_Project_Summary.md](./ANOVA_Methods_Project_Summary.md) for the short overview.
+- [ANOVA_Methods_Project_Summary.md](./ANOVA_Methods_Project_Summary.md) provides the short overview.
 - Use [ANOVA_Methods_Project_Report.md](./ANOVA_Methods_Project_Report.md) for the comparative write-up.
 - See [02_ANOVA_Analysis_R.md](./02_ANOVA_Analysis_R.md) for the full R analysis.
 

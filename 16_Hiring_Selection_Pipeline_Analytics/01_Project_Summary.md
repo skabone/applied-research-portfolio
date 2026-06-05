@@ -5,14 +5,14 @@
 
 ## What this project is
 
-This case study demonstrates an end-to-end hiring pipeline analytics workflow using a small synthetic dataset:
+This case study walks through an end-to-end hiring pipeline analytics workflow using a small synthetic dataset:
 
 - define pipeline stages and outcomes
 - build a relational schema suitable for repeated reporting
 - compute funnel metrics and subgroup pass rates in SQL
 - run an **adverse impact screen** (4/5ths rule) and document caveats
 
-## What to read first
+## Primary Files
 
 - `docs/Results_Snapshot.md`
 - `README.md`

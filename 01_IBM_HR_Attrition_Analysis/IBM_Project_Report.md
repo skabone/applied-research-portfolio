@@ -188,7 +188,7 @@ This project has several important constraints.
 
 ## 9. Conclusion
 
-This project demonstrates a practical attrition-analysis workflow using a widely known people analytics benchmark dataset. The analysis combined exploratory data analysis, preprocessing, class-imbalance correction, model comparison, and business interpretation in a way that mirrors a realistic analytics process.
+This project documents a practical attrition-analysis workflow using a widely known people analytics benchmark dataset. The analysis combined exploratory data analysis, preprocessing, class-imbalance correction, model comparison, and business interpretation in a way that mirrors a realistic analytics process.
 
 Within this project setup, Logistic Regression produced the strongest overall classification results, while overtime, compensation-related variables, role, age, and tenure emerged as recurring signals across methods. The most durable takeaway is not that a benchmark model should be deployed as-is. It is that attrition work is strongest when descriptive analysis, modeling discipline, and careful interpretation are kept tightly connected.
 

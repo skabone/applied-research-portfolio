@@ -139,7 +139,7 @@ The comparison of state versus county summaries also reinforces a broader public
 
 This project shows how county-level broadband data can be cleaned, compared, and visualized to make national inequalities more interpretable. The main contribution is not a causal claim about why gaps exist, but a clearer descriptive view of where access-related differences appear, how those patterns vary geographically, and how demographic and economic context can be layered into the analysis.
 
-As a portfolio piece, the project demonstrates multi-source data preparation, public-data quality review, Tableau-based geographic storytelling, and cautious interpretation of descriptive findings from observational data.
+The analysis combines multi-source data preparation, public-data quality review, Tableau-based geographic storytelling, and cautious interpretation of descriptive findings from observational data.
 
 ---
 

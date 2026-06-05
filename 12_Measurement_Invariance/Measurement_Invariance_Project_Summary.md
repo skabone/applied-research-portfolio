@@ -6,4 +6,4 @@ The analysis follows the standard measurement-invariance sequence through config
 
 The key result is that weak invariance holds but strong invariance does not. In practical terms, the constructs appear to be measured on the same metric across groups, but the item intercepts differ enough that raw observed means cannot be treated as directly comparable without additional modeling.
 
-As a portfolio piece, this project demonstrates multi-group CFA, fit-change interpretation, and the ability to connect psychometric results to concrete decisions about how survey scores should and should not be used.
+This project shows multi-group CFA, fit-change interpretation, and the ability to connect psychometric results to concrete decisions about how survey scores should and should not be used.

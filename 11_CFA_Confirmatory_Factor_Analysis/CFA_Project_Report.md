@@ -156,7 +156,7 @@ Third, model fit was evaluated using established benchmarks that, as Kline (2016
 
 ### 4.4 Conclusion
 
-CFA confirmed that the GRMSAAW is best characterized as a four-dimensional, first-order measurement instrument with correlated factors. The evidence is unambiguous: a single general factor does not adequately represent the construct space captured by these 22 items. This project demonstrates a complete CFA validation workflow — from data simulation to competing model evaluation to APA write-up — implemented in both R and Python.
+CFA confirmed that the GRMSAAW is best characterized as a four-dimensional, first-order measurement instrument with correlated factors. The evidence is unambiguous: a single general factor does not adequately represent the construct space captured by these 22 items. The workflow covers the full CFA validation sequence — from data simulation to competing model evaluation to APA write-up — implemented in both R and Python.
 
 ---
 

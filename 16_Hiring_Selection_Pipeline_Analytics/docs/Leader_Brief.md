@@ -1,6 +1,6 @@
 # Leader Brief — Hiring & Selection Pipeline Analytics
 
-This brief summarizes a synthetic-data case study that demonstrates a hiring pipeline analytics workflow with an adverse impact screening step.
+This brief summarizes a synthetic-data case study that walks through a hiring pipeline analytics workflow with an adverse impact screening step.
 
 ## Key takeaways (first pass)
 
@@ -16,4 +16,4 @@ This brief summarizes a synthetic-data case study that demonstrates a hiring pip
 
 ## Scope note
 
-This case study uses **synthetic data** for portfolio purposes; it does not reflect any organization’s real hiring outcomes.
+This case study uses **synthetic data**; it does not reflect any organization’s real hiring outcomes.

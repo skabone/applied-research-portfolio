@@ -10,9 +10,9 @@ Among 228 patients with advanced lung cancer, who survives longer — and which 
 
 **Methods:** Kaplan-Meier estimation and the log-rank test for group survival, one-way ANOVA for performance-status differences, and a multivariable Cox proportional-hazards model with hazard-ratio interpretation and a Schoenfeld-residual assumption check.
 
-## Read this project
+## Project Files
 
-- **[01_Project_Summary.md](./01_Project_Summary.md)** — a 3-minute, plain-language overview of the findings and what they mean.
+- **[01_Project_Summary.md](./01_Project_Summary.md)** — a concise overview of the findings and what they mean.
 - **[02_Project_Report.md](./02_Project_Report.md)** — the full write-up: metric definitions, figure-by-figure interpretation, the Cox results table, assumption checks, and references.
 - **[03_Analysis_Workflow.md](./03_Analysis_Workflow.md)** — the rendered R Markdown workflow with code, tables, and inline figures.
 - **[04_Source_Report.Rmd](./04_Source_Report.Rmd)** — the reproducible R source; the rendered workflow and figures are produced from it on publish.

@@ -8,9 +8,9 @@ Engagement is measured as three distinct dimensions — **Vigor**, **Dedication*
 
 *Above: the headline view leadership would receive each quarter. Tracking Vigor, Dedication, and Absorption separately over four waves makes a dip in any single dimension visible before it compounds into turnover.*
 
-## Read this project
+## Project Files
 
-- **[01_Project_Summary.md](./01_Project_Summary.md)** — recruiter-facing overview: the problem, the design, and what it produces, in plain language (~3 min).
+- **[01_Project_Summary.md](./01_Project_Summary.md)** — concise overview of the problem, the design, and what it produces.
 - **[02_Project_Report.md](./02_Project_Report.md)** — full PhD-level design specification: theoretical framework, sampling, instrument, scoring, validation plan, and APA-cited methodology.
 - **[03_Reporting_Demonstration.ipynb](./03_Reporting_Demonstration.ipynb)** — the scoring and reporting pipeline implemented end-to-end on clearly-labeled synthetic illustrative data ([source](./04_Reporting_Demonstration_Source.py)).
 

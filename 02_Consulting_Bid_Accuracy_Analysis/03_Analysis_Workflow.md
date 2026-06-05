@@ -1,6 +1,6 @@
 # Consulting Bid Accuracy Analysis — Analysis Workflow
 
-This GitHub-viewable workflow summarizes the analysis produced by `04_Source_Report.Rmd`. The source file contains the executable R Markdown code; this file gives hiring managers and technical reviewers a quick way to inspect the analytical path and the stable figure outputs without running R locally.
+This rendered workflow summarizes the analysis produced by `04_Source_Report.Rmd`. The source file contains the executable R Markdown code; this file documents the analytical path and stable figure outputs without requiring a local R run.
 
 ## 1. Data Setup
 

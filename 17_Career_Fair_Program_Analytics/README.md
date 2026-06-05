@@ -14,7 +14,7 @@ The event was a logistical success but a candidate-market disappointment for emp
 
 ## Where to go next
 
-- **[01_Project_Summary.md](01_Project_Summary.md)** — a 3-minute, plain-language read of the findings and recommendations, for a recruiter or program lead.
+- **[01_Project_Summary.md](01_Project_Summary.md)** — concise overview of the findings and recommendations.
 - **[02_Project_Report.md](02_Project_Report.md)** — the full write-up: metric definitions, methods, every figure with an evidence walkthrough, and recommendations traced back to specific results.
 - **[03_Analysis_Notebook.ipynb](03_Analysis_Notebook.ipynb)** — the executed analysis that reads the aggregated tables and produces every figure.
 - **[docs/](docs/)** — leader brief, metrics spec, and the results snapshot.
@@ -23,7 +23,7 @@ The event was a logistical success but a candidate-market disappointment for emp
 
 | Path | Purpose |
 |---|---|
-| `01_Project_Summary.md` | Recruiter-facing overview (plain language, findings-first) |
+| `01_Project_Summary.md` | Concise overview of the findings and recommendations |
 | `02_Project_Report.md` | Full program-evaluation write-up with figures and references |
 | `03_Analysis_Notebook.ipynb` | Executed analysis that builds the figures from `data/` |
 | `data/` | Aggregated survey and registration summary tables (no person-level data) |

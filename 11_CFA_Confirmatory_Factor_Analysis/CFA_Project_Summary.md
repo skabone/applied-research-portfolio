@@ -6,4 +6,4 @@ The strongest value of the project is its combination of psychometric reasoning 
 
 The outcome is clear: the four-factor model fits substantially better than the one-factor alternative. That matters because it changes how the instrument should be scored and interpreted. A scale that behaves as a multidimensional measure should not be collapsed into a single score without evidence that doing so is justified.
 
-As a portfolio piece, this project demonstrates psychometric model testing, fit-index interpretation, and reproducible CFA workflows across software environments.
+This project shows psychometric model testing, fit-index interpretation, and reproducible CFA workflows across software environments.

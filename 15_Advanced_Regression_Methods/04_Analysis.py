@@ -19,7 +19,7 @@
 #     the README, summary, and report reference.
 #
 # Run:  python 04_Analysis.py   (regenerates data file, figures, and console
-#       output). 03_Analysis.ipynb is the executed, GitHub-viewable version.
+#       output). 03_Analysis.ipynb is the executed notebook version.
 # =============================================================================
 
 import os

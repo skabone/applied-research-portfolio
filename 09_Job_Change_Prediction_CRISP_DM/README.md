@@ -26,11 +26,11 @@ Gradient boosting and random forest separate from the simpler baselines on ROC-A
 - At the default 0.50 threshold, the model identified 431 of 955 job-change cases and missed 524, so it is better framed as a ranked screening tool than as an automated decision rule.
 - City development index was the dominant feature in the fitted gradient boosting model (importance = 0.604), followed by company size (0.132) and log training hours (0.060).
 
-## Read This Project
+## Project Files
 
-- Start with `Job_Change_Prediction_Project_Summary.md` for the short overview.
+- `Job_Change_Prediction_Project_Summary.md` provides the short overview.
 - Use `Job_Change_Prediction_Project_Report.md` for the fuller CRISP-DM write-up.
-- Open `Job_Change_Prediction_Data_Mining.ipynb` for a GitHub-rendered notebook version of the workflow.
+- Open `Job_Change_Prediction_Data_Mining.ipynb` for a rendered notebook version of the workflow.
 - Use `Job_Change_Prediction_Data_Mining.py` if you prefer the script version.
 
 ## Project Files
@@ -39,7 +39,7 @@ Gradient boosting and random forest separate from the simpler baselines on ROC-A
 |------|------|
 | `Job_Change_Prediction_Project_Summary.md` | Short interpretive overview of the project |
 | `Job_Change_Prediction_Project_Report.md` | Full CRISP-DM write-up |
-| `Job_Change_Prediction_Data_Mining.ipynb` | GitHub-rendered notebook companion for the workflow |
+| `Job_Change_Prediction_Data_Mining.ipynb` | Rendered notebook companion for the workflow |
 | `Job_Change_Prediction_Data_Mining.py` | Script version of the workflow |
 | `data/` | Public Kaggle CSVs and source/license note |
 | `docs/figures/` | Generated figures embedded in the writeups |

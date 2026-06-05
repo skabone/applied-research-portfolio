@@ -166,7 +166,7 @@ Engagement results are reported at three levels:
 
 ### 6.0 Evaluation Metrics Defined
 
-Because the validation plan (Sections 6.2 and 7) and the reporting demonstration (Section 9) rely on specific psychometric and fit statistics, each is defined here before it appears in any result so the reader can interpret the values directly.
+Because the validation plan (Sections 6.2 and 7) and the reporting demonstration (Section 9) rely on specific psychometric and fit statistics, each is defined here before it appears in any result so the values can be interpreted directly.
 
 **Cronbach's alpha (α).** Alpha estimates *internal-consistency reliability* — the degree to which the items intended to measure one subscale actually move together. It is computed as α = (k/(k−1)) × (1 − Σσ²ᵢ/σ²ₜ), where k is the number of items, σ²ᵢ is each item's variance, and σ²ₜ is the variance of the summed scale (Cronbach, 1951; Field, 2018). It ranges from 0 to 1; values of .70–.95 are conventionally acceptable, with .80+ considered good. Below .70, the items are not measuring a coherent construct and item-level diagnostics are warranted. This design adopts α ≥ .70 as the per-administration acceptability gate.
 
@@ -249,7 +249,7 @@ A survey design is only as credible as the output it produces. Because no employ
 
 ![Instrument blueprint showing one engagement construct measured through three subscales — Vigor, Dedication, Absorption — of five items each](docs/figures/instrument-blueprint-1.png)
 
-This figure renders the measurement model before any data is involved. *What to inspect:* the single top-level construct (Work Engagement) feeding three subscale boxes, each with five labeled items (V1–V5, D1–D5, A1–A5). *Why it matters:* it visually commits the design to a multidimensional structure — the same three-factor structure that the confirmatory validation stage (Section 7, CFI ≥ .95, RMSEA ≤ .06) is later meant to test. A reviewer can confirm at a glance that the instrument measures engagement as three distinct constructs rather than a single attitudinal index.
+This figure renders the measurement model before any data is involved. *What to inspect:* the single top-level construct (Work Engagement) feeding three subscale boxes, each with five labeled items (V1–V5, D1–D5, A1–A5). *Why it matters:* it visually commits the design to a multidimensional structure — the same three-factor structure that the confirmatory validation stage (Section 7, CFI ≥ .95, RMSEA ≤ .06) is later meant to test. The diagram makes clear that the instrument measures engagement as three distinct constructs rather than a single attitudinal index.
 
 ### 9.2 Organizational-Level Trend
 

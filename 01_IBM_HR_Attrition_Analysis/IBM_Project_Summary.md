@@ -33,9 +33,9 @@ The goal is not to present a deployable attrition tool. The goal is to show how 
 
 ---
 
-## What This Demonstrates
+## Practical Value
 
-This project demonstrates several skills that matter in applied people analytics work:
+The workflow shows several skills that matter in applied people analytics work:
 
 1. Translating a broad workforce question into a staged analytical workflow
 2. Handling class imbalance rather than relying on misleading accuracy alone
@@ -49,4 +49,4 @@ For a real organization, the findings suggest the kinds of issues that would be 
 
 ## Bottom Line
 
-This project shows a practical people analytics workflow for attrition modeling: define the question, inspect the data carefully, account for class imbalance, compare multiple models, and interpret the results in plain language. Its strongest value as a portfolio piece is not that it solves attrition universally, but that it demonstrates disciplined analytical thinking with a familiar workforce problem.
+This project shows a practical people analytics workflow for attrition modeling: define the question, inspect the data carefully, account for class imbalance, compare multiple models, and interpret the results in plain language. Its strongest value is not that it solves attrition universally, but that it shows disciplined analytical thinking with a familiar workforce problem.

@@ -4,7 +4,7 @@ Author: Mintay Misgano, PhD
 
 This project applies multiple unsupervised clustering methods to a credit card applicant dataset in order to identify behavioral segments without relying on approval status as a target. The focus is on comparing clustering structures across methods and interpreting where the results converge.
 
-## What This Project Demonstrates
+## Practical Value
 
 - Use of multiple clustering algorithms on the same standardized feature set
 - Comparison of centroid-based, hierarchical, density-based, and mode-seeking approaches
@@ -15,9 +15,9 @@ This project applies multiple unsupervised clustering methods to a credit card a
 
 A four-segment structure appears consistently across the clustering methods, with meaningful differences in expenditure, account tenure, spending share, and derogatory reports. The strongest result is not any single algorithm, but the degree of convergence across them.
 
-## Read This Project
+## Project Files
 
-- Start with [Clustering_Project_Summary.md](./Clustering_Project_Summary.md) for the short overview.
+- [Clustering_Project_Summary.md](./Clustering_Project_Summary.md) provides the short overview.
 - Use [Clustering_Project_Report.md](./Clustering_Project_Report.md) for the full write-up.
 - See [02_Clustering_Analysis_R.md](./02_Clustering_Analysis_R.md) for the detailed R workflow.
 

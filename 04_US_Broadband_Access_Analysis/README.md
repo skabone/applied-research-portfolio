@@ -11,11 +11,11 @@ This project examines county-level variation in U.S. broadband access using publ
 - Broadband outcomes follow clear regional and rural-urban patterns rather than being evenly distributed.
 - Counties with higher concentrations of Black residents are overrepresented among poorer broadband outcomes in this dataset.
 
-## Read This Project
+## Project Files
 
-- Start with `Broadband_Access_Project_Summary.md` for the short narrative overview.
+- `Broadband_Access_Project_Summary.md` provides the short narrative overview.
 - Use `Broadband_Access_Project_Report.md` for the full workflow, findings, and limitations.
-- Open `Broadband_Access_Data_Prep.ipynb` for a GitHub-rendered notebook version of the preparation steps.
+- Open `Broadband_Access_Data_Prep.ipynb` for a rendered notebook version of the preparation steps.
 - Use `Broadband_Access_Data_Prep.py` if you prefer the script version.
 
 ## Project Files
@@ -24,7 +24,7 @@ This project examines county-level variation in U.S. broadband access using publ
 |------|------|
 | `Broadband_Access_Project_Summary.md` | Short interpretive summary of the project and dashboard story |
 | `Broadband_Access_Project_Report.md` | Full project report with data sources, preparation, findings, and limitations |
-| `Broadband_Access_Data_Prep.ipynb` | GitHub-rendered notebook companion for the preparation workflow |
+| `Broadband_Access_Data_Prep.ipynb` | Rendered notebook companion for the preparation workflow |
 | `Broadband_Access_Data_Prep.py` | Python script replicating the data cleaning and preparation workflow |
 | `broadband_access.csv` | County-level broadband analysis dataset used for the project |
 

@@ -7,7 +7,7 @@ This memo documents the analytic approach used in this synthetic hiring pipeline
 - Schema and queries: `sql/`
 - Synthetic dataset + dictionary: `data/`
 - Repro script (SQLite loader + query runner): `analysis/run_analysis.py`
-- Public-facing output: `docs/Results_Snapshot.md`
+- Results snapshot: `docs/Results_Snapshot.md`
 
 ## Adverse impact screen (4/5ths rule)
 

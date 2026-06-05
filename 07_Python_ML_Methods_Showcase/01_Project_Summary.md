@@ -2,7 +2,7 @@
 
 ## The problem
 
-The same college dataset can support several different modeling questions: predicting graduation rate, classifying private versus public institutions, discovering natural clusters, and reducing many institutional features into a smaller set of dimensions. This project puts those questions side by side so the reader can see where the methods agree, where they diverge, and what that means for interpreting institutional data.
+The same college dataset can support several different modeling questions: predicting graduation rate, classifying private versus public institutions, discovering natural clusters, and reducing many institutional features into a smaller set of dimensions. This project puts those questions side by side to show where the methods agree, where they diverge, and what that means for interpreting institutional data.
 
 The analysis uses the public ISLR College dataset (`N = 777`). The dataset is educational rather than operational, so the goal is not to recommend decisions about real colleges. The value is in the modeling judgment: choosing metrics that match each question, comparing predictive and exploratory methods fairly, and explaining why a high-performing classifier does not mean the same thing as a meaningful unsupervised cluster.
 

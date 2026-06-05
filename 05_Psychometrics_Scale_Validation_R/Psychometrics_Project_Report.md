@@ -6,7 +6,7 @@
 
 ## Abstract
 
-This project demonstrates a psychometric scale-validation workflow applied to the Perceptions of the LGBTQ College Campus Climate Scale (Szymanski & Bissonette, 2020), a six-item instrument designed to measure two dimensions of campus climate. Item-level data were simulated from published factor loadings, item means, and sample size parameters to preserve methodological transparency. The analysis proceeded through data preparation, reliability analysis, item analysis, and exploratory factor analysis. Results converged on a two-factor interpretation: College Response and Stigma. Subscale alphas were acceptable (α = .79 each), items showed strong within-scale relationships and low cross-subscale overlap, and both PCA and PAF recovered the same basic structure. Because the data are simulated from published parameters, the project is best interpreted as a transparent validation demonstration rather than as a new empirical validation study.
+This project documents a psychometric scale-validation workflow applied to the Perceptions of the LGBTQ College Campus Climate Scale (Szymanski & Bissonette, 2020), a six-item instrument designed to measure two dimensions of campus climate. Item-level data were simulated from published factor loadings, item means, and sample size parameters to preserve methodological transparency. The analysis proceeded through data preparation, reliability analysis, item analysis, and exploratory factor analysis. Results converged on a two-factor interpretation: College Response and Stigma. Subscale alphas were acceptable (α = .79 each), items showed strong within-scale relationships and low cross-subscale overlap, and both PCA and PAF recovered the same basic structure. Because the data are simulated from published parameters, the project is best interpreted as a transparent validation demonstration rather than as a new empirical validation study.
 
 ---
 
@@ -217,7 +217,7 @@ Third, this is an exploratory rather than confirmatory analysis. Confirmatory fa
 
 This project demonstrated a psychometric validation workflow spanning data preparation, reliability analysis, item analysis, and exploratory factor analysis. Applied to the LGBTQ Campus Climate Scale, the workflow produced convergent evidence supporting a two-factor measurement model. Subscale reliability was acceptable (α = .79), item functioning aligned with the hypothesized structure, and both PCA and PAF recovered the same basic factor solution.
 
-As a portfolio project, its value lies in showing how measurement questions can be handled systematically and transparently. The workflow is directly relevant to multi-item instruments used in psychometrics, assessment, and people analytics, but the simulated-data design also makes clear that empirical follow-up remains an important next step.
+Its value lies in showing how measurement questions can be handled systematically and transparently. The workflow is directly relevant to multi-item instruments used in psychometrics, assessment, and people analytics, but the simulated-data design also makes clear that empirical follow-up remains an important next step.
 
 ---
 

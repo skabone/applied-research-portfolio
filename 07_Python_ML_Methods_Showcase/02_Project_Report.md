@@ -145,7 +145,7 @@ The dataset is public and educational, not current operational data. The results
 
 The classification target is institutional type, which is a broad label. A production workflow would need fairness review, calibration, external validation, and a stakeholder-specific objective before being used in decision-making.
 
-The model comparison is intentionally compact. It uses stable default or lightly constrained model settings rather than exhaustive hyperparameter tuning. That is appropriate for a portfolio workflow focused on method comparison, but it is not a benchmark leaderboard exercise.
+The model comparison is intentionally compact. It uses stable default or lightly constrained model settings rather than exhaustive hyperparameter tuning. That is appropriate for a workflow focused on method comparison, but it is not a benchmark leaderboard exercise.
 
 ---
 

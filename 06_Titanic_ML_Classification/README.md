@@ -18,7 +18,7 @@ Gradient boosting produced the strongest five-fold cross-validated accuracy in t
 - Random forest feature importance ranked `Title_Mr`, `Sex_female`, `Sex_male`, `FareLog`, and `Title_Miss` as the strongest predictors.
 - The hard-voting ensemble produced 0.816 out-of-fold balanced accuracy, with 479 true non-survivor predictions and 260 true survivor predictions in cross-validation.
 
-## Read The Project
+## Project Files
 
 - [01_Project_Summary.md](01_Project_Summary.md): concise findings and implications.
 - [02_Project_Report.md](02_Project_Report.md): full methods, metric definitions, results, limitations, and references.

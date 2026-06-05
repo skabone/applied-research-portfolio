@@ -10,9 +10,9 @@ The main result is that private/public classification is highly learnable from i
 
 ## Where to go next
 
-- **[01_Project_Summary.md](01_Project_Summary.md)** — a 3-minute, recruiter-friendly summary of the modeling story and key findings.
+- **[01_Project_Summary.md](01_Project_Summary.md)** — a concise summary of the modeling story and key findings.
 - **[02_Project_Report.md](02_Project_Report.md)** — the full technical write-up with method definitions, metric definitions, figure walkthroughs, limitations, and references.
-- **[03_Analysis_Notebook.ipynb](03_Analysis_Notebook.ipynb)** — the GitHub-viewable notebook companion with the verified run output and figures.
+- **[03_Analysis_Notebook.ipynb](03_Analysis_Notebook.ipynb)** — the rendered notebook companion with the verified run output and figures.
 - **[04_Source_Code.py](04_Source_Code.py)** — the reproducible Python source that reads `data/College_Data.csv` and regenerates every figure.
 - **[docs/Results_Snapshot.md](docs/Results_Snapshot.md)** — a quick metric snapshot for fast review.
 

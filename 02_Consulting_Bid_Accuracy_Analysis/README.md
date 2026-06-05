@@ -35,7 +35,7 @@ The diagonal line marks perfect estimate accuracy. Points above the line were un
 |---|---|
 | `01_Project_Summary.md` | Short narrative overview: problem, approach, and takeaways |
 | `02_Project_Report.md` | Full methods and results write-up |
-| `03_Analysis_Workflow.md` | GitHub-viewable analysis workflow with figures |
+| `03_Analysis_Workflow.md` | Rendered analysis workflow with figures |
 | `04_Source_Report.Rmd` | R Markdown source file for the report |
 | `data.csv` | Synthetic, anonymized public dataset used in the analysis |
 | `docs/Results_Snapshot.md` | Quick-reference model results table |

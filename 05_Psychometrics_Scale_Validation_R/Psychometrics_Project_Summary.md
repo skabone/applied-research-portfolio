@@ -34,9 +34,9 @@ The central question was whether the scale should be interpreted as a single ove
 
 ---
 
-## What This Demonstrates
+## Practical Value
 
-This project demonstrates several skills relevant to psychometrics, people analytics, and assessment work:
+The workflow shows several skills relevant to psychometrics, people analytics, and assessment work:
 
 1. Translating psychometric theory into a reproducible analysis workflow
 2. Evaluating reliability at both scale and subscale levels
@@ -48,4 +48,4 @@ This project demonstrates several skills relevant to psychometrics, people analy
 
 ## Bottom Line
 
-This project works well as a psychometrics portfolio piece because it shows how measurement questions can be handled systematically. It demonstrates not only technical familiarity with reliability and factor analysis, but also the judgment to distinguish between a statistically cleaner interpretation and a less defensible one.
+This project shows how measurement questions can be handled systematically. It shows not only technical familiarity with reliability and factor analysis, but also the judgment to distinguish between a statistically cleaner interpretation and a less defensible one.

@@ -1,8 +1,8 @@
-# AIERS Governance Note (Portfolio Version)
+# AIERS Governance Note
 
 This project includes a lightweight governance appendix inspired by an “AI Ethics Review System” (AIERS) format.
 
-Scope for this portfolio version:
+Scope for this public case study:
 
 - Document intended use and non-use (what decisions the analysis supports vs. does not support)
 - Data handling + privacy posture (synthetic data, no PII)

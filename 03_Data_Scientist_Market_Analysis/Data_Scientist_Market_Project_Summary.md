@@ -33,9 +33,9 @@ The main question was: what patterns become visible when salary, geography, and 
 
 ---
 
-## What This Demonstrates
+## Practical Value
 
-This project demonstrates several skills relevant to analytics and workforce intelligence work:
+The workflow shows several skills relevant to analytics and workforce intelligence work:
 
 1. Cleaning and structuring public labor-market data
 2. Translating exploratory questions into dashboard-ready views
@@ -47,4 +47,4 @@ This project demonstrates several skills relevant to analytics and workforce int
 
 ## Bottom Line
 
-This project works well as a portfolio piece because it shows a complete market-analysis workflow: public data preparation, dashboard design, and narrative interpretation. Its strongest value is the combination of visual storytelling and analytical structure rather than any single chart or finding on its own.
+This project shows a complete market-analysis workflow: public data preparation, dashboard design, and narrative interpretation. Its strongest value is the combination of visual storytelling and analytical structure rather than any single chart or finding on its own.

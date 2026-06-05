@@ -6,4 +6,4 @@ The strongest aspect of the project is methodological comparison. K-means, hiera
 
 The segments differ in interpretable ways across expenditure, income, account activity, derogatory reports, and tenure. DBSCAN also adds a useful wrinkle by identifying a subset of observations as noise, showing that not every applicant profile fits cleanly into a stable segment.
 
-As a portfolio piece, the project demonstrates unsupervised learning, cross-method comparison, and practical interpretation of cluster stability rather than just running a single clustering algorithm and accepting its output at face value.
+The project shows unsupervised learning, cross-method comparison, and practical interpretation of cluster stability rather than just running a single clustering algorithm and accepting its output at face value.

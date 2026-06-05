@@ -10,7 +10,7 @@
 
 This project uses the IBM HR Analytics benchmark dataset (1,470 employees; 35 variables) to examine attrition patterns and compare several supervised learning approaches. The work moves from exploratory analysis to classification modeling, with PCA included as a supplementary exploratory step.
 
-Completed as part of graduate coursework in people analytics and machine learning, the project is intended to demonstrate applied workflow, interpretation, and communication using public benchmark data.
+Completed as part of graduate coursework in people analytics and machine learning, the analysis emphasizes applied workflow, interpretation, and communication using public benchmark data.
 
 Because this is a public benchmark dataset, the findings should be read as an analytical demonstration rather than as recommendations for deployment in a live organization without revalidation.
 
@@ -26,23 +26,23 @@ Because this is a public benchmark dataset, the findings should be read as an an
 
 ---
 
-## Read This Project
+## Project Files
 
-- Start here for the project overview and file map
-- Read `IBM_Project_Summary.md` for a short narrative interpretation of the project
-- Read `IBM_Project_Report.md` for methods, results, and limitations in full
-- Open the notebooks to inspect the analytic workflow step by step
+- `README.md` provides the project overview and file map.
+- `IBM_Project_Summary.md` provides a short narrative interpretation of the project.
+- `IBM_Project_Report.md` provides methods, results, and limitations in full.
+- The notebooks preserve the analytic workflow step by step.
 
 ---
 
-## Project Files
+## File Map
 
 | File | Purpose |
 |---|---|
 | `01_Data_Preparation_and_EDA.ipynb` | Data exploration, feature preparation, and class imbalance handling |
 | `02_Classification_Modeling.ipynb` | Classification modeling and feature importance analysis |
 | `03_PCA_Exploration.ipynb` | Dimensionality reduction and feature-space exploration |
-| `IBM_Project_Summary.md` | Short narrative summary of the project and what it demonstrates |
+| `IBM_Project_Summary.md` | Short narrative summary of the project and practical value |
 | `IBM_Project_Report.md` | Full project report with methods, results, and limitations |
 
 ---

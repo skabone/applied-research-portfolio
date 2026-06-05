@@ -8,7 +8,7 @@
 
 ## Overview
 
-This project demonstrates a psychometric scale-validation workflow using a published two-factor instrument and simulated item-level data derived from reported parameters. The analysis focuses on whether the scale is best interpreted as a single total score or as two distinct subscales: College Response and Stigma.
+This project documents a psychometric scale-validation workflow using a published two-factor instrument and simulated item-level data derived from reported parameters. The analysis focuses on whether the scale is best interpreted as a single total score or as two distinct subscales: College Response and Stigma.
 
 Completed as graduate psychometrics coursework, the project is intended to show measurement-focused analytical skill, including reliability analysis, item analysis, and exploratory factor analysis.
 
@@ -26,7 +26,7 @@ Because the item-level data are simulated from published parameters rather than 
 
 ---
 
-## Read This Project
+## Project Files
 
 - Start here for the project overview and file map
 - Read `Psychometrics_Project_Summary.md` for the short narrative interpretation
@@ -39,7 +39,7 @@ Because the item-level data are simulated from published parameters rather than 
 
 | File | Purpose |
 |---|---|
-| `Psychometrics_Project_Summary.md` | Short narrative summary of the project and what it demonstrates |
+| `Psychometrics_Project_Summary.md` | Short narrative summary of the project and practical value |
 | `Psychometrics_Project_Report.md` | Full project report with methods, results, and limitations |
 | `Psychometrics_Project_Report.Rmd` | R Markdown source file for the report |
 

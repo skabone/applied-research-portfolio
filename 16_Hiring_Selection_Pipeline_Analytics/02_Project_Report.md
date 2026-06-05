@@ -29,6 +29,5 @@ Tables:
 ## 5) Outputs
 
 - SQL queries in `sql/`
-- Public-facing snapshot in `docs/Results_Snapshot.md`
+- Results snapshot in `docs/Results_Snapshot.md`
 - Repro script in `analysis/run_analysis.py` (writes tables to `analysis/outputs/`)
-

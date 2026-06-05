@@ -24,23 +24,23 @@ Completed as graduate coursework in data mining and analytics, the project is ce
 
 ---
 
-## Read This Project
+## Project Files
 
-- Start here for the project overview and file map
-- Read `Data_Scientist_Market_Project_Summary.md` for the short narrative interpretation
-- Read `Data_Scientist_Market_Project_Report.md` for methods, findings, and limitations in full
-- Open `Data_Scientist_Market_Data_Prep.ipynb` for a GitHub-rendered notebook version of the preparation workflow
-- Use `Data_Scientist_Market_Data_Prep.py` if you prefer the script version
+- `README.md` provides the project overview and file map.
+- `Data_Scientist_Market_Project_Summary.md` provides the short narrative interpretation.
+- `Data_Scientist_Market_Project_Report.md` provides methods, findings, and limitations in full.
+- `Data_Scientist_Market_Data_Prep.ipynb` provides a rendered notebook version of the preparation workflow.
+- `Data_Scientist_Market_Data_Prep.py` provides the script version.
 
 ---
 
-## Project Files
+## File Map
 
 | File | Purpose |
 |------|---------|
-| `Data_Scientist_Market_Project_Summary.md` | Short narrative summary of the project and what it demonstrates |
+| `Data_Scientist_Market_Project_Summary.md` | Short narrative summary of the project and practical value |
 | `Data_Scientist_Market_Project_Report.md` | Full project report with methods, findings, and limitations |
-| `Data_Scientist_Market_Data_Prep.ipynb` | GitHub-rendered notebook companion for the preparation workflow |
+| `Data_Scientist_Market_Data_Prep.ipynb` | Rendered notebook companion for the preparation workflow |
 | `Data_Scientist_Market_Data_Prep.py` | Reproducible data-preparation script |
 | `ds_salary_public.csv` | Public feature-level analysis dataset used in the project |
 

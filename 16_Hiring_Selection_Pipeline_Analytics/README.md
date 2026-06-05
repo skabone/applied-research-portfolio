@@ -1,18 +1,18 @@
 # Hiring & Selection Pipeline Analytics (SQL + Validation + Adverse Impact)
 
 **Author:** Mintay Misgano, PhD  
-**Project Type:** Portfolio case study using **synthetic** candidate and assessment data  
+**Project Type:** Synthetic hiring pipeline case study
 **Tools:** SQL + Python/R (analysis), markdown reporting
 
 ---
 
 ## Objective
 
-Demonstrate an end-to-end hiring/selection analytics workflow:
+Analyze an end-to-end hiring/selection analytics workflow:
 
 1) business question → 2) data model → 3) SQL extraction → 4) statistical analysis → 5) decision-ready reporting
 
-This project is designed to show crossover strength across **people analytics**, **talent assessment**, and **selection-system governance**, including **adverse impact** checks and documentation discipline.
+The case combines **people analytics**, **talent assessment**, and **selection-system governance**, including **adverse impact** checks and documentation discipline.
 
 ---
 
@@ -47,7 +47,7 @@ This project is designed to show crossover strength across **people analytics**,
 
 ## Repro
 
-On GitHub, start with `03_Analysis_Notebook.ipynb` and `docs/Results_Snapshot.md`. To rerun the workflow locally:
+Primary rendered artifacts are `03_Analysis_Notebook.ipynb` and `docs/Results_Snapshot.md`. To rerun the workflow locally:
 
 ```bash
 python3 analysis/run_analysis.py
@@ -55,7 +55,7 @@ python3 analysis/run_analysis.py
 
 ## Data Note
 
-All datasets in `data/` are **synthetic** and created for portfolio demonstration. This project does **not** use proprietary hiring data or any organization’s real selection outcomes.
+All datasets in `data/` are **synthetic** and created for this case study. This project does **not** use proprietary hiring data or any organization’s real selection outcomes.
 
 ## Limitations
 
