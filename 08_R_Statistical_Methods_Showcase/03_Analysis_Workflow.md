@@ -1,0 +1,301 @@
+Survival, Group, and Regression Analysis of Advanced Lung Cancer
+Outcomes
+================
+Mintay Misgano, PhD
+2023
+
+- [1. Setup and Data](#1-setup-and-data)
+- [2. Exploratory Description](#2-exploratory-description)
+- [3. Survival Analysis](#3-survival-analysis)
+  - [3.1 Kaplan-Meier estimation](#31-kaplan-meier-estimation)
+- [4. Group Comparison: Performance Status and Survival
+  Time](#4-group-comparison-performance-status-and-survival-time)
+- [5. Multivariable Cox Proportional-Hazards
+  Model](#5-multivariable-cox-proportional-hazards-model)
+- [6. References](#6-references)
+
+> **Question framing.** Among patients with advanced lung cancer, *who
+> survives longer, and why?* This workflow answers that with one dataset
+> and a sequence of methods chosen to match the structure of the
+> outcome: group comparisons for “is there a difference,” regression for
+> “how do predictors relate to outcome,” and survival analysis for “how
+> long until the event, accounting for patients still alive at last
+> contact (censoring).”
+
+# 1. Setup and Data
+
+The data are the NCCTG lung cancer records distributed with R’s
+`survival` package (Loprinzi et al., 1994): 228 patients with advanced
+lung cancer, each with a survival time in days, a censoring indicator,
+and clinical predictors (age, sex, ECOG and Karnofsky performance
+scores, weight loss, calorie intake).
+
+``` r
+library(survival)   # lung data, survfit (Kaplan-Meier), coxph (Cox model), cox.zph (PH check)
+library(dplyr)      # data manipulation
+library(tidyr)      # reshaping for plots
+library(broom)      # tidy model output into data frames for ggplot
+library(ggplot2)    # visualization
+library(scales)     # axis formatting
+```
+
+``` r
+# Load the lung dataset and build analysis-ready variables.
+# In survival::lung, status is coded 1 = censored, 2 = dead. We recode an explicit
+# event indicator (1 = death observed, 0 = censored) so every model reads the outcome
+# the same way, and we label sex so plots and tables are self-explanatory.
+data(lung)
+d <- lung %>%
+  mutate(
+    event   = ifelse(status == 2, 1, 0),                 # 1 = death, 0 = censored
+    sex_lab = factor(sex, levels = c(1, 2), labels = c("Male", "Female")),
+    ecog    = factor(ph.ecog)                            # ECOG performance status as a group factor
+  )
+
+# Cohort overview: how many patients, how many deaths vs. censored, basic age profile.
+c(n = nrow(d), deaths = sum(d$event), censored = sum(d$event == 0))
+```
+
+    ##        n   deaths censored 
+    ##      228      165       63
+
+``` r
+summary(d$age)
+```
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##   39.00   56.00   63.00   62.45   69.00   82.00
+
+``` r
+table(d$sex_lab)
+```
+
+    ## 
+    ##   Male Female 
+    ##    138     90
+
+# 2. Exploratory Description
+
+``` r
+# Distribution of observed follow-up time, split by whether the patient died or was
+# censored. Censored observations (still alive at last contact) carry partial information
+# and are exactly why ordinary averages of "time" would be misleading here.
+ggplot(d, aes(x = time, fill = factor(event, labels = c("Censored", "Died")))) +
+  geom_histogram(bins = 30, position = "stack", color = "white") +
+  scale_fill_manual(values = c("Censored" = "#9ecae1", "Died" = "#08519c"), name = NULL) +
+  labs(title = "Observed follow-up time by outcome",
+       x = "Time (days)", y = "Patients") +
+  theme_minimal()
+```
+
+![](03_Analysis_Workflow_files/figure-gfm/eda-survival-time-1.png)<!-- -->
+
+``` r
+# Event vs. censoring counts by sex. This previews the survival comparison in Section 3:
+# a higher share of censored (surviving) patients in one group hints at better prognosis.
+d %>%
+  count(sex_lab, outcome = factor(event, labels = c("Censored", "Died"))) %>%
+  ggplot(aes(x = sex_lab, y = n, fill = outcome)) +
+  geom_col(position = "dodge", color = "white") +
+  scale_fill_manual(values = c("Censored" = "#9ecae1", "Died" = "#08519c"), name = NULL) +
+  labs(title = "Outcome counts by sex", x = NULL, y = "Patients") +
+  theme_minimal()
+```
+
+![](03_Analysis_Workflow_files/figure-gfm/eda-status-by-sex-1.png)<!-- -->
+
+# 3. Survival Analysis
+
+## 3.1 Kaplan-Meier estimation
+
+The Kaplan-Meier estimator (Kaplan & Meier, 1958) is a nonparametric
+estimate of the survival function S(t) = P(survival beyond time t). It
+steps down at each observed death and correctly keeps censored patients
+in the risk set until the moment they are censored, so it uses partial
+information instead of discarding it.
+
+``` r
+# Overall survival curve with 95% confidence band. The median survival time is where
+# the curve crosses 0.5.
+fit_all <- survfit(Surv(time, event) ~ 1, data = d)
+km_all  <- broom::tidy(fit_all)
+ggplot(km_all, aes(x = time, y = estimate)) +
+  geom_step(color = "#08519c") +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.15, fill = "#08519c") +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "grey50") +
+  labs(title = "Overall Kaplan-Meier survival", x = "Time (days)", y = "Survival probability") +
+  theme_minimal()
+```
+
+![](03_Analysis_Workflow_files/figure-gfm/km-overall-1.png)<!-- -->
+
+``` r
+# Survival by sex. The gap between the two step functions is the effect we formally
+# test with the log-rank statistic below.
+fit_sex <- survfit(Surv(time, event) ~ sex_lab, data = d)
+km_sex  <- broom::tidy(fit_sex)
+ggplot(km_sex, aes(x = time, y = estimate, color = strata, fill = strata)) +
+  geom_step() +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.12, color = NA) +
+  scale_color_manual(values = c("sex_lab=Male" = "#08519c", "sex_lab=Female" = "#a50f15"),
+                     labels = c("Female", "Male"), name = NULL) +
+  scale_fill_manual(values = c("sex_lab=Male" = "#08519c", "sex_lab=Female" = "#a50f15"),
+                    labels = c("Female", "Male"), name = NULL) +
+  labs(title = "Survival by sex", x = "Time (days)", y = "Survival probability") +
+  theme_minimal()
+```
+
+![](03_Analysis_Workflow_files/figure-gfm/km-by-sex-1.png)<!-- -->
+
+``` r
+# Median survival per group and the log-rank test of the difference.
+fit_sex
+```
+
+    ## Call: survfit(formula = Surv(time, event) ~ sex_lab, data = d)
+    ## 
+    ##                  n events median 0.95LCL 0.95UCL
+    ## sex_lab=Male   138    112    270     212     310
+    ## sex_lab=Female  90     53    426     348     550
+
+``` r
+survdiff(Surv(time, event) ~ sex_lab, data = d)
+```
+
+    ## Call:
+    ## survdiff(formula = Surv(time, event) ~ sex_lab, data = d)
+    ## 
+    ##                  N Observed Expected (O-E)^2/E (O-E)^2/V
+    ## sex_lab=Male   138      112     91.6      4.55      10.3
+    ## sex_lab=Female  90       53     73.4      5.68      10.3
+    ## 
+    ##  Chisq= 10.3  on 1 degrees of freedom, p= 0.001
+
+# 4. Group Comparison: Performance Status and Survival Time
+
+One-way ANOVA (Fisher, 1925) tests whether mean survival time differs
+across ECOG performance-status groups (0 = fully active to 3 = largely
+bedbound). ANOVA partitions total variance into between-group and
+within-group components; the F-statistic is their ratio.
+
+``` r
+# Survival time across ECOG performance levels. ANOVA tests the group-mean difference;
+# the boxplot shows the direction and spread behind that test.
+d_ec <- d %>% filter(!is.na(ph.ecog))
+ggplot(d_ec, aes(x = ecog, y = time, fill = ecog)) +
+  geom_boxplot(alpha = 0.8, outlier.alpha = 0.4) +
+  scale_fill_brewer(palette = "Blues", guide = "none") +
+  labs(title = "Survival time by ECOG performance status",
+       x = "ECOG performance status", y = "Time (days)") +
+  theme_minimal()
+```
+
+![](03_Analysis_Workflow_files/figure-gfm/box-time-by-ecog-1.png)<!-- -->
+
+``` r
+aov_fit <- aov(time ~ ecog, data = d_ec)
+summary(aov_fit)
+```
+
+    ##              Df  Sum Sq Mean Sq F value Pr(>F)  
+    ## ecog          3  434580  144860   3.371 0.0193 *
+    ## Residuals   223 9582655   42972                 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+# 5. Multivariable Cox Proportional-Hazards Model
+
+The Cox proportional-hazards model (Cox, 1972) relates predictors to the
+hazard (instantaneous risk of death) without assuming a shape for the
+baseline hazard. Each coefficient, exponentiated, is a hazard ratio
+(HR): HR \> 1 means higher risk, HR \< 1 means protection. We chose Cox
+over fully parametric survival models (e.g., Weibull) because it makes
+no distributional assumption about baseline risk, and over logistic
+regression because it uses *time-to-event* and censoring rather than
+collapsing the outcome to a yes/no.
+
+``` r
+# Multivariable Cox model. We tidy the fit into hazard ratios with 95% CIs and show them
+# as a forest plot: points right of 1 raise risk, left of 1 lower it; whiskers crossing 1
+# are not statistically distinguishable from "no effect."
+cox_fit <- coxph(Surv(time, event) ~ age + sex_lab + ph.ecog + wt.loss, data = d)
+hr <- broom::tidy(cox_fit, exponentiate = TRUE, conf.int = TRUE)
+ggplot(hr, aes(x = estimate, y = reorder(term, estimate))) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "grey50") +
+  geom_point(size = 2.5, color = "#08519c") +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.2, color = "#08519c") +
+  scale_x_log10() +
+  labs(title = "Cox hazard ratios (95% CI)", x = "Hazard ratio (log scale)", y = NULL) +
+  theme_minimal()
+```
+
+![](03_Analysis_Workflow_files/figure-gfm/cox-forest-1.png)<!-- -->
+
+``` r
+summary(cox_fit)            # coefficients, HRs, CIs, p-values, concordance (C-index)
+```
+
+    ## Call:
+    ## coxph(formula = Surv(time, event) ~ age + sex_lab + ph.ecog + 
+    ##     wt.loss, data = d)
+    ## 
+    ##   n= 213, number of events= 151 
+    ##    (15 observations deleted due to missingness)
+    ## 
+    ##                    coef exp(coef)  se(coef)      z Pr(>|z|)    
+    ## age            0.013369  1.013459  0.009628  1.389 0.164951    
+    ## sex_labFemale -0.590775  0.553898  0.175339 -3.369 0.000754 ***
+    ## ph.ecog        0.515111  1.673824  0.125988  4.089 4.34e-05 ***
+    ## wt.loss       -0.009006  0.991034  0.006658 -1.353 0.176135    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ##               exp(coef) exp(-coef) lower .95 upper .95
+    ## age              1.0135     0.9867    0.9945    1.0328
+    ## sex_labFemale    0.5539     1.8054    0.3928    0.7811
+    ## ph.ecog          1.6738     0.5974    1.3076    2.1427
+    ## wt.loss          0.9910     1.0090    0.9782    1.0041
+    ## 
+    ## Concordance= 0.647  (se = 0.026 )
+    ## Likelihood ratio test= 31.02  on 4 df,   p=3e-06
+    ## Wald test            = 29.94  on 4 df,   p=5e-06
+    ## Score (logrank) test = 30.65  on 4 df,   p=4e-06
+
+``` r
+# Proportional-hazards assumption check (Grambsch & Therneau, 1994): a non-significant
+# global test means hazard ratios are reasonably constant over time, which the Cox model
+# requires. Schoenfeld residuals should show no trend against time.
+zph <- cox.zph(cox_fit)
+zph
+```
+
+    ##          chisq df    p
+    ## age     0.4353  1 0.51
+    ## sex_lab 2.6731  1 0.10
+    ## ph.ecog 1.6355  1 0.20
+    ## wt.loss 0.0457  1 0.83
+    ## GLOBAL  4.7516  4 0.31
+
+``` r
+plot(zph[2], main = "Schoenfeld residuals: sex")
+```
+
+![](03_Analysis_Workflow_files/figure-gfm/cox-ph-check-1.png)<!-- -->
+
+# 6. References
+
+- Cox, D. R. (1972). Regression models and life-tables. *Journal of the
+  Royal Statistical Society: Series B, 34*(2), 187-202.
+- Fisher, R. A. (1925). *Statistical methods for research workers.*
+  Oliver and Boyd.
+- Grambsch, P. M., & Therneau, T. M. (1994). Proportional hazards tests
+  and diagnostics based on weighted residuals. *Biometrika, 81*(3),
+  515-526.
+- Harrell, F. E., Lee, K. L., & Mark, D. B. (1996). Multivariable
+  prognostic models. *Statistics in Medicine, 15*(4), 361-387.
+- Kaplan, E. L., & Meier, P. (1958). Nonparametric estimation from
+  incomplete observations. *Journal of the American Statistical
+  Association, 53*(282), 457-481.
+- Loprinzi, C. L., et al. (1994). Prospective evaluation of prognostic
+  variables from patient-completed questionnaires. *Journal of Clinical
+  Oncology, 12*(3), 601-607.

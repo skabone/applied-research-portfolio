@@ -14,6 +14,7 @@ Among 228 patients with advanced lung cancer, who survives longer — and which 
 
 - **[01_Project_Summary.md](./01_Project_Summary.md)** — a 3-minute, plain-language overview of the findings and what they mean.
 - **[02_Project_Report.md](./02_Project_Report.md)** — the full write-up: metric definitions, figure-by-figure interpretation, the Cox results table, assumption checks, and references.
+- **[03_Analysis_Workflow.md](./03_Analysis_Workflow.md)** — the rendered R Markdown workflow with code, tables, and inline figures.
 - **[04_Source_Report.Rmd](./04_Source_Report.Rmd)** — the reproducible R source; the rendered workflow and figures are produced from it on publish.
 
 ## Data
