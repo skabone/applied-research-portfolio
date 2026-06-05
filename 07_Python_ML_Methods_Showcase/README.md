@@ -1,45 +1,32 @@
-# Project 07 - Python ML Methods Showcase
+# College Institutional Profile Modeling
 
-Author: Mintay Misgano, PhD
+**Author:** Mintay Misgano, PhD
 
-This project consolidates a graduate-level Python machine learning course into a single comparative showcase. Eight supervised and unsupervised methods are applied to the ISLR College dataset so the workflow, tradeoffs, and results can be compared in one place rather than across separate weekly labs.
+The ISLR College dataset contains 777 U.S. colleges and universities with enrollment, tuition, admissions, faculty, spending, and graduation-rate fields. This project uses that public dataset to answer a practical modeling question: when the same institutional records are viewed through supervised prediction, unsupervised clustering, and dimensionality reduction, which patterns are stable enough to guide interpretation?
 
-## What This Project Demonstrates
+The main result is that private/public classification is highly learnable from institutional profile variables, but unsupervised clusters do not simply recover the same label. SVM and logistic regression produced the strongest cross-validated private/public accuracy (`0.937` and `0.936`), while k-means clustering had a near-zero adjusted Rand index against the private/public label (`ARI = -0.023`). In plain terms, prediction works well when the target is supplied; structure discovery answers a different question.
 
-- End-to-end comparison of multiple machine learning methods on the same tabular dataset
-- Consistent evaluation of classification models with 5-fold stratified cross-validation
-- Use of clustering and PCA alongside supervised models to examine dataset structure
-- Clear documentation of method tradeoffs, especially accuracy versus interpretability
+![Private/public classification accuracy by model](docs/figures/fig03-classification-model-comparison.png)
 
-## Methods Included
+## Where to go next
 
-| Method | Use in Project |
-|--------|----------------|
-| Linear Regression | Graduation rate prediction |
-| Logistic Regression | Private vs. public classification |
-| Decision Tree | Interpretable classification |
-| Support Vector Machine | Nonlinear classification |
-| Random Forest | Ensemble classification |
-| k-Means | Unsupervised clustering |
-| Gaussian Mixture Model | Probabilistic clustering |
-| PCA | Dimensionality reduction |
+- **[01_Project_Summary.md](01_Project_Summary.md)** — a 3-minute, recruiter-friendly summary of the modeling story and key findings.
+- **[02_Project_Report.md](02_Project_Report.md)** — the full technical write-up with method definitions, metric definitions, figure walkthroughs, limitations, and references.
+- **[03_Analysis_Notebook.ipynb](03_Analysis_Notebook.ipynb)** — the GitHub-viewable notebook companion with the verified run output and figures.
+- **[04_Source_Code.py](04_Source_Code.py)** — the reproducible Python source that reads `data/College_Data.csv` and regenerates every figure.
+- **[docs/Results_Snapshot.md](docs/Results_Snapshot.md)** — a quick metric snapshot for fast review.
 
-## Read This Project
+## Repository guide
 
-- Start with `Python_ML_Methods_Project_Summary.md` for the short overview.
-- Use `Python_ML_Methods_Project_Report.md` for the full comparative write-up.
-- Open `Python_ML_Methods_Showcase.ipynb` for a GitHub-rendered notebook version of the implementation.
-- Use `Python_ML_Methods_Showcase.py` if you prefer the script version.
+| Path | Purpose |
+|---|---|
+| `data/College_Data.csv` | Public ISLR College dataset used for the analysis |
+| `docs/figures/` | Six generated figures referenced in the README, summary, and report |
+| `01_Project_Summary.md` | Short, findings-first overview |
+| `02_Project_Report.md` | Full methods and results report |
+| `03_Analysis_Notebook.ipynb` | Notebook companion with saved run output |
+| `04_Source_Code.py` | Reproducible source workflow |
 
-## Project Files
+## Data and interpretation note
 
-| File | Role |
-|------|------|
-| `Python_ML_Methods_Project_Summary.md` | Short interpretive overview of the methods showcase |
-| `Python_ML_Methods_Project_Report.md` | Full comparative report across methods |
-| `Python_ML_Methods_Showcase.ipynb` | GitHub-rendered notebook companion for the full workflow |
-| `Python_ML_Methods_Showcase.py` | Script version of the full workflow |
-
-## Data Note
-
-The project uses the public ISLR College dataset, a structured teaching dataset that works well for comparative demonstration. Results are best interpreted as a methods showcase rather than a domain-specific application study.
+This project originated in graduate machine-learning coursework, but the public version is framed as an applied modeling comparison rather than a course lab. The dataset is public and educational, so the results should be read as evidence of modeling judgment and interpretation rather than as deployment guidance for a current college admissions or workforce process.
