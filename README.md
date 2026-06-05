@@ -1,28 +1,79 @@
 # People Analytics and Applied Research Portfolio
 
-Mintay Misgano, PhD
+**Mintay Misgano, PhD**
+People analytics, psychometrics, survey research, applied statistics, and machine learning.
 
-People analytics, psychometrics, survey research, and applied machine learning.
+These applied research projects translate organizational questions into evidence: workforce outcomes, assessment quality, survey measurement, statistical modeling, and program evaluation. The strongest projects combine clear problem framing, reproducible workflows, visual evidence, and deeper technical reports.
 
-This repository presents a curated portfolio of public-facing analytics, psychometrics, survey research, machine learning, and consulting-style projects. The collection includes graduate coursework, benchmark modeling projects, public datasets, simulated datasets, and synthetic consulting-style cases prepared for GitHub publication.
-
-The goal of this portfolio is to document analytical process clearly, communicate findings appropriately for each project context, and preserve enough methodological detail for readers who want to go deeper.
-
-## Quick Links
+## Navigation
 
 - [Resume (PDF)](./resume/Mintay_Misgano_PhD_Resume.pdf)
 - [LinkedIn](https://www.linkedin.com/in/mmisgano/)
+- [Project Catalog](./docs/project-catalog.md)
+- [Methods Map](./docs/methods-map.md)
+- [Reading Guide](./docs/reading-guide.md)
+- [Changelog](./CHANGELOG.md)
 
-## Repository Structure
+## Featured Work
 
-Each project folder contains only the polished public materials prepared for GitHub:
+### Consulting Bid Accuracy Analysis
 
-- `README.md`: landing page and project guide
-- `Project_Summary.md`: short interpretive overview
-- `Project_Report.md`: fuller methods and results write-up when applicable
-- source analysis files such as `.Rmd`, `.ipynb`, `.py`, or supporting public data files where appropriate
+[![Estimated bill compared with final invoice](./02_Consulting_Bid_Accuracy_Analysis/docs/figures/eda-bill-vs-invoice-1.png)](./02_Consulting_Bid_Accuracy_Analysis)
 
-## Reproducibility
+A real consulting engagement is represented with a synthetic, anonymized public dataset. The analysis compares project bids with final invoices and finds that estimation error is more relational than structural: consultant and client-account effects explain more variance than broad service categories.
+
+### Employee Engagement Pulse Survey Design
+
+[![Quarterly engagement trend by subscale](./10_Employee_Engagement_Survey_Design/docs/figures/quarterly-trend-1.png)](./10_Employee_Engagement_Survey_Design)
+
+This design project builds a quarterly engagement instrument around Vigor, Dedication, and Absorption, then specifies how the instrument should be scored, validated, and reported before any organization acts on the results.
+
+### Advanced Regression For Non-Standard Outcomes
+
+[![Tobit predicted affairs by marriage rating](./15_Advanced_Regression_Methods/docs/figures/fig07-tobit-predicted.png)](./15_Advanced_Regression_Methods)
+
+Counts, ordered categories, truncated samples, and censored outcomes violate ordinary least squares assumptions in different ways. This project compares Poisson, negative binomial, ordinal logistic, truncated, and Tobit models against simpler linear alternatives.
+
+### R Statistical Methods: Survival Analysis
+
+[![Cox model forest plot](./08_R_Statistical_Methods_Showcase/docs/figures/cox-forest-1.png)](./08_R_Statistical_Methods_Showcase)
+
+The survival-analysis workflow evaluates time-to-event outcomes with Kaplan-Meier curves, Cox proportional hazards modeling, proportional-hazards checks, and clear interpretation of effect sizes and assumptions.
+
+### Career Fair Program Analytics
+
+[![Student experience indicators](./17_Career_Fair_Program_Analytics/docs/figures/student-experience-1.png)](./17_Career_Fair_Program_Analytics)
+
+This program-evaluation project analyzes student and employer feedback to identify where career fair preparation, event design, and follow-up support can improve participant experience.
+
+### Titanic Passenger Survival Classification
+
+[![Cross-validated model comparison](./06_Titanic_ML_Classification/docs/figures/fig04-cross-validated-model-comparison.png)](./06_Titanic_ML_Classification)
+
+The Titanic benchmark is rebuilt as a disciplined tabular classification workflow with project-local data, training-set-only preprocessing, six model comparisons, and an executed notebook.
+
+## Projects By Theme
+
+| Theme | Projects |
+|---|---|
+| People analytics and workforce research | [IBM HR Attrition](./01_IBM_HR_Attrition_Analysis), [Consulting Bid Accuracy](./02_Consulting_Bid_Accuracy_Analysis), [Data Scientist Market Analysis](./03_Data_Scientist_Market_Analysis), [Job Change Prediction](./09_Job_Change_Prediction_CRISP_DM), [Hiring Selection Pipeline Analytics](./16_Hiring_Selection_Pipeline_Analytics), [Career Fair Program Analytics](./17_Career_Fair_Program_Analytics) |
+| Psychometrics and measurement | [Psychometrics Scale Validation](./05_Psychometrics_Scale_Validation_R), [Confirmatory Factor Analysis](./11_CFA_Confirmatory_Factor_Analysis), [Measurement Invariance](./12_Measurement_Invariance), [Employee Engagement Survey Design](./10_Employee_Engagement_Survey_Design) |
+| Machine learning and data mining | [Titanic Classification](./06_Titanic_ML_Classification), [Python ML Methods](./07_Python_ML_Methods_Showcase), [Unsupervised Segmentation](./13_Unsupervised_Segmentation) |
+| Public policy and labor-market analysis | [US Broadband Access](./04_US_Broadband_Access_Analysis), [Data Scientist Market Analysis](./03_Data_Scientist_Market_Analysis) |
+| Statistical methods | [R Statistical Methods](./08_R_Statistical_Methods_Showcase), [ANOVA Methods](./14_ANOVA_Methods_Showcase), [Advanced Regression Methods](./15_Advanced_Regression_Methods) |
+
+## How Projects Are Organized
+
+Most polished projects follow this structure:
+
+| File | Role |
+|---|---|
+| `README.md` | Entry point with the problem, key finding, and navigation. |
+| `01_Project_Summary.md` | Concise findings-first overview. |
+| `02_Project_Report.md` | Full technical report with methods, results, limitations, and references. |
+| `03_*` | Rendered workflow or executed notebook. |
+| `04_*` | Source workflow when useful. |
+| `docs/figures/` | Stable figure exports used in the README, summary, and report. |
 
 For Python-based projects, install the shared public-analysis dependencies with:
 
@@ -30,87 +81,8 @@ For Python-based projects, install the shared public-analysis dependencies with:
 python -m pip install -r requirements.txt
 ```
 
-R-based projects list their required packages in the relevant `.Rmd` or analysis file.
+R-based projects list package requirements in the relevant `.Rmd` or analysis file.
 
-## Featured Projects
+## Data And Confidentiality
 
-- [01_IBM_HR_Attrition_Analysis](./01_IBM_HR_Attrition_Analysis)
-  IBM benchmark attrition modeling project using exploratory analysis, classification methods, and PCA exploration.
-
-- [02_Consulting_Bid_Accuracy_Analysis](./02_Consulting_Bid_Accuracy_Analysis)
-  Consulting bid accuracy analysis from a real NDA-protected engagement, shared with a synthetic public dataset and anonymized project structure.
-
-- [05_Psychometrics_Scale_Validation_R](./05_Psychometrics_Scale_Validation_R)
-  Psychometric validation project covering reliability, item analysis, and construct-validity evidence in R.
-
-- [11_CFA_Confirmatory_Factor_Analysis](./11_CFA_Confirmatory_Factor_Analysis)
-  Confirmatory factor analysis project documenting latent-structure evaluation across R and Python workflows.
-
-- [12_Measurement_Invariance](./12_Measurement_Invariance)
-  Measurement invariance testing project focused on cross-group comparability in survey measurement.
-
-- [10_Employee_Engagement_Survey_Design](./10_Employee_Engagement_Survey_Design)
-  Survey design and measurement project focused on employee engagement research.
-
-## Portfolio by Theme
-
-### People Analytics and Workforce Research
-
-- [01_IBM_HR_Attrition_Analysis](./01_IBM_HR_Attrition_Analysis)
-  IBM benchmark attrition modeling project using exploratory analysis, classification methods, and PCA exploration.
-
-- [02_Consulting_Bid_Accuracy_Analysis](./02_Consulting_Bid_Accuracy_Analysis)
-  Consulting bid accuracy analysis from a real NDA-protected engagement, shared with a synthetic public dataset and anonymized project structure.
-
-- [03_Data_Scientist_Market_Analysis](./03_Data_Scientist_Market_Analysis)
-  U.S. data scientist labor market analysis with dashboarding and salary pattern exploration.
-
-- [09_Job_Change_Prediction_CRISP_DM](./09_Job_Change_Prediction_CRISP_DM)
-  CRISP-DM-oriented job change prediction project using a structured data mining workflow.
-
-### Psychometrics and Measurement
-
-- [05_Psychometrics_Scale_Validation_R](./05_Psychometrics_Scale_Validation_R)
-  Psychometric validation project covering reliability and construct-validity assessment in R.
-
-- [11_CFA_Confirmatory_Factor_Analysis](./11_CFA_Confirmatory_Factor_Analysis)
-  Confirmatory factor analysis project documenting latent-structure evaluation across R and Python workflows.
-
-- [12_Measurement_Invariance](./12_Measurement_Invariance)
-  Measurement invariance testing project focused on cross-group comparability in survey measurement.
-
-### Survey Research and Assessment Design
-
-- [10_Employee_Engagement_Survey_Design](./10_Employee_Engagement_Survey_Design)
-  Survey design and measurement project focused on employee engagement research.
-
-### Machine Learning and Data Mining
-
-- [04_US_Broadband_Access_Analysis](./04_US_Broadband_Access_Analysis)
-  Broadband access analysis using public U.S. data and visualization-oriented workflow.
-
-- [06_Titanic_ML_Classification](./06_Titanic_ML_Classification)
-  Applied machine learning benchmark project based on the Kaggle Titanic competition.
-
-- [07_Python_ML_Methods_Showcase](./07_Python_ML_Methods_Showcase)
-  Python-based methods showcase covering core machine learning workflows and algorithms.
-
-- [13_Unsupervised_Segmentation](./13_Unsupervised_Segmentation)
-  Unsupervised segmentation project using clustering methods for pattern discovery.
-
-### Statistical Methods Collections
-
-- [08_R_Statistical_Methods_Showcase](./08_R_Statistical_Methods_Showcase)
-  R-based methods collection spanning classical statistics and applied modeling techniques.
-
-- [14_ANOVA_Methods_Showcase](./14_ANOVA_Methods_Showcase)
-  ANOVA methods collection covering one-way, factorial, repeated-measures, and mixed-design analyses.
-
-- [15_Advanced_Regression_Methods](./15_Advanced_Regression_Methods)
-  Advanced regression methods collection covering generalized and specialized regression models in R.
-
-## Notes
-
-- Public benchmark, simulated, synthetic, and anonymized datasets are labeled as such within each project.
-- NDA-related work is represented only through synthetic or generalized public-safe artifacts.
-- Internal working materials, protected source records, contacts, and private context notes are intentionally excluded.
+Public benchmark, simulated, synthetic, and anonymized datasets are labeled inside each project. NDA-related work is represented only through synthetic or generalized artifacts. Protected source records, contacts, and private context notes are excluded from this repository.
