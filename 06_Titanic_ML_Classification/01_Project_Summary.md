@@ -1,0 +1,17 @@
+# Titanic Passenger Survival Classification - Project Summary
+
+The Titanic benchmark turns a historical passenger manifest into a supervised learning problem: predict whether each passenger survived from the information recorded before the outcome is known. The data are small enough to audit by hand but messy enough to require real modeling decisions: missing ages, mostly missing cabin assignments, skewed fares, categorical ticket details, and strong interactions between sex, class, age, and family structure.
+
+The training file contains 891 labeled passengers. Survival was not evenly distributed: 342 passengers survived (38.4%) and 549 did not (61.6%). The clearest descriptive split appears when sex and passenger class are examined together. First-class women survived at 96.8%, second-class women at 92.1%, and third-class women at 50.0%; the comparable rates for men were 36.9%, 15.7%, and 13.5%. That pattern made sex and class essential predictors, but it also showed why a model needed more than a single variable.
+
+Missing data shaped the feature strategy. `Cabin` was missing for 77.1% of training records, so the workflow did not try to reconstruct cabin numbers. It converted cabin availability into a `HasCabin` signal and extracted a rough deck label when a cabin was present. `Age` was missing for 19.9% of training records, so missing ages were filled from the median age for each passenger title and class group. A third-class passenger with the title `Miss`, for example, is not treated as exchangeable with a first-class passenger titled `Mrs` or an adult male titled `Mr`.
+
+The final modeling table combined raw and engineered predictors: sex, passenger class, embarked port, passenger title, age band, family size, whether the passenger traveled alone, log-transformed fare, cabin availability, and deck. Five individual classifiers were compared with a hard-voting ensemble using five-fold stratified cross-validation, which keeps the survival/non-survival balance similar in each validation fold.
+
+![Survival rates by sex and class](docs/figures/fig01-survival-by-sex-class.png)
+
+Gradient boosting had the highest rebuilt cross-validated accuracy at 0.838, followed by random forest at 0.832, hard-voting ensemble at 0.829, logistic regression at 0.828, Gaussian naive Bayes at 0.807, and a single decision tree at 0.800. The ensemble remained useful as a stability check because it combined linear, probabilistic, single-tree, bagged-tree, and boosted-tree perspectives.
+
+The random forest importance profile matched the historical logic of the problem. The strongest predictors were `Title_Mr` (0.181), `Sex_female` (0.161), `Sex_male` (0.120), `FareLog` (0.068), and `Title_Miss` (0.051). These features jointly captured the evacuation priority attached to sex and age, the class gradient embedded in fare and cabin records, and the social-role information contained in passenger titles.
+
+The original Kaggle submission history improved from 0.76555 for a single decision-tree baseline to 0.79186 for the tuned five-model voting submission. The practical lesson is that the performance gain came from a sequence of small, defensible decisions: context-aware missing-data handling, better representation of social role and family structure, model comparison under the same validation folds, and a final submission workflow that kept competition scoring separate from internal validation.
