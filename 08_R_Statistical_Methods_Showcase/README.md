@@ -1,34 +1,21 @@
-# Project 08 - R Statistical Methods Showcase
+# Survival Analysis of Advanced Lung Cancer Outcomes
 
-Author: Mintay Misgano, PhD
+**Author:** Mintay Misgano, PhD · **Language:** R (`survival`, `ggplot2`)
 
-This project consolidates a graduate-level R statistics course into a single methods showcase. The collection moves from foundational inference through regression and survival analysis, using one time-to-event dataset so the methods can be demonstrated within a shared analytical frame.
+Among 228 patients with advanced lung cancer, who survives longer — and which clinical factors actually drive that difference? This project answers that question while handling the central difficulty of survival data: 28% of patients were still alive at the end of follow-up, so their survival time is only partially known (censored), and ordinary averages would mislead.
 
-## What This Project Demonstrates
+![Survival by sex](docs/figures/km-by-sex-1.png)
 
-- Core statistical workflows in R across hypothesis testing, regression, and survival analysis
-- Use of one common dataset to compare how different methods answer different kinds of questions
-- Clear treatment of time-to-event data through Kaplan-Meier and Cox proportional hazards modeling
-- Reproducible reporting through R Markdown
+**Key findings:** Women survived markedly longer than men (median 426 vs. 270 days; log-rank *p* = 0.001). A patient's ECOG performance status was the strongest predictor of mortality (hazard ratio 1.67 per level, *p* < 0.001), while age and weight loss showed no independent effect once it and sex were accounted for. The Cox model reached a concordance of 0.65, and its proportional-hazards assumption held (*p* = 0.10).
 
-## Methods Included
+**Methods:** Kaplan-Meier estimation and the log-rank test for group survival, one-way ANOVA for performance-status differences, and a multivariable Cox proportional-hazards model with hazard-ratio interpretation and a Schoenfeld-residual assumption check.
 
-| Method | Use in Project |
-|--------|----------------|
-| Descriptive analysis | Initial variable inspection and group summaries |
-| t-test | Mean comparisons by group |
-| ANOVA | Group mean comparisons across multiple categories |
-| Linear regression | Continuous outcome modeling |
-| Logistic regression | Binary event modeling |
-| Kaplan-Meier | Nonparametric survival estimation |
-| Cox proportional hazards | Multivariable time-to-event modeling |
+## Read this project
 
-## Read This Project
+- **[01_Project_Summary.md](./01_Project_Summary.md)** — a 3-minute, plain-language overview of the findings and what they mean.
+- **[02_Project_Report.md](./02_Project_Report.md)** — the full write-up: metric definitions, figure-by-figure interpretation, the Cox results table, assumption checks, and references.
+- **[04_Source_Report.Rmd](./04_Source_Report.Rmd)** — the reproducible R source; the rendered workflow and figures are produced from it on publish.
 
-- Start with [R_Statistical_Methods_Project_Summary.md](./R_Statistical_Methods_Project_Summary.md) for the short overview.
-- Use [R_Statistical_Methods_Project_Report.md](./R_Statistical_Methods_Project_Report.md) for the long-form write-up.
-- See [R_Statistical_Methods_Project_Report.Rmd](./R_Statistical_Methods_Project_Report.Rmd) for the source document behind the report.
+## Data
 
-## Data Note
-
-The project uses a public lung disease survival dataset as a teaching case for comparative statistical analysis. It is best interpreted as a methods showcase, with survival analysis included because it is especially useful for time-to-event questions.
+NCCTG advanced lung cancer cohort (N = 228), a public, de-identified instructional dataset distributed with R's `survival` package (Loprinzi et al., 1994). It is analyzed here as a methods demonstration, not as a new clinical claim.
