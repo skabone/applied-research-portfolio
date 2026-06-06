@@ -1,4 +1,4 @@
-# HR Employee Attrition Analysis — IBM Benchmark Dataset
+# Project 01 — IBM HR Employee Attrition Analysis
 
 **Author:** Mintay Misgano, PhD  
 **Dataset:** [IBM HR Analytics Employee Attrition & Performance](https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset)  
@@ -18,20 +18,11 @@ Because this is a public benchmark dataset, the findings should be read as an an
 
 ## Key Findings
 
-- Attrition is a minority outcome in the dataset at about 16%, making class imbalance an important modeling issue.
-- Overtime, compensation-related variables, job role, marital status, age, and tenure patterns all show meaningful relationships with attrition.
-- Logistic Regression, Decision Tree, and Random Forest models all improved after balancing the training data.
-- Logistic Regression produced the strongest overall test performance in this project, with AUC = 0.934 on the balanced evaluation setup.
-- PCA was useful for exploring structure in the feature space, but it was not the main driver of predictive performance.
-
----
-
-## Project Files
-
-- `README.md` provides the project overview and file map.
-- `IBM_Project_Summary.md` provides a short narrative interpretation of the project.
-- `IBM_Project_Report.md` provides methods, results, and limitations in full.
-- The notebooks preserve the analytic workflow step by step.
+- Attrition is a minority outcome at about 16%, making class imbalance an important modeling issue.
+- Overtime, compensation-related variables, job role, marital status, age, and tenure all show meaningful relationships with attrition.
+- All three models improved after balancing the training data via SMOTE and ADASYN.
+- Logistic Regression produced the strongest overall test performance: AUC = 0.934.
+- PCA was useful for exploring feature-space structure but was not central to predictive performance.
 
 ---
 
@@ -39,24 +30,21 @@ Because this is a public benchmark dataset, the findings should be read as an an
 
 | File | Purpose |
 |---|---|
+| `01_Project_Summary.md` | Short narrative summary of the project and practical value |
+| `02_Project_Report.md` | Full project report with methods, results, and limitations |
 | `01_Data_Preparation_and_EDA.ipynb` | Data exploration, feature preparation, and class imbalance handling |
 | `02_Classification_Modeling.ipynb` | Classification modeling and feature importance analysis |
 | `03_PCA_Exploration.ipynb` | Dimensionality reduction and feature-space exploration |
-| `IBM_Project_Summary.md` | Short narrative summary of the project and practical value |
-| `IBM_Project_Report.md` | Full project report with methods, results, and limitations |
+| `docs/Results_Snapshot.md` | Verified metrics table and top feature signals |
 
 ---
 
 ## Tools
 
-- Python
-- pandas, numpy, scikit-learn
-- seaborn, matplotlib
-- SMOTE, ADASYN
-- Decision Tree, Random Forest, Logistic Regression, PCA
+Python · pandas · numpy · scikit-learn · seaborn · matplotlib · SMOTE · ADASYN · Logistic Regression · Random Forest · Decision Tree · PCA
 
 ---
 
 ## Data Note
 
-`HR_Attrition_IBM.csv` is a clean benchmark dataset with no missing values. It is useful for demonstrating workflow design, model comparison, and interpretation, but it should not be treated as evidence about IBM's current workforce or as a substitute for organization-specific validation.
+`HR_Attrition_IBM.csv` is a clean public benchmark dataset with no missing values. It is useful for demonstrating workflow design, model comparison, and interpretation, but should not be treated as evidence about IBM's current workforce or as a substitute for organization-specific validation.
