@@ -7,7 +7,7 @@
 
 ## Abstract
 
-Analysis of Variance (ANOVA) is among the most frequently applied statistical frameworks in behavioral research, yet the family of ANOVA designs is often treated as a single technique rather than a set of related tools, each suited to a different data structure. This project applies four ANOVA designs to four simulated social science datasets: a one-way between-subjects ANOVA, a 2x3 factorial ANOVA, a one-way repeated measures ANOVA, and a 3x3 mixed design ANOVA. Across designs, results illustrate the core statistical logic while highlighting the practical implications of each design choice: controlling for individual differences, testing interaction effects, and managing Type I error across multiple comparisons.
+Analysis of Variance (ANOVA) is among the most frequently applied statistical frameworks in behavioral research, yet the family of ANOVA designs is often treated as a single technique rather than a set of related tools, each suited to a different data structure. This project demonstrates four ANOVA designs applied to four simulated social science datasets: a one-way between-subjects ANOVA, a 2×3 factorial ANOVA, a one-way repeated measures ANOVA, and a 3×3 mixed design ANOVA. Across designs, results illustrate the core statistical logic while highlighting the practical implications of each design choice: controlling for individual differences, testing interaction effects, and managing Type I error across multiple comparisons.
 
 ---
 

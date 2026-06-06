@@ -6,4 +6,4 @@ The collection is useful because it highlights contrasts that often get blurred 
 
 One of the strongest themes in the collection is that interaction effects and design structure matter as much as the omnibus p-value. The factorial and mixed-design examples are especially helpful because they show why main effects alone are often not the most interesting result.
 
-This project shows statistical design fluency, ANOVA assumption awareness, and the ability to organize several related analytical methods into one coherent reference-style package.
+As a portfolio piece, this project demonstrates statistical design fluency, ANOVA assumption awareness, and the ability to organize several related analytical methods into one coherent reference-style package.
