@@ -55,7 +55,7 @@ The data was scraped from Glassdoor — a self-reported, user-generated platform
 
 ## 3. Data Preparation
 
-Data cleaning was performed in RapidMiner and validated in Jamovi. The accompanying Python script (`Data_Scientist_Market_Data_Prep.py`) validates the public feature extract and prepares it for dashboard import.
+Data cleaning was performed in RapidMiner and validated in Jamovi. The accompanying Python script (`04_Source_Code.py`) validates the public feature extract and prepares it for dashboard import.
 
 ### 3.1 Public Extract Construction
 
@@ -171,7 +171,7 @@ The dual map approach (3D + 2D) addressed a real tension in geospatial visualiza
 
 This project provides a structured view of the 2021 U.S. data-science labor market using a public job-posting dataset and a dashboard-centered workflow. The clearest patterns in the sample were the prevalence of Python, the concentration of roles in major coastal markets, and the prominence of large private employers in technology-related sectors.
 
-Its main value lies in combining data preparation, exploratory market analysis, and dashboard-based communication in one coherent artifact. The dashboard is useful as a directional exploration tool, while the written report clarifies the scope and limits of the underlying data.
+As a portfolio project, its main value lies in combining data preparation, exploratory market analysis, and dashboard-based communication in one coherent artifact. The dashboard is useful as a directional exploration tool, while the written report clarifies the scope and limits of the underlying data.
 
 ---
 
