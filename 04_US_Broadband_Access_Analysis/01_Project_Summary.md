@@ -1,9 +1,60 @@
-# America's Broadband Problem
+# County-Level Broadband Access in the United States — Summary
 
-This project uses county-level public data to explore broadband access inequality in the United States. The goal was to move beyond national averages and build a clearer view of where broadband access, affordability, and related demographic patterns vary across counties.
+## The problem
 
-The analysis combined data from IMLS, BroadbandNow, FCC-linked indicators, and county geodata, then translated the results into a Tableau story. A key part of the workflow was checking whether commonly used access indicators were measuring meaningful differences in likely household connectivity, not just formal coverage claims.
+By national headlines, broadband looks like a mostly solved problem: most
+Americans have it. But national and state averages blur over enormous local
+variation, and they say nothing about *why* some places are left behind. This
+project uses public county-level data for 3,102 U.S. counties to ask two
+practical questions: where is broadband adoption actually lowest, and what
+predicts it — the infrastructure that's available, or the economic conditions of
+the households who would have to pay for it?
 
-The final dashboard shows several recurring patterns. Broadband outcomes differ sharply across counties, poverty is more informative than provider-style availability counts when interpreting likely access, and regional plus rural-urban differences are visible at a glance once the data are mapped. Counties with higher concentrations of Black residents also appear disproportionately among less well-served areas in this dataset, which makes the equity dimension of the broadband gap much easier to examine.
+## What the data show
 
-As a portfolio project, this work demonstrates multi-source data preparation, public-policy framing, geographic visualization, and careful interpretation of descriptive patterns. Because the project relies on public observational data assembled from multiple sources, the results are best treated as exploratory evidence for comparison and discussion rather than as causal conclusions or current policy evaluation.
+**The gap that averages hide is large.** The share of households with home
+broadband ranges from 25.7% to 95.5% across counties, with a median of 73.7%.
+The bottom 5% of counties are below 56%. A single national number averages a
+well-connected county with one where a quarter of homes have no broadband at all.
+
+**Economic conditions predict adoption better than infrastructure does.** This is
+the central finding. Comparing each factor's correlation with actual
+home-broadband adoption, poverty is the strongest single predictor (r = -0.65),
+with the share of households receiving SNAP close behind (r = -0.57). Formal
+broadband availability — whether providers nominally serve the county —
+correlates only weakly (r = +0.30), and raw provider count weaker still
+(r = +0.22). In other words, the signal that points to where households are
+offline is mostly about affordability and need, not about whether wires reach the
+county.
+
+![Poverty correlates with adoption more than infrastructure does](docs/figures/fig03-adoption-correlates.png)
+
+**Availability is not adoption.** Among the 1,044 counties with formal
+availability at or above 90% — counties a coverage map would call "served" —
+mean household adoption is still only 76.1%, and the lowest is 39%. Counting
+where providers exist substantially overstates where households are actually
+connected.
+
+**The gap maps onto economic disadvantage and geography.** Sorting counties into
+poverty quartiles, adoption falls 15 points from 79.2% in the lowest-poverty
+quartile to 64.3% in the highest. The same pattern shows up geographically: the
+South averages 69.2% county adoption versus 79.2% in the Northeast, and the
+lowest-adoption states — Mississippi (61.1%), New Mexico (63.2%), Arkansas
+(64.2%) — sit in the Deep South and rural Southwest where poverty is highest.
+
+![Adoption falls across poverty quartiles](docs/figures/fig05-poverty-quartile.png)
+
+## What it means
+
+If the goal is to close the broadband gap, these patterns point to where effort
+pays off. Because adoption tracks poverty more than coverage, programs that only
+fund infrastructure buildout in nominally underserved areas will miss the larger
+problem: high-poverty counties where service exists but households can't afford or
+don't adopt it. Targeting affordability support and adoption assistance in
+economically disadvantaged counties — concentrated in the South and rural
+Southwest — is where the data suggest the divide is widest. These are descriptive
+patterns from observational, multi-year data, so they are best used to target and
+prioritize rather than as causal or current-condition claims.
+
+An interactive Tableau version of the geographic story is available on
+[Tableau Public](https://public.tableau.com/app/profile/mintay/viz/DVProject1-Tableau-AmericasBroadbandProblem/AmericasBroadbandProblem).
