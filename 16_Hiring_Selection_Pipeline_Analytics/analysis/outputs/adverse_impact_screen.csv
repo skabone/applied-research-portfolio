@@ -41,7 +41,7 @@ race_ethnicity_group,hire,Hispanic/Latino,46,26,0.5652,0.9817,0
 race_ethnicity_group,hire,Two+,19,7,0.3684,0.6399,1
 race_ethnicity_group,hire,Unknown,33,19,0.5758,1.0,0
 race_ethnicity_group,hire,White,239,129,0.5397,0.9375,0
-race_ethnicity_group,interview,Asian,160,107,0.6687,0.9897,0
+race_ethnicity_group,interview,Asian,160,107,0.6688,0.9898,0
 race_ethnicity_group,interview,Black,62,39,0.629,0.931,0
 race_ethnicity_group,interview,Hispanic/Latino,96,62,0.6458,0.9558,0
 race_ethnicity_group,interview,Two+,45,30,0.6667,0.9867,0

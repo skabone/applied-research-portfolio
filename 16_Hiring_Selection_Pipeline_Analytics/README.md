@@ -1,63 +1,40 @@
-# Hiring & Selection Pipeline Analytics (SQL + Validation + Adverse Impact)
+# Hiring & Selection Pipeline Analytics
 
-**Author:** Mintay Misgano, PhD  
-**Project Type:** Synthetic hiring pipeline case study
-**Tools:** SQL + Python/R (analysis), markdown reporting
+Every hiring pipeline is a series of gates that remove candidates, and two questions follow from that: where does the process lose the most people, and do different demographic groups clear those gates at similar rates? This project builds the full workflow to answer both — a relational schema, SQL funnel and subgroup metrics, and an adverse-impact (4/5ths rule) fairness screen — on a synthetic candidate pipeline.
 
----
+![The 4/5ths rule raised four flags; adding 95% confidence intervals shows only the assessment-stage gap for Black candidates (red, p = 0.020) is distinguishable from parity — the other three rest on samples under 30.](docs/figures/impact_ratio_ci.png)
 
-## Objective
+## What it found
 
-Analyze an end-to-end hiring/selection analytics workflow:
+Of 5,000 applicants, 434 are hired (8.7% yield), and two early gates — assessment (47% pass-through) and interview (45%) — do almost all the filtering. The fairness screen points at the same place. The 4/5ths rule raised four flags, but pairing each with a two-proportion z-test and a confidence interval shows that only one holds up: at the **assessment** stage, Black candidates pass at 35.6% versus 50.6% for the top group — an impact ratio of **0.70**, 95% CI [0.53, 0.94], *p* = 0.020, the only flag whose interval excludes parity. It also sits on the heaviest-filtering gate, making it the clear priority. The three hire-stage flags rest on fewer than 30 candidates, span parity, and are logged as provisional.
 
-1) business question → 2) data model → 3) SQL extraction → 4) statistical analysis → 5) decision-ready reporting
+## Where to go
 
-The case combines **people analytics**, **talent assessment**, and **selection-system governance**, including **adverse impact** checks and documentation discipline.
+- **[`01_Project_Summary.md`](01_Project_Summary.md)** — findings-first overview, plain language, ~3-minute read.
+- **[`02_Project_Report.md`](02_Project_Report.md)** — full method and metric definitions, the complete adverse-impact screen, figure walkthroughs, and references.
+- **[`03_Analysis_Notebook.ipynb`](03_Analysis_Notebook.ipynb)** — the executed, narrated workflow.
 
----
-
-## Key Findings
-
-- SQL-first funnel and subgroup analytics show how selection process metrics can be structured for review.
-- The synthetic run illustrates a full pipeline of 5,000 applied to 434 hired.
-- Example 4/5ths rule flags appear at select stages to demonstrate review posture, not to imply an operational conclusion.
-- The decision posture is explicitly conservative: flags trigger deeper review, minimum-n checks, and job-relatedness evidence gathering.
-
----
-
-## Repository Guide
+## Repository guide
 
 | Path | Purpose |
 |---|---|
-| `sql/` | Schema + queries (funnel metrics, subgroup selection ratios, adverse impact screens) |
-| `analysis/` | Supporting scripts that regenerate the public outputs |
-| `data/` | Synthetic dataset + data dictionary (no real candidate data) |
-| `docs/` | Leader brief, technical memo, and governance notes |
+| `sql/` | Schema and queries: funnel metrics, subgroup selection ratios, adverse-impact screen |
+| `analysis/` | `run_analysis.py` (SQLite loader + query runner), `make_figures.py` (figures), and `inferential_tests.py` (z-tests + impact-ratio CIs) |
+| `data/` | Synthetic dataset, generator, and data dictionary |
+| `docs/` | Figures, generated results snapshot, leader brief, technical memo, metrics spec, governance note |
 
-## Key Deliverables
-
-- `01_Project_Summary.md`
-- `02_Project_Report.md`
-- `03_Analysis_Notebook.ipynb`
-- `docs/Leader_Brief.md`
-- `docs/Metrics_Spec.md`
-- `docs/AIERS_Governance_Note.md`
-- `docs/Technical_Memo.md`
-- `docs/Results_Snapshot.md` (generated)
-
-## Repro
-
-Primary rendered artifacts are `03_Analysis_Notebook.ipynb` and `docs/Results_Snapshot.md`. To rerun the workflow locally:
+## Reproduce
 
 ```bash
-python3 analysis/run_analysis.py
+python3 analysis/run_analysis.py       # writes analysis/outputs/ and docs/Results_Snapshot.md
+python3 analysis/make_figures.py       # writes the funnel, subgroup, and adverse-impact figures to docs/figures/
+python3 analysis/inferential_tests.py  # writes impact_inference.csv and the confidence-interval figure
 ```
 
-## Data Note
+## Data note
 
-All datasets in `data/` are **synthetic** and created for this case study. This project does **not** use proprietary hiring data or any organization’s real selection outcomes.
+All data in `data/` is **synthetic**, generated with a fixed seed for this case study. The project uses no proprietary hiring data and no organization's real selection outcomes. The demographic fields exist only to demonstrate fairness-screening logic.
 
-## Limitations
+## Scope note
 
-- The package is intentionally synthetic, so the main value is workflow and governance structure rather than empirical generalization.
-- Adverse impact flags shown here are review triggers, not stand-alone decision rules.
+The 4/5ths screen is a review trigger, not a legal conclusion or a validation study. A flag means a stage warrants deeper review — job-relatedness evidence, cut-score sensitivity, and minimum-sample guardrails — as detailed in the report.
