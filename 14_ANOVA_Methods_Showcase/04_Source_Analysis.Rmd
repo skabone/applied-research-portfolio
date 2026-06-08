@@ -1,0 +1,470 @@
+---
+title: "ANOVA Methods Collection: One-Way, Factorial, Repeated Measures, and Mixed Design"
+author: "Mintay Misgano"
+date: "`r Sys.Date()`"
+output:
+  github_document:
+    toc: true
+    toc_depth: 3
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
+                      fig.width = 9, fig.height = 5)
+```
+
+---
+
+## Overview
+
+This document demonstrates four ANOVA designs applied to simulated research contexts drawn from published social science studies. Each design answers a different research question structure — from comparing three independent groups, to testing interaction effects, to tracking the same individuals across time, to combining both within- and between-subjects factors in a single model.
+
+| Design | Dataset | DV | Factors |
+|--------|---------|-----|---------|
+| One-Way Between-Subjects | mTalk (Tran & Lee, 2014 sim.) | Willingness to talk more | Training condition (3 levels) |
+| Two-Way Factorial (2×3) | Curbside (Coughenour et al., 2017 sim.) | Cars not stopping | Race × Neighborhood income |
+| One-Way Repeated Measures | Resilience (Amodio et al., 2018 sim.) | Resilience | Wave (Pre/Post/Follow-Up) |
+| Mixed Design (3×3) | Bias reduction (Brenick, 2019 sim.) | Group-based exclusion | Condition (between) × Wave (within) |
+
+---
+
+## Setup
+
+```{r packages}
+library(tidyverse)
+library(psych)
+library(car)
+library(lsr)
+library(ggpubr)
+library(rstatix)
+library(knitr)
+```
+
+---
+
+## Part 1: One-Way Between-Subjects ANOVA
+
+### Background
+
+Tran and Lee (2014) examined the effectiveness of training conditions on participants' willingness to engage in cross-cultural communication (`moreTalk`). Participants were assigned to one of three conditions: Control (no training), Low-intensity training, and High-intensity training. A one-way between-subjects ANOVA tests whether mean `moreTalk` scores differ significantly across the three conditions.
+
+### 1.1 Load and Format Data
+
+```{r oneway-load}
+mtalk <- read.csv("GitHub_Ready/01a_mTalk.csv")
+mtalk$COND <- factor(mtalk$COND, levels = c("Control","Low","High"))
+str(mtalk)
+```
+
+### 1.2 Descriptive Statistics
+
+```{r oneway-desc}
+describeBy(moreTalk ~ COND, data = mtalk, mat = TRUE) |>
+  select(group1, n, mean, sd, median, skew, kurtosis) |>
+  kable(digits = 3, caption = "Table 1.1. Descriptives — moreTalk by Condition")
+```
+
+```{r oneway-boxplot, fig.cap="Figure 1.1. moreTalk scores by training condition"}
+ggboxplot(mtalk, x = "COND", y = "moreTalk",
+          color = "COND", palette = c("#616161","#1976D2","#388E3C"),
+          add = "jitter", add.params = list(size = 1.5, alpha = 0.6),
+          xlab = "Training Condition", ylab = "Willingness to Talk More",
+          legend = "none") +
+  labs(title = "One-Way ANOVA: moreTalk by Training Condition",
+       subtitle = "Jittered points + boxplot; n = 30 per group") +
+  theme_minimal(base_size = 12)
+```
+
+### 1.3 Assumption Checks
+
+```{r oneway-shapiro}
+# Normality by group
+mtalk |> group_by(COND) |> shapiro_test(moreTalk) |>
+  kable(digits = 3, caption = "Table 1.2. Shapiro-Wilk Normality Tests by Condition")
+```
+
+```{r oneway-levene}
+# Homogeneity of variance
+levene_test(mtalk, moreTalk ~ COND) |>
+  kable(digits = 3, caption = "Table 1.3. Levene's Test of Homogeneity of Variance")
+```
+
+### 1.4 Omnibus ANOVA
+
+```{r oneway-anova}
+oneway_model <- aov(moreTalk ~ COND, data = mtalk)
+summary(oneway_model)
+cat("\nEffect size (eta-squared):\n")
+etaSquared(oneway_model)
+```
+
+### 1.5 Post Hoc Comparisons (Tukey HSD)
+
+```{r oneway-posthoc}
+tukey_out <- TukeyHSD(oneway_model)
+print(tukey_out)
+
+# Visualise
+plot(tukey_out, las = 1)
+title("Tukey HSD: 95% CI for Pairwise Differences")
+```
+
+### 1.6 APA Results
+
+```{r oneway-apa, results='asis'}
+cat("
+A one-way between-subjects ANOVA was conducted to examine the effect of training
+condition on willingness to engage in additional cross-cultural communication (*moreTalk*).
+Levene's test indicated no violation of the homogeneity of variance assumption.
+Results indicated a significant effect of condition, *F*(2, 87) = [see output],
+*p* < .05, η² = [see output]. Tukey HSD post hoc comparisons indicated that [see
+pairwise output for specific contrasts]. Effect size interpretation follows Cohen (1988):
+η² ≈ .01 small, ≈ .06 medium, ≥ .14 large.
+")
+```
+
+---
+
+## Part 2: Two-Way Factorial ANOVA (2 × 3)
+
+### Background
+
+Coughenour et al. (2017) examined racial bias in driver yielding at crosswalks, comparing a Black and White pedestrian (Race: 2 levels) across neighborhoods of varying income (NbhdInc: Low, Middle, High). The DV `NotStop` is the number of cars that did not stop. This 2×3 design tests both main effects and their interaction.
+
+### 2.1 Load and Format Data
+
+```{r factorial-load}
+curb <- read.csv("GitHub_Ready/01b_Curb2X3.csv")
+curb$Race    <- factor(curb$Race)
+curb$NbhdInc <- factor(curb$NbhdInc, levels = c("Low","Middle","High"))
+str(curb)
+```
+
+### 2.2 Descriptive Statistics
+
+```{r factorial-desc}
+describeBy(NotStop ~ Race + NbhdInc, data = curb, mat = TRUE) |>
+  select(group1, group2, n, mean, sd, skew, kurtosis) |>
+  kable(digits = 3, caption = "Table 2.1. Descriptives — NotStop by Race × Neighborhood Income")
+```
+
+```{r factorial-lineplot, fig.cap="Figure 2.1. Interaction plot — mean NotStop by Race and Neighborhood Income"}
+ggline(curb, x = "NbhdInc", y = "NotStop", color = "Race",
+       palette = c("#C62828","#1565C0"),
+       add = c("mean_se"),
+       xlab = "Neighborhood Income Level",
+       ylab = "Cars Not Stopping (mean ± SE)",
+       legend.title = "Pedestrian Race") +
+  labs(title   = "2×3 Factorial ANOVA: Interaction Plot",
+       subtitle = "Diverging lines suggest Race × NbhdInc interaction") +
+  theme_minimal(base_size = 12)
+```
+
+```{r factorial-boxplot, fig.cap="Figure 2.2. Boxplots — NotStop by Neighborhood Income, coloured by Race"}
+ggboxplot(curb, x = "NbhdInc", y = "NotStop", color = "Race",
+          palette = c("#C62828","#1565C0"),
+          xlab = "Neighborhood Income Level",
+          ylab = "Cars Not Stopping") +
+  labs(title = "Distribution of NotStop by NbhdInc and Race") +
+  theme_minimal(base_size = 12)
+```
+
+### 2.3 Assumption Checks
+
+```{r factorial-levene}
+levene_test(curb, NotStop ~ Race * NbhdInc) |>
+  kable(digits = 3, caption = "Table 2.2. Levene's Test — NotStop by Race × NbhdInc")
+```
+
+### 2.4 Omnibus Factorial ANOVA
+
+```{r factorial-anova}
+factorial_model <- aov(NotStop ~ Race * NbhdInc, data = curb)
+summary(factorial_model)
+cat("\nEffect sizes (eta-squared):\n")
+etaSquared(factorial_model)
+```
+
+### 2.5 Simple Main Effects (Follow-Up for Significant Interaction)
+
+```{r factorial-sme}
+# Simple main effect of Race within each level of NbhdInc
+curb |>
+  group_by(NbhdInc) |>
+  anova_test(NotStop ~ Race) |>
+  get_anova_table() |>
+  kable(digits = 3, caption = "Table 2.3. Simple Main Effect of Race within Neighborhood Income")
+```
+
+```{r factorial-posthoc}
+# Pairwise comparisons — NbhdInc within each level of Race
+pwc_factorial <- curb |>
+  group_by(Race) |>
+  pairwise_t_test(NotStop ~ NbhdInc, p.adjust.method = "holm")
+kable(pwc_factorial, digits = 3,
+      caption = "Table 2.4. Pairwise Comparisons — NbhdInc within Race (Holm-adjusted)")
+```
+
+### 2.6 APA Results
+
+```{r factorial-apa, results='asis'}
+cat("
+A 2 (Race: Black, White) × 3 (Neighborhood Income: Low, Middle, High)
+between-subjects factorial ANOVA was conducted to evaluate racial bias in driver
+yielding behaviors. Levene's test indicated no violation of homogeneity of variance.
+Results indicated significant main effects for Race [see output], NbhdInc [see output],
+and a significant Race × NbhdInc interaction [see output]. The interaction indicates
+that the effect of race on driver yielding was moderated by neighborhood income level.
+Follow-up simple main effects and Holm-corrected pairwise comparisons are presented
+in Tables 2.3 and 2.4.
+")
+```
+
+---
+
+## Part 3: One-Way Repeated Measures ANOVA
+
+### Background
+
+Amodio et al. (2018) evaluated a resilience-building intervention, measuring `Resilience` at three time points (Pre, Post, 6-month Follow-Up). Because the same 50 participants are measured repeatedly, this is a one-way within-subjects (repeated measures) design. It controls for individual differences that would otherwise inflate error variance.
+
+### 3.1 Load and Format Data
+
+```{r rm-load}
+amodio <- read.csv("GitHub_Ready/01c_Amodio.csv")
+amodio$Wave <- factor(amodio$Wave, levels = c("Pre","Post","FollowUp"))
+str(amodio)
+cat("\nParticipants:", n_distinct(amodio$ID), "| Waves:", n_distinct(amodio$Wave), "\n")
+```
+
+### 3.2 Descriptive Statistics
+
+```{r rm-desc}
+amodio |> group_by(Wave) |>
+  summarise(n    = n(),
+            Mean = mean(Resilience),
+            SD   = sd(Resilience),
+            Min  = min(Resilience),
+            Max  = max(Resilience),
+            Skew = psych::skew(Resilience)) |>
+  kable(digits = 3, caption = "Table 3.1. Descriptives — Resilience by Wave")
+```
+
+```{r rm-lineplot, fig.cap="Figure 3.1. Resilience across waves (individual trajectories + group mean)"}
+ggline(amodio, x = "Wave", y = "Resilience",
+       add = c("mean_se","jitter"),
+       add.params = list(size = 0.8, alpha = 0.3, color = "#9E9E9E"),
+       color = "#7B1FA2", size = 1,
+       xlab = "Assessment Wave", ylab = "Resilience Score") +
+  labs(title   = "One-Way Repeated Measures ANOVA: Resilience Over Time",
+       subtitle = "Mean ± SE; jittered individual scores in grey") +
+  theme_minimal(base_size = 12)
+```
+
+### 3.3 Assumption Checks
+
+```{r rm-normality}
+# Normality at each wave
+amodio |> group_by(Wave) |> shapiro_test(Resilience) |>
+  kable(digits = 3, caption = "Table 3.2. Shapiro-Wilk Tests by Wave")
+```
+
+```{r rm-outliers}
+amodio |> group_by(Wave) |> identify_outliers(Resilience) |>
+  filter(is.extreme == TRUE) |>
+  kable(digits = 3, caption = "Table 3.3. Extreme Outliers by Wave (if any)")
+```
+
+### 3.4 Omnibus Repeated Measures ANOVA
+
+```{r rm-anova}
+rm_model <- anova_test(data = amodio, dv = Resilience, wid = ID, within = Wave)
+get_anova_table(rm_model) |>
+  kable(digits = 3, caption = "Table 3.4. Repeated Measures ANOVA — Resilience by Wave")
+```
+
+*Mauchly's test for sphericity is reported in the anova_test() output. If violated (p < .05), use Greenhouse-Geisser corrected df.*
+
+### 3.5 Pairwise Comparisons
+
+```{r rm-pwc}
+pwc_rm <- amodio |>
+  pairwise_t_test(Resilience ~ Wave, paired = TRUE, p.adjust.method = "holm")
+kable(pwc_rm, digits = 3,
+      caption = "Table 3.5. Pairwise Comparisons — Resilience across Waves (Holm-corrected, paired)")
+```
+
+```{r rm-pwc-plot, fig.cap="Figure 3.2. Resilience with pairwise significance brackets"}
+pwc_rm_plot <- pwc_rm |> add_xy_position(x = "Wave")
+ggline(amodio, x = "Wave", y = "Resilience",
+       add = "mean_se", color = "#7B1FA2", size = 1,
+       xlab = "Assessment Wave", ylab = "Resilience (mean ± SE)") +
+  stat_pvalue_manual(pwc_rm_plot, tip.length = 0.01, hide.ns = TRUE) +
+  labs(title    = "Pairwise Comparisons: Resilience by Wave",
+       subtitle = "Holm-corrected; brackets show significant contrasts") +
+  theme_minimal(base_size = 12)
+```
+
+### 3.6 APA Results
+
+```{r rm-apa, results='asis'}
+cat("
+A one-way repeated measures ANOVA was conducted to examine changes in resilience
+across three assessment waves (Pre, Post, 6-month Follow-Up; N = 50).
+Mauchly's test [see output] evaluated the sphericity assumption; corrections are applied
+where violated. Results indicated [significant/non-significant] change in resilience
+across waves, *F*([df]) = [F], *p* = [p], η² = [effect]. Holm-corrected pairwise
+comparisons [see Table 3.5] identified the pattern of change across specific waves.
+")
+```
+
+---
+
+## Part 4: Mixed Design ANOVA (3 × 3)
+
+### Background
+
+Brenick (2019) evaluated a prejudice reduction intervention across three conditions (Control, Skills, Skills+Contact) over three time points (Pre, Post, Follow-Up). The between-subjects factor (Condition) captures treatment assignment; the within-subjects factor (Wave) captures repeated measurement. The DV `GBE` (Group-Based Exclusion) reflects attitudes about excluding outgroup members.
+
+### 4.1 Load and Format Data
+
+```{r mixed-load}
+gbe <- read.csv("GitHub_Ready/01d_GBE.csv")
+gbe$Wave <- factor(gbe$Wave, levels = c("Pre","Post","FollowUp"))
+gbe$Cond <- factor(gbe$Cond, levels = c("Control","Skills","SkillsContact"))
+str(gbe)
+cat("\nParticipants:", n_distinct(gbe$ID), "| Waves:", n_distinct(gbe$Wave),
+    "| Conditions:", n_distinct(gbe$Cond), "\n")
+```
+
+### 4.2 Descriptive Statistics
+
+```{r mixed-desc}
+describeBy(GBE ~ Wave + Cond, data = gbe, mat = TRUE) |>
+  select(group1, group2, n, mean, sd, skew, kurtosis) |>
+  kable(digits = 3, caption = "Table 4.1. Descriptives — GBE by Wave × Condition")
+```
+
+```{r mixed-boxplot, fig.cap="Figure 4.1. GBE by Wave, coloured by Condition"}
+ggboxplot(gbe, x = "Wave", y = "GBE", color = "Cond",
+          palette = c("#616161","#1976D2","#388E3C"),
+          xlab = "Assessment Wave", ylab = "Group-Based Exclusion (GBE)",
+          legend.title = "Condition") +
+  labs(title   = "Mixed Design ANOVA: GBE by Wave and Condition",
+       subtitle = "Between factor: Condition; Within factor: Wave") +
+  theme_minimal(base_size = 12)
+```
+
+```{r mixed-lineplot, fig.cap="Figure 4.2. Interaction plot — mean GBE trajectory by Condition"}
+ggline(gbe, x = "Wave", y = "GBE", color = "Cond",
+       palette = c("#616161","#1976D2","#388E3C"),
+       add = "mean_se", size = 0.9,
+       xlab = "Assessment Wave", ylab = "GBE (mean ± SE)",
+       legend.title = "Condition") +
+  labs(title   = "Interaction Plot: GBE Over Time by Condition",
+       subtitle = "Diverging trajectories indicate Condition × Wave interaction") +
+  theme_minimal(base_size = 12)
+```
+
+### 4.3 Assumption Checks
+
+```{r mixed-normality}
+gbe |> group_by(Wave, Cond) |> shapiro_test(GBE) |>
+  kable(digits = 3, caption = "Table 4.2. Shapiro-Wilk Tests by Wave × Condition")
+```
+
+```{r mixed-levene}
+gbe |> group_by(Wave) |> levene_test(GBE ~ Cond) |>
+  kable(digits = 3, caption = "Table 4.3. Levene's Test — GBE within each Wave")
+```
+
+```{r mixed-boxM}
+# Box's M — homogeneity of covariance matrices
+box_m(gbe[, "GBE", drop = FALSE], gbe$Cond)
+```
+
+### 4.4 Omnibus Mixed Design ANOVA
+
+```{r mixed-anova}
+mixed_model <- anova_test(
+  data    = gbe,
+  dv      = GBE,
+  wid     = ID,
+  between = Cond,
+  within  = Wave
+)
+get_anova_table(mixed_model) |>
+  kable(digits = 3, caption = "Table 4.4. Mixed Design ANOVA — GBE by Condition × Wave")
+```
+
+### 4.5 Simple Main Effects (Follow-Up for Interaction)
+
+```{r mixed-sme}
+# Simple main effect of Condition within each Wave
+sme_cond_in_wave <- gbe |>
+  group_by(Wave) |>
+  anova_test(dv = GBE, wid = ID, between = Cond) |>
+  get_anova_table() |>
+  adjust_pvalue(method = "bonferroni")
+
+kable(sme_cond_in_wave, digits = 3,
+      caption = "Table 4.5. Simple Main Effect of Condition within Wave (Bonferroni-adjusted)")
+```
+
+```{r mixed-pwc}
+# Post hoc pairwise comparisons — Condition within Wave
+pwc_mixed <- gbe |>
+  group_by(Wave) |>
+  pairwise_t_test(GBE ~ Cond, p.adjust.method = "holm")
+kable(pwc_mixed, digits = 3,
+      caption = "Table 4.6. Pairwise Comparisons — Condition within Wave (Holm-adjusted)")
+```
+
+```{r mixed-pwc-plot, fig.cap="Figure 4.3. Mixed ANOVA interaction plot with pairwise significance brackets"}
+pwc_mixed_plot <- pwc_mixed |> add_xy_position(x = "Wave")
+ggline(gbe, x = "Wave", y = "GBE", color = "Cond",
+       palette = c("#616161","#1976D2","#388E3C"),
+       add = "mean_se", size = 0.9,
+       xlab = "Assessment Wave", ylab = "GBE (mean ± SE)") +
+  stat_pvalue_manual(pwc_mixed_plot, tip.length = 0, hide.ns = TRUE) +
+  labs(title    = "GBE Over Time: Pairwise Significance by Condition",
+       subtitle = get_test_label(mixed_model, detailed = TRUE),
+       caption  = get_pwc_label(pwc_mixed)) +
+  theme_minimal(base_size = 11)
+```
+
+### 4.6 APA Results
+
+```{r mixed-apa, results='asis'}
+cat("
+A 3 (Condition: Control, Skills, Skills+Contact; between-subjects) × 3
+(Wave: Pre, Post, Follow-Up; within-subjects) mixed design ANOVA was conducted to
+examine the combined effects of training condition and time on group-based exclusion
+attitudes (GBE). Assumption checks indicated adequate normality and homogeneity of
+variance at each wave and condition cell (see Tables 4.2–4.3). Mauchly's test [see
+omnibus output] evaluated sphericity; Greenhouse-Geisser corrections are applied where
+indicated.
+
+Results indicated a significant main effect for Condition [F-values from Table 4.4],
+a significant main effect for Wave, and a significant Condition × Wave interaction.
+The significant interaction indicates that the trajectories of change in GBE over time
+differed across training conditions.
+
+Follow-up simple main effects of Condition within each Wave (Table 4.5) revealed
+non-significant condition differences at Pre-test, and significant differences at Post
+and Follow-Up. Holm-corrected pairwise comparisons (Table 4.6) identified that
+[specific contrasts from output] drove the post-test and follow-up differences.
+")
+```
+
+---
+
+## Session Info
+
+```{r session-info}
+sessionInfo()
+```

@@ -51,8 +51,7 @@ Mintay Misgano
 
 ## Overview
 
-This document demonstrates four ANOVA designs applied to real
-(simulated) research contexts drawn from published social science
+This document demonstrates four ANOVA designs applied to simulated research contexts drawn from published social science
 studies. Each design answers a different research question structure —
 from comparing three independent groups, to testing interaction effects,
 to tracking the same individuals across time, to combining both within-
@@ -133,7 +132,7 @@ ggboxplot(mtalk, x = "COND", y = "moreTalk",
 ```
 
 <figure>
-<img src="02_ANOVA_Analysis_R_files/figure-gfm/oneway-boxplot-1.png"
+<img src="03_Analysis_Workflow_files/figure-gfm/oneway-boxplot-1.png"
 alt="Figure 1.1. moreTalk scores by training condition" />
 <figcaption aria-hidden="true">Figure 1.1. moreTalk scores by training
 condition</figcaption>
@@ -218,7 +217,7 @@ plot(tukey_out, las = 1)
 title("Tukey HSD: 95% CI for Pairwise Differences")
 ```
 
-![](02_ANOVA_Analysis_R_files/figure-gfm/oneway-posthoc-1.png)<!-- -->
+![](03_Analysis_Workflow_files/figure-gfm/oneway-posthoc-1.png)<!-- -->
 
 ### 1.6 APA Results
 
@@ -301,7 +300,7 @@ ggline(curb, x = "NbhdInc", y = "NotStop", color = "Race",
 ```
 
 <figure>
-<img src="02_ANOVA_Analysis_R_files/figure-gfm/factorial-lineplot-1.png"
+<img src="03_Analysis_Workflow_files/figure-gfm/factorial-lineplot-1.png"
 alt="Figure 2.1. Interaction plot — mean NotStop by Race and Neighborhood Income" />
 <figcaption aria-hidden="true">Figure 2.1. Interaction plot — mean
 NotStop by Race and Neighborhood Income</figcaption>
@@ -317,7 +316,7 @@ ggboxplot(curb, x = "NbhdInc", y = "NotStop", color = "Race",
 ```
 
 <figure>
-<img src="02_ANOVA_Analysis_R_files/figure-gfm/factorial-boxplot-1.png"
+<img src="03_Analysis_Workflow_files/figure-gfm/factorial-boxplot-1.png"
 alt="Figure 2.2. Boxplots — NotStop by Neighborhood Income, coloured by Race" />
 <figcaption aria-hidden="true">Figure 2.2. Boxplots — NotStop by
 Neighborhood Income, coloured by Race</figcaption>
@@ -497,7 +496,7 @@ ggline(amodio, x = "Wave", y = "Resilience",
 ```
 
 <figure>
-<img src="02_ANOVA_Analysis_R_files/figure-gfm/rm-lineplot-1.png"
+<img src="03_Analysis_Workflow_files/figure-gfm/rm-lineplot-1.png"
 alt="Figure 3.1. Resilience across waves (individual trajectories + group mean)" />
 <figcaption aria-hidden="true">Figure 3.1. Resilience across waves
 (individual trajectories + group mean)</figcaption>
@@ -577,7 +576,7 @@ ggline(amodio, x = "Wave", y = "Resilience",
 ```
 
 <figure>
-<img src="02_ANOVA_Analysis_R_files/figure-gfm/rm-pwc-plot-1.png"
+<img src="03_Analysis_Workflow_files/figure-gfm/rm-pwc-plot-1.png"
 alt="Figure 3.2. Resilience with pairwise significance brackets" />
 <figcaption aria-hidden="true">Figure 3.2. Resilience with pairwise
 significance brackets</figcaption>
@@ -674,7 +673,7 @@ ggboxplot(gbe, x = "Wave", y = "GBE", color = "Cond",
 ```
 
 <figure>
-<img src="02_ANOVA_Analysis_R_files/figure-gfm/mixed-boxplot-1.png"
+<img src="03_Analysis_Workflow_files/figure-gfm/mixed-boxplot-1.png"
 alt="Figure 4.1. GBE by Wave, coloured by Condition" />
 <figcaption aria-hidden="true">Figure 4.1. GBE by Wave, coloured by
 Condition</figcaption>
@@ -692,7 +691,7 @@ ggline(gbe, x = "Wave", y = "GBE", color = "Cond",
 ```
 
 <figure>
-<img src="02_ANOVA_Analysis_R_files/figure-gfm/mixed-lineplot-1.png"
+<img src="03_Analysis_Workflow_files/figure-gfm/mixed-lineplot-1.png"
 alt="Figure 4.2. Interaction plot — mean GBE trajectory by Condition" />
 <figcaption aria-hidden="true">Figure 4.2. Interaction plot — mean GBE
 trajectory by Condition</figcaption>
@@ -824,7 +823,7 @@ ggline(gbe, x = "Wave", y = "GBE", color = "Cond",
 ```
 
 <figure>
-<img src="02_ANOVA_Analysis_R_files/figure-gfm/mixed-pwc-plot-1.png"
+<img src="03_Analysis_Workflow_files/figure-gfm/mixed-pwc-plot-1.png"
 alt="Figure 4.3. Mixed ANOVA interaction plot with pairwise significance brackets" />
 <figcaption aria-hidden="true">Figure 4.3. Mixed ANOVA interaction plot
 with pairwise significance brackets</figcaption>
