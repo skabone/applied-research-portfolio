@@ -486,7 +486,7 @@ semPlot::semPaths(fit_configural,
 
 <figure>
 <img
-src="02_Invariance_Analysis_R_files/figure-gfm/configural-path-1.png"
+src="03_Analysis_Workflow_files/figure-gfm/configural-path-1.png"
 alt="Figure 1. Configural model path diagram (Mild group)" />
 <figcaption aria-hidden="true">Figure 1. Configural model path diagram
 (Mild group)</figcaption>
@@ -498,7 +498,7 @@ title("Configural Model — Mild Group (Standardized)", cex.main = 0.9)
 
 <figure>
 <img
-src="02_Invariance_Analysis_R_files/figure-gfm/configural-path-2.png"
+src="03_Analysis_Workflow_files/figure-gfm/configural-path-2.png"
 alt="Figure 1. Configural model path diagram (Mild group)" />
 <figcaption aria-hidden="true">Figure 1. Configural model path diagram
 (Mild group)</figcaption>
@@ -1436,9 +1436,9 @@ ruler across disability severity levels.
 fi_c["df"], fi_c["chisq"],
 ifelse(fi_c["pvalue"] < .001, "< .001", sprintf("= %.3f", fi_c["pvalue"])),
 fi_c["cfi"], fi_c["rmsea"], fi_c["rmsea.ci.lower"], fi_c["rmsea.ci.upper"], fi_c["srmr"],
-as.integer(lrt_weak$Df[2]),   lrt_weak$`Chisq diff`[2],   lrt_weak$`Pr(>Chisq)`[2],
+as.integer(lrt_weak$`Df diff`[2]),   lrt_weak$`Chisq diff`[2],   lrt_weak$`Pr(>Chisq)`[2],
 abs(cfi_vals[2] - cfi_vals[1]),
-as.integer(lrt_strong$Df[2]), lrt_strong$`Chisq diff`[2],
+as.integer(lrt_strong$`Df diff`[2]), lrt_strong$`Chisq diff`[2],
 abs(cfi_vals[3] - cfi_vals[2])
 ))
 ```
@@ -1456,14 +1456,14 @@ fits adequately in both groups, χ²(328) = 645.786, *p* \< .001, CFI =
 
 The **weak invariance model** constrained factor loadings to equality
 across groups. Model fit remained acceptable and did not significantly
-degrade relative to configural, Δχ²(344) = 18.809, *p* = 0.279, ΔCFI =
+degrade relative to configural, Δχ²(16) = 18.809, *p* = 0.279, ΔCFI =
 0.001, supporting the conclusion that factor loadings are invariant. The
 AMS items carry equivalent relationships to their respective constructs
 regardless of disability severity group.
 
 The **strong invariance model** additionally constrained item intercepts
 to equality. This model showed a substantial and statistically
-significant decrement in fit relative to the weak model, Δχ²(360) =
+significant decrement in fit relative to the weak model, Δχ²(16) =
 291.336, *p* \< .001, ΔCFI = 0.092. Strong invariance is **not
 supported**, indicating that item intercepts differ across groups —
 items are systematically endorsed at different levels by Mild and Severe
