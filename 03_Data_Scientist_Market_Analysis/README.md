@@ -1,51 +1,30 @@
 # U.S. Data Scientist Market Analysis (2021)
 
-**Author:** Mintay Misgano, PhD  
-**Tools:** Python, RapidMiner, Jamovi, Power BI  
-**Dataset:** Glassdoor job-posting data via Kaggle
+What did the 2021 U.S. data-science hiring market actually reward — which roles, skills, and locations carried the highest pay, and where did demand concentrate? This project answers that by analyzing 742 public job postings across salary, geography, employer profile, degree, and tool requirements, then translating the patterns into workforce- and talent-planning signals.
 
----
+The analysis recomputes every reported figure from a public feature extract and rebuilds the visuals as a reproducible Python pipeline, so the evidence can be inspected directly from the repository.
 
-## Overview
+![Median advertised salary by role group: ML Engineer $124K and Data Scientist $114K lead; Analyst roles trail at $62K](docs/figures/fig01-salary-by-role.png)
 
-This project explores the 2021 U.S. data-science job market using a 742-row public feature extract derived from a Glassdoor job-posting dataset published on Kaggle. The analysis examines salary patterns, geographic concentration, employer characteristics, degree requirements, and tool demand across data scientist, data analyst, data engineer, and senior data scientist roles.
+*Pay scaled sharply with role type. ML Engineer (median $124K, n=22) and Data Scientist ($114K, n=313) postings led the market, while Analyst roles ($62K, n=109) sat roughly $50K lower — a gap that widens further with seniority and degree requirements.*
 
-Completed as graduate coursework in data mining and analytics, the project is centered on an interactive Power BI dashboard supported by reproducible data-preparation steps.
+## What the data showed
 
----
+- **A small core stack dominated demand.** Python (52.8%), Excel (52.3%), and SQL (51.2%) each appeared in about half of postings, while specialized tools such as Flink (1.3%) and Google Analytics (1.9%) were negligible.
+- **Skill bundles differed by role.** Analyst postings clustered on Excel (74%) and SQL (72%); Data Scientist and ML Engineer postings led on Python (77% and 82%) and the deep-learning libraries (TensorFlow, scikit-learn, PyTorch) that were essentially absent from analyst roles.
+- **Demand concentrated geographically.** California (152 postings, median $121K), Massachusetts (103), and New York (72) led on volume, with California also highest on pay.
+- **Pay rose with credentials and level.** PhD-required roles paid a median $120K vs. $89K where no degree was specified; senior roles paid $122K vs. $88K for unspecified-level postings.
 
-## Key Findings
+## Where to go next
 
-- Python appeared as the most consistently requested technical tool across role types.
-- California, Massachusetts, and New York showed the highest concentration of roles and salary ranges.
-- Hiring organizations were commonly large, relatively young, and private, with concentration in IT and biotech-related sectors.
-- Degree requirements tended to increase with seniority and compensation level.
-- Some tools, such as Flink and Google Analytics, appeared very rarely in the postings.
+| File | What it is |
+|------|------------|
+| [`01_Project_Summary.md`](01_Project_Summary.md) | Two-to-three-minute, plain-language overview of the question, findings, and what they mean. |
+| [`02_Project_Report.md`](02_Project_Report.md) | Full write-up: data, methods, metric definitions, figure-by-figure evidence, limitations, and references. |
+| [`03_Analysis_Notebook.ipynb`](03_Analysis_Notebook.ipynb) | Executed analysis with all numbers and figures rendered inline. |
+| [`04_Source_Code.py`](04_Source_Code.py) | Annotated script that reproduces every statistic and figure. |
+| [`data/`](data) | Public analysis extract and its data note. |
 
----
+## Data note
 
-## Project Files
-
-- `README.md` provides the project overview and file map.
-- `Data_Scientist_Market_Project_Summary.md` provides the short narrative interpretation.
-- `Data_Scientist_Market_Project_Report.md` provides methods, findings, and limitations in full.
-- `Data_Scientist_Market_Data_Prep.ipynb` provides a rendered notebook version of the preparation workflow.
-- `Data_Scientist_Market_Data_Prep.py` provides the script version.
-
----
-
-## File Map
-
-| File | Purpose |
-|------|---------|
-| `Data_Scientist_Market_Project_Summary.md` | Short narrative summary of the project and practical value |
-| `Data_Scientist_Market_Project_Report.md` | Full project report with methods, findings, and limitations |
-| `Data_Scientist_Market_Data_Prep.ipynb` | Rendered notebook companion for the preparation workflow |
-| `Data_Scientist_Market_Data_Prep.py` | Reproducible data-preparation script |
-| `ds_salary_public.csv` | Public feature-level analysis dataset used in the project |
-
----
-
-## Data Note
-
-This project uses a public feature-level extract derived from a Kaggle dataset of Glassdoor job postings. Raw job descriptions, company names, headquarters, competitors, and contact-bearing posting text are not stored in this repository. Salary ranges and company attributes should be treated as directional labor-market signals rather than authoritative compensation benchmarks.
+This project uses a public feature-level extract derived from a Kaggle dataset of Glassdoor job postings. Raw job descriptions, company names, headquarters, competitors, and any contact-bearing posting text are excluded from the repository. Salary ranges and company attributes are best read as directional 2021 labor-market signals rather than authoritative compensation benchmarks. The original cleaning was done in RapidMiner and Jamovi and the dashboards built in Power BI; the published pipeline reproduces that work in Python.
